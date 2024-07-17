@@ -1,18 +1,19 @@
-import mongoose, { Schema, Document } from "mongoose";
+// import mongoose, { Schema, Document } from "mongoose";
 
 
-export interface Twallet extends Document {
-    tournamentId: string,
-    title: string,
-    winPrice: Number
-}
+// export interface Twallet extends Document {
+//     tournamentId: string,
+//     title: string,
+//     colletction: Number
+// }
 
-const tWalletSchema: Schema<Twallet> = new Schema({
-    tournamentId: { type: String, required: true },
-    title: { type: String, required: true },
-    winPrice: { type: Number, required: true }
-})
+// const tWalletSchema: Schema<Twallet> = new Schema({
+//     tournamentId: { type: String, required: true },
+//     title: { type: String, required: true },
+//     colletction: { type: Number, required: true }
+// })
 
 
-const Twallet = (mongoose.models.User as mongoose.Model<Twallet>) || mongoose.model<Twallet>("Twallet", tWalletSchema)
+// export const TWallet = mongoose.model<Twallet>("TWallet", tWalletSchema)
 
+    

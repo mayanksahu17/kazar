@@ -56,13 +56,14 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const token = jwt.sign(
       { id: user._id, userName: user.userName },
       process.env.JWT_SECRET as string,
-      { expiresIn: '1h' }
+      { expiresIn: '7d' }
     );
 
     const response = NextResponse.json({
       success: true,
       message: 'User authenticated successfully',
       token,
+      data : user
     });
 
     response.headers.set('Set-Cookie', cookie.serialize('token', token, {

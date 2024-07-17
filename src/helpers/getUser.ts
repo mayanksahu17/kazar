@@ -17,9 +17,7 @@ export async function getUser(req: NextRequest) {
      
       try {
       const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
-      req.user  = payload as { _id: string; userName: string };
-
-      return  req.user.userName ;
+      return payload
     } catch (error) {
       console.error('JWT verification error', error);
     

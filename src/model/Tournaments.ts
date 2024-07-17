@@ -1,11 +1,11 @@
 import mongoose, {Schema, Document, } from "mongoose";
 import { User } from "./User";
-import { Twallet } from "./Wallet";
 import { Team } from "./Teams";
 
 
 
-export interface Tournaments extends Document{
+
+export interface Tournament extends Document{
     title : string,
     roomId : string,
     password : string,
@@ -18,21 +18,21 @@ export interface Tournaments extends Document{
     participants : Team,
     requiredTeamsize : Number,
     launchDate : Date,
-    twallet : Twallet,
+    Collection : Number
 }
 
-const tournamentSchema : Schema<Tournaments> = new Schema({
+const tournamentSchema : Schema<Tournament> = new Schema({
     title : {
         type : String,
-        required: [true,"title is required"],
+        // required: [true,"title is required"],
     },
     roomId : {
         type : String,
-        required: [true,"roomId is required"],
+        // required: [true,"roomId is required"],
         },
     password : {
         type : String,
-        required: [true,"password is required"],
+        // required: [true,"password is required"],
     },
     entryPrice : {
         type : Number,
@@ -57,8 +57,12 @@ const tournamentSchema : Schema<Tournaments> = new Schema({
         type : Schema.Types.ObjectId,
         ref : "Team",
         },
+    Collection : {
+        type : Number,
+        default : 0
+    }
     
 
 })
 
-const Tournaments = (mongoose.models.User as mongoose.Model<Tournaments>) || mongoose.model<Team>("Tournaments", tournamentSchema)
+export const Tournaments =  mongoose.model<Tournament>("Tournament", tournamentSchema)
