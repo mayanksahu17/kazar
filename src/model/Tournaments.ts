@@ -19,20 +19,18 @@ export interface Tournament extends Document{
     requiredTeamsize : Number,
     launchDate : Date,
     Collection : Number
+    thumbNail : string
 }
 
 const tournamentSchema : Schema<Tournament> = new Schema({
     title : {
         type : String,
-        // required: [true,"title is required"],
     },
     roomId : {
         type : String,
-        // required: [true,"roomId is required"],
         },
     password : {
         type : String,
-        // required: [true,"password is required"],
     },
     entryPrice : {
         type : Number,
@@ -57,12 +55,19 @@ const tournamentSchema : Schema<Tournament> = new Schema({
         type : Schema.Types.ObjectId,
         ref : "Team",
         },
+    launchDate : {
+        type : Date,
+    },
     Collection : {
         type : Number,
         default : 0
+    },
+    thumbNail : {
+        type : String,
     }
     
 
 })
 
 export const Tournaments =  mongoose.model<Tournament>("Tournament", tournamentSchema)
+''

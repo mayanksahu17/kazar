@@ -20,14 +20,15 @@ export async function POST(req: NextRequest) {
       lunchDate,
       requiredTeamSize,
       token,
-      entryPrice
+      entryPrice,
+      thumbNail
     } = await req.json();
 
     const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
     const userId = payload.id;
 
     // Input validations (enhanced for robustness)
-    if (!title || !mode || !map || winningPrice === undefined || !eligibility || !owner || !lunchDate || !requiredTeamSize || entryPrice) {
+    if (!title || !mode || !map || winningPrice === undefined || !eligibility || !owner || !lunchDate || !requiredTeamSize || !entryPrice || !thumbNail) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
     }
 
@@ -52,7 +53,8 @@ export async function POST(req: NextRequest) {
       lunchDate,
       requiredTeamSize,
       Collection :  0,
-      entryPrice 
+      entryPrice ,
+      thumbNail
     });
 
  
@@ -65,7 +67,7 @@ export async function POST(req: NextRequest) {
      // Save the updated user document
     ]);
 
-    return NextResponse.json({ message: "Tournament created successfully", tournament: savedTournament }, { status: 201 });
+    return NextResponse.json({ message: "Tournament created successfully", data : savedTournament }, { status: 201 });
   } catch (error) {
     console.error("Error creating tournament:", error);
     return NextResponse.json({ message: "Error creating tournament" }, { status: 500 });
