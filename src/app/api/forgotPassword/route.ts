@@ -9,7 +9,8 @@ import { verify } from 'crypto';
 export async function PUT(request: NextRequest) {
     try {
       const { email } = await request.json();
-  
+      console.log(email);
+      
       if (!validator.isEmail(email)) {
         return NextResponse.json({ errors: ['Invalid email'] }, { status: 400 });
       }

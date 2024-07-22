@@ -8,17 +8,18 @@ export async function POST(req: Request) {
     await dbConnect();
 
     const { userName, email, password, bgmiId, mobileNumber } = await req.json();
-
+    
     // Input validation
     const errors = [];
     if (!validator.isEmail(email)) errors.push('Invalid email');
     if (!validator.isMobilePhone(mobileNumber, 'en-IN')) errors.push('Invalid mobile number');
     if (!validator.isLength(password, { min: 8 })) errors.push('Password must be at least 8 characters long');
-
+    
+    
     if (errors.length) {
       return new Response(JSON.stringify({ success: false, message: errors.join(', ') }), { status: 400 });
     }
-
+    
     // Check if user already exists
     const userExist = await User.findOne({
       $or: [{ userName }, { email }, { bgmiId }],

@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Tournaments } from "@/model/Tournaments";
 import { User } from "@/model/User";
-import { getUser } from "@/helpers/getUser";
-import { ObjectId } from 'mongodb';
 import { jwtVerify } from "jose";
 import dbConnect from "@/lib/dbConnect";
 
 export async function POST(req: NextRequest) {
   await dbConnect();
+  const token = req.cookies.get("token")?.value || ""
+  if (token === "") {
+    return NextResponse.json({
+      success: false,
+      message: "You are not logged in",
 
+    }, {
+      status: 203
+    })
+  }
   try {
     const {
       title,
@@ -19,7 +26,6 @@ export async function POST(req: NextRequest) {
       owner,
       lunchDate,
       requiredTeamSize,
-      token,
       entryPrice,
       thumbNail
     } = await req.json();
@@ -40,7 +46,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-  
+
 
     // Create tournament
     const tournament = await Tournaments.create({
@@ -52,22 +58,22 @@ export async function POST(req: NextRequest) {
       owner: userId,
       lunchDate,
       requiredTeamSize,
-      Collection :  0,
-      entryPrice ,
+      Collection: 0,
+      entryPrice,
       thumbNail
     });
 
- 
+
 
     userExists.tournaments.push(tournament._id)
 
     const [savedTournament, savedUser] = await Promise.all([
       tournament.save(),
       userExists.save(),
-     // Save the updated user document
+      // Save the updated user document
     ]);
 
-    return NextResponse.json({ message: "Tournament created successfully", data : savedTournament }, { status: 201 });
+    return NextResponse.json({ message: "Tournament created successfully", data: savedTournament }, { status: 201 });
   } catch (error) {
     console.error("Error creating tournament:", error);
     return NextResponse.json({ message: "Error creating tournament" }, { status: 500 });

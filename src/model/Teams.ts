@@ -10,15 +10,18 @@ export interface Team extends Document{
     player3 : User
     player4 : User
     registered : boolean
+    leader : User
 }
 
 const TeamSchema : Schema<Team> = new Schema({
     teamName : String,
-    player1 : {type : Schema.Types.ObjectId, ref : 'User'},
-    player2 : {type : Schema.Types.ObjectId, ref : 'User'},
-    player3 : {type : Schema.Types.ObjectId, ref : 'User'},
-    player4 : {type : Schema.Types.ObjectId, ref : 'User'},
-    registered : Boolean
+    player1 : {type : Schema.Types.ObjectId, ref : 'User', default : null},
+    player2 : {type : Schema.Types.ObjectId, ref : 'User', default : null},
+    player3 : {type : Schema.Types.ObjectId, ref : 'User', default : null},
+    player4 : {type : Schema.Types.ObjectId, ref : 'User', default : null},
+    registered : Boolean,
+    leader : {type : Schema.Types.ObjectId, ref : 'User'}
+
 })
 
-const Team = (mongoose.models.User as mongoose.Model<Team>) || mongoose.model<Team>("Team", TeamSchema)
+export const Teams =  mongoose.models.Team || mongoose.model<Team>("Team", TeamSchema)
