@@ -29,14 +29,15 @@ export default function SignInComponent() {
       if (response.status === 200) {
         toast.success(response?.data.message);
         router.push("/")
-      }else{
+      }else if (response.status === 404){
         toast.error(response.data.message)
       }
       toast.error(response.data.message)
-    } catch (error) {
+    } catch (error : any) {
       console.log(error);
       
       toast.error("Failed to sign in. Please check your credentials.");
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
