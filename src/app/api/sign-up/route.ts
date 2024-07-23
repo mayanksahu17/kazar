@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     });
 
     if (userExist) {
-      return new Response(JSON.stringify({ success: false, message: 'User already exists' }), { status: 400 });
+      return new Response(JSON.stringify({ success: false, message: 'User already exists with same Email or Username' }), { status: 400 });
     }
 
     // Secure password hashing

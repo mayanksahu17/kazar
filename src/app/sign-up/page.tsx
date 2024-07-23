@@ -22,6 +22,8 @@ interface SignUpFormData {
 
 const SignUp: React.FC = () => {
 
+  const [loading, setLoading] = useState<boolean>(false);
+
     const getCookie = (name: string): string | undefined => {
         return Cookies.get(name);
       };
@@ -54,16 +56,17 @@ const SignUp: React.FC = () => {
     }
 
     try {
-        console.log("waitint for response");
+        setLoading(true)
+        const response = await axios.post('api/sign-up', formData);
+        console.log(response);
         
-      const response = await axios.post('api/sign-up', formData);
-      console.log(response);
-      
-      toast.success('Sign up successful');
-      router.push('/sign-in');
-    } catch (err) {
-      toast.error('Sign up failed. Please try again.');
-    }
+        toast.success('Sign up successful');
+        router.push('/sign-in');
+      } catch (error : any) {
+        toast.error(error?.response?.data?.message);
+      }finally{
+        setLoading(false)
+      }
   };
 
   return (
@@ -97,11 +100,11 @@ const SignUp: React.FC = () => {
             <Label htmlFor="bgmiId">Bgmi Id</Label>
             <Input id="bgmiId" type="text" placeholder="Enter your bgmiID" value={formData.bgmiId} onChange={handleChange} required />
           </div>
-          <Link href="/sign-in" className="text-sm font-medium text-primary hover:underline text-gray-700" prefetch={false}>
+          <Link href="/sign-in" className="text-sm font-medium  hover:underline text-muted-foreground" prefetch={false}>
             already have an account sign-in
           </Link>
           <Button type="submit" className="w-full text-orange-600">
-            Sign up
+           {loading ? `Signing up...` : `Sign up`} 
           </Button>
         </form>
       </div>
