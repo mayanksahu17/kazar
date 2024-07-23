@@ -1,15 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import tournaments from "./tournaments.json" // Import the JSON data
+// import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req:NextRequest) {
+// export async function GET(req:NextRequest) {
 
-        return NextResponse.json({
-            message : 'le re lund ke',
-            tournaments : tournaments
-//
-        })
+//         return NextResponse.json({
+//             message : 'le re lund ke',
+//             tournaments : tournaments
+// //
+//         })
     
-    return NextResponse.json({
-        success : true
-    })
-}
+//     return NextResponse.json({
+//         success : true
+//     })
+// }
