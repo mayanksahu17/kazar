@@ -3,10 +3,10 @@ import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import Header from "@/components/Header"
+import Header from "@/components/Header"                                                                                                                                                                                                                                    
 import tournaments from "./tournaments.json" // Import the JSON data
 
-export default function Tournaments() {
+export default function Tournaments({...tournament}) {
   return (
     <>
   
@@ -20,7 +20,7 @@ export default function Tournaments() {
                   <img
                     src={tournament.image}
                     alt={`${tournament.title} Thumbnail`}
-                    className="rounded-t-lg w-full h-[200px] object-cover"
+                    className="rounded-t-lg w-full h-[200px] object-cover"  
                   />  
                 </CardHeader>
                 <CardContent className="p-4">

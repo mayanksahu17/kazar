@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import tournaments from "./tournaments.json" // Import the JSON data
 
 export async function GET(req:NextRequest) {
 
-    const formadata = await req.formData();
-    const File =  formadata.get("File");
-        if (File) {
-        
         return NextResponse.json({
             message : 'le re lund ke',
-            file : File
+            tournaments : tournaments
 //
         })
-    }
+    
     return NextResponse.json({
         success : true
     })
-    
 }
