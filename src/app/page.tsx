@@ -14,13 +14,7 @@ export default function Component() {
     setIsAuthenticated(!!token);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.setItem("token","")
-    Cookies.remove("token");
-    setIsAuthenticated(false);
-    toast.success("Logged out successfully!");
-    router.push("/")
-  };
+ 
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-orange-500">

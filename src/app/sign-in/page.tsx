@@ -62,7 +62,7 @@ export default function SignInComponent() {
           <div>
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link href="/forgot-password" className="text-sm font-medium text-primary hover:underline text-gray-600" prefetch={false}>
+              <Link href="/forgot-password" className="text-sm font-medium  text-muted-foreground hover:underline " prefetch={false}>
                 Forgot password?
               </Link>
             </div>
@@ -75,7 +75,7 @@ export default function SignInComponent() {
               required
             />
           </div>
-          <Link href="/sign-up" className="text-sm font-medium text-primary hover:underline text-gray-700" prefetch={false}>
+          <Link href="/sign-up" className="text-sm font-medium  hover:underline  text-muted-foreground" prefetch={false}>
             Don't have an account? Create one.
           </Link>
           <Button type="submit" className="w-full text-orange-600" disabled={loading}>

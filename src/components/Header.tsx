@@ -47,10 +47,10 @@ export default function Header() {
             {!isAuthenticated ? (
 
               <>
-                <Link href="/sign-in" className="text-sm font-medium text-muted-foreground hover:text-foreground" prefetch={false}>
+                <Link href="/sign-in" className="text-sm font-medium text-muted-foreground hover:text-foreground text-orange-600" prefetch={false}>
                   Sign in
                 </Link>
-                <Link href="/sign-up" className="text-sm font-medium text-muted-foreground hover:text-foreground" prefetch={false}>
+                <Link href="/sign-up" className="text-sm font-medium text-muted-foreground hover:text-foreground text-orange-600" prefetch={false}>
                   Sign up
                 </Link>
               </>

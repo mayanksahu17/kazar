@@ -27,7 +27,7 @@ const ForgotPassword = () => {
   const sendOtp = async () => {
     setIsSendingOtp(true);
     try {
-      const response = await axios.put("/api/forgotPassword", { email });
+      const response = await axios.post("/api/node", { email });
       if (response.status === 200) {
         console.log(response);
         
