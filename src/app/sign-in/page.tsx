@@ -27,9 +27,10 @@ export default function SignInComponent() {
       localStorage.setItem("token",response?.data.token)
 
       if (response.status === 200) {
-        toast.success("Signed in successfully!");
+        toast.success(response?.data.message);
         router.push("/")
       }
+      toast.error(response.data.message)
     } catch (error) {
       console.log(error);
       
@@ -76,7 +77,7 @@ export default function SignInComponent() {
             />
           </div>
           <Link href="/sign-up" className="text-sm font-medium  hover:underline  text-muted-foreground" prefetch={false}>
-            Don't have an account? Create one.
+            Don not have an account? Create one.
           </Link>
           <Button type="submit" className="w-full text-orange-600" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}

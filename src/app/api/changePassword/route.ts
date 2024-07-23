@@ -1,4 +1,3 @@
-import { getUser } from "@/helpers/getUser";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { User } from "@/model/User";

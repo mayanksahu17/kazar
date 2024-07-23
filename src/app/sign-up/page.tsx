@@ -60,6 +60,7 @@ const SignUp: React.FC = () => {
       console.log(response);
       
       toast.success('Sign up successful');
+      router.push('/sign-in');
     } catch (err) {
       toast.error('Sign up failed. Please try again.');
     }

@@ -36,7 +36,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "Team ID is required" }, { status: 400 });
         }
         const team  = await Teams.findById(teamId).lean()
-        console.log(team.player1);
+        
+        // console.log(team.player1);
         
         if (!team) {
             return NextResponse.json({ message: "Team not found" }, { status: 404 });

@@ -24,4 +24,4 @@ const TeamSchema : Schema<Team> = new Schema({
 
 })
 
-export const Teams =  mongoose.models.Team || mongoose.model<Team>("Team", TeamSchema)
+export const Teams = ( mongoose.models.Team as mongoose.Model<Team>) || mongoose.model<Team>("Team", TeamSchema)

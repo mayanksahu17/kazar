@@ -27,7 +27,7 @@ const ForgotPassword = () => {
   const sendOtp = async () => {
     setIsSendingOtp(true);
     try {
-      const response = await axios.post("/api/node", { email });
+      const response = await axios.post("/api/node-mail", { email });
       if (response.status === 200) {
         console.log(response);
         
@@ -53,9 +53,11 @@ const ForgotPassword = () => {
         toast.success("OTP verified successfully");
         router.push("/change-password");
       } else {
-        toast.error("Something went wrong");
+        toast.error(response.data.message);
       }
     } catch (error) {
+      console.log(error); 
+      
       toast.error("An error occurred while verifying OTP");
     }
   };

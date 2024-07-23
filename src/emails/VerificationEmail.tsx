@@ -69,7 +69,7 @@ const VerificationEmail: React.FC<{ username: string; otp: string }> = ({ userna
           Copy OTP
         </Button>
         <Text>
-          (Please copy the OTP manually if the button doesn't work in your email client)
+          (Please copy the OTP manually if the button does not work in your email client)
         </Text>
       </Row>
     </Section>

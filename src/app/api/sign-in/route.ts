@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import cookie from 'cookie';
 import createError from 'http-errors';
 import { authMiddleware } from '@/middlewares/authMiddleware';
-import { getUser } from '@/helpers/getUser';
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_TIME = 30 * 60 * 1000; // 30 minutes
 
@@ -18,13 +17,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
       console.log(userName, password);
       
       if (!userName || !password) {
-          throw createError(400, 'Please provide username and password');
+          return NextResponse.json({success : false, message : 'Please provide username and password'} , {status : 400});
         }
         
     const user = await User.findOne({ userName });
 
     if (!user) {
-      throw createError(401, 'Invalid username or password');
+      return NextResponse.json({success : false, message : 'Invalid username or password'},{status : 401});
     }
 
     if (user.isLocked) {
@@ -33,7 +32,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         user.loginAttempts = 0;
         await user.save();
       } else {
-        throw createError(403, 'Account locked. Please try again after 30 minutes');
+        return NextResponse.json({success : false, message : 'Account locked. Please try again after 30 minutes'},{status : 401});
       }
     }
 
@@ -46,7 +45,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         user.lockUntil = Date.now() + LOCK_TIME;
       }
       await user.save();
-      throw createError(401, 'Invalid username or password. ');
+      return NextResponse.json({success : false, message : 'Invalid username or password. '},{status : 401});
     }
 
     user.loginAttempts = 0;
@@ -61,7 +60,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const response = NextResponse.json({
       success: true,
-      message: 'User authenticated successfully',
+      message: "Signed in successfully!",
       token,
       data : user
     });
