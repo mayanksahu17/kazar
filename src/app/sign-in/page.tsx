@@ -29,6 +29,8 @@ export default function SignInComponent() {
       if (response.status === 200) {
         toast.success(response?.data.message);
         router.push("/")
+      }else{
+        toast.error(response.data.message)
       }
       toast.error(response.data.message)
     } catch (error) {

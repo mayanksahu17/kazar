@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const user = await User.findOne({ userName });
 
     if (!user) {
-      return NextResponse.json({success : false, message : 'Invalid username or password'},{status : 401});
+      return NextResponse.json({success : false, message : `You don't have any account. Please create one`},{status : 401});
     }
 
     if (user.isLocked) {
