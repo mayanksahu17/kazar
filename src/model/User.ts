@@ -3,7 +3,7 @@ import { Tournaments } from "./Tournaments";
 import { Tournament } from "./Tournaments";
 import { TransectionHistory } from "./TrasectionHistory";
 import { history } from "./History";
-export interface User extends Document{
+export interface user extends Document{
     userName : string,
     email : string,
     password : string,
@@ -20,7 +20,7 @@ export interface User extends Document{
 }
 
 
-const UserSchema : Schema<User> = new Schema({
+const UserSchema : Schema<user> = new Schema({
     userName   : {
         type: String ,
         required: [true,"Username is required"],
@@ -82,4 +82,4 @@ const UserSchema : Schema<User> = new Schema({
 })
 
 
-export const User = (mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User", UserSchema)
+export const User = (mongoose.models.User as mongoose.Model<user>) || mongoose.model<user>("User", UserSchema)

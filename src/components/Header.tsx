@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -32,8 +33,15 @@ export default function Header() {
           <MountainIcon className="h-6 w-6" />
           <span className="sr-only">Acme Inc</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-4 text-orange-600">
-          <Link href="/about" className="text-sm font-medium text-muted-foreground text-orange-600 hover:text-foreground" prefetch={false}>
+        <button 
+          className="md:hidden text-orange-600" 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle navigation menu"
+        >
+          <XIcon className="h-6 w-6" />
+        </button>
+        <nav className={`${isMenuOpen ? 'block' : 'hidden'} md:flex items-center gap-4  text-orange-600`}>
+          <Link href="/about" className="text-sm font-medium text-muted-foreground text-orange-600 hover:text-white" prefetch={false}>
             About
           </Link>
           <DropdownMenu>
@@ -71,6 +79,7 @@ export default function Header() {
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Link href="/launch-tournament" className="text-sm font-medium text-muted-foreground hover:text-white text-orange-600">Launch Tournament</Link>
             </>
           )}
         </nav>
@@ -117,7 +126,7 @@ function MountainIcon(props: any) {
   );
 }
 
-function XIcon(props: any) {
+ export function XIcon(props: any) {
   return (
     <svg
       {...props}

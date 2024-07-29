@@ -4,7 +4,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Header from "@/components/Header"                                                                                                                                                                                                                                    
-
+import { toast } from "react-toastify"
+import {useRouter}  from "next/navigation"
 
 
 const tournaments = [
@@ -80,6 +81,17 @@ const tournaments = [
 
 
 export default function Tournaments() {
+
+  const router = useRouter()
+  const register =  () =>{
+      if (!localStorage.getItem("token")) {
+        toast.error("please login to register")
+        router.push("/sign-in")
+      }
+
+
+  }
+
   return (
     <>
   
@@ -163,7 +175,9 @@ export default function Tournaments() {
                       </div>
                     </div>
                     {(tournament.status === "Ongoing" || tournament.status === "Upcoming") && (
-                      <button className="mt-4 w-full py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
+                      <button
+                      onClick={register}
+                       className="mt-4 w-full py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
                         Register
                       </button>
                     )}

@@ -1,4 +1,4 @@
-import mongoose, {Schema, Document, } from "mongoose";
+import mongoose, {Schema, Document, Mongoose, } from "mongoose";
 import { User } from "./User";
 import { Team } from "./Teams";
 
@@ -69,5 +69,4 @@ const tournamentSchema : Schema<Tournament> = new Schema({
 
 })
 
-export const Tournaments =  mongoose.model<Tournament>("Tournament", tournamentSchema)
-''
+export const Tournaments = (mongoose.models.Tournament as mongoose.Model<Tournament>) ||  mongoose.model<Tournament>("Tournament", tournamentSchema)

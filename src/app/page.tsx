@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Tournaments  from '@/components/Tournament' 
 import axios from "axios";
-
+import TournamentModel from "@/components/TournamentModel";
 
 async function getTournamets() {
   const response = await axios.get("/api/foo")
@@ -35,9 +35,10 @@ export default   function Component() {
  
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-orange-500">
+    <div className="flex flex-col min-h-screen bg-gray-900 text-orange-500">
     <Header />
     <Tournaments />
+  
       {/* <main className="flex-1 grid gap-6 p-4 sm:p-6 md:grid-cols-3">
  
       </main> */}

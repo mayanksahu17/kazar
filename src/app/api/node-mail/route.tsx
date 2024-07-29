@@ -5,17 +5,19 @@ import VerificationEmail from '@/emails/VerificationEmail';
 import React from 'react';
 import { User } from '@/model/User';
 import validator from 'validator'
-
+import dbConnect from '@/lib/dbConnect';
 
 export async function POST(req: NextRequest) {
   try {
+    await dbConnect()
     const { email } = await req.json();
 
     if (!validator.isEmail(email)) {
       return NextResponse.json({ errors: ['Invalid email'] }, { status: 400 });
     }
 
-    const user = await User.findOne({ email });
+    console.log("test");
+    const user = await User.findOne({ email })
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -30,19 +32,19 @@ export async function POST(req: NextRequest) {
       port: 465,
       auth: {
         user: 'mayanksahu0024@gmail.com',
-        pass: 'xjop ytcj bsmb kkpp',
+        pass: 'qdtj wcbt mtjs nihf',
       },
     });
 
     const emailTemplate = render(<VerificationEmail username={user.userName} otp={verifyCode} />);
-
+    
     const receiver = {
       from: 'mayanksahu0024@gmail.com',
       to: email,
       subject: 'Verification Code',
       html: emailTemplate,
     };
-
+    
     await auth.sendMail(receiver);
 
     return NextResponse.json({ message: 'Email sent successfully' }, { status: 200});
