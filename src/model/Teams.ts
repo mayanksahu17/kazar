@@ -1,16 +1,16 @@
 import mongoose, {Schema, Document, } from "mongoose";
-import { User } from "./User";
+import { user } from "./User";
 
  
 
 export interface Team extends Document{
     teamName : string,
-    player1 : User
-    player2 : User
-    player3 : User
-    player4 : User
+    player1 : user
+    player2 : user
+    player3 : user
+    player4 : user
     registered : boolean
-    leader : User
+    leader : user
 }
 
 const TeamSchema : Schema<Team> = new Schema({

@@ -1,5 +1,5 @@
 import mongoose, {Schema, Document, Mongoose, } from "mongoose";
-import { User } from "./User";
+import { user } from "./User";
 import { Team } from "./Teams";
 
 
@@ -14,7 +14,7 @@ export interface Tournament extends Document{
     map : string,
     winningPrice : Number,
     eligiblity : string ,
-    owner : User,
+    owner : user,
     participants : Team,
     requiredTeamsize : Number,
     launchDate : Date,

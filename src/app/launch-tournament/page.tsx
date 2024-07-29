@@ -70,9 +70,11 @@ const TournamentModel = ({ value, ...props }: any) => {
 
     try {
       const thumbnailUrl = await uploadThumbnail()
-
+      let token = localStorage.getItem('token') || ""
       if (thumbnailUrl) {
-        setFormData({"token" : localStorage.getItem('token')})
+        setFormData({
+          ...formData ,
+          "token" : token })
         const response = await axios.post('/api/createTournament', {
           ...formData,
           thumbnail: thumbnailUrl
