@@ -28,7 +28,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-black text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
+    <header className="bg-gray-900 text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
           <MountainIcon className="h-6 w-6" />
@@ -56,10 +56,10 @@ export default function Header() {
           </DropdownMenu>
           {!isAuthenticated ? (
             <>
-              <Link href="/sign-in" className="text-sm font-medium text-gray-200 hover:text-foreground" prefetch={false}>
+              <Link href="/sign-in" className="text-sm font-medium text-gray-200 hover:text-white" prefetch={false}>
                 Sign in
               </Link>
-              <Link href="/sign-up" className="text-sm font-medium text-gray-200 hover:text-foreground" prefetch={false}>
+              <Link href="/sign-up" className="text-sm font-medium text-gray-200 hover:text-white" prefetch={false}>
                 Sign up
               </Link>
             </>
