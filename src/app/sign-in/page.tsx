@@ -10,33 +10,37 @@ import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from 'react-toastify';
 
 export default function SignInComponent() {
-  const [username, setUsername] = useState<string>("");
+  const [userNameOrEmail, setUserNameOrEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
 
     try {
+      console.log(userNameOrEmail, password);
+      
       const response = await axios.post("/api/sign-in", {
-        userName : username,
+        userNameOrEmail,
         password,
       });
+
       console.log(response);
-      localStorage.setItem("token",response?.data.token)
+      localStorage.setItem("token", response?.data.token);
 
       if (response.status === 200) {
         toast.success(response?.data.message);
-        router.push("/")
-      }else if (response.status === 404){
-        toast.error(response.data.message)
+        router.push("/");
+      } else if (response.status === 404) {
+        toast.error(response.data.message);
+      } else {
+        toast.error(response.data.message);
       }
-      toast.error(response.data.message)
-    } catch (error : any) {
+    } catch (error: any) {
       console.log(error);
-      
-      toast.error("Failed to sign in. Please check your credentials.");
+      // toast.error("Failed to sign in. Please check your credentials.");
       toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
@@ -44,8 +48,8 @@ export default function SignInComponent() {
   };
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 bg-black text-orange-500">
-            <ToastContainer />
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 bg-gray-900 text-orange-500">
+      <ToastContainer />
       <div className="mx-auto w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-foreground text-orange-500">Sign in to your account</h1>
@@ -53,20 +57,20 @@ export default function SignInComponent() {
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">Username or Email</Label>
             <Input
               id="username"
               type="text"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username or email"
+              value={userNameOrEmail}
+              onChange={(e) => setUserNameOrEmail(e.target.value)}
               required
             />
           </div>
           <div>
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link href="/forgot-password" className="text-sm font-medium  text-muted-foreground hover:underline " prefetch={false}>
+              <Link href="/forgot-password" className="text-sm font-medium text-muted-foreground hover:underline" prefetch={false}>
                 Forgot password?
               </Link>
             </div>
@@ -79,10 +83,10 @@ export default function SignInComponent() {
               required
             />
           </div>
-          <Link href="/sign-up" className="text-sm font-medium  hover:underline  text-muted-foreground" prefetch={false}>
-            Don not have an account? Create one.
+          <Link href="/sign-up" className="text-sm font-medium hover:underline text-muted-foreground" prefetch={false}>
+            Don't have an account? Create one.
           </Link>
-          <Button type="submit" className="w-full text-orange-600" disabled={loading}>
+          <Button type="submit" className="w-full text-gray-300 bg-gray-800" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>

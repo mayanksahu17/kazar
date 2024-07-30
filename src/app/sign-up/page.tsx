@@ -70,14 +70,14 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 bg-black text-orange-600">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 bg-gray-900 text-orange-600">
       <ToastContainer />
       <div className="mx-auto w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-foreground text-orange-600">Sign up your account</h1>
-          <p className="mt-2 text-muted-foreground">Enter your userName and details below</p>
+          <p className="mt-2 text-muted-foreground">Enter your Username and Details below</p>
         </div>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4 text-orange-500 " onSubmit={handleSubmit}>
           <div>
             <Label htmlFor="userName">Username</Label>
             <Input id="userName" type="text" placeholder="Enter your username" value={formData.userName} onChange={handleChange} required />

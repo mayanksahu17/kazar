@@ -7,7 +7,7 @@ import dbConnect from "@/lib/dbConnect";
 export async function POST(req: NextRequest) {
   await dbConnect();
   
-  console.log(" : ", req);
+
   
 
   

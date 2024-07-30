@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import cookie from 'cookie';
 import createError from 'http-errors';
-import { authMiddleware } from '@/middlewares/authMiddleware';
+
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_TIME = 30 * 60 * 1000; // 30 minutes
 
@@ -13,18 +13,18 @@ export async function POST(req: NextRequest, res: NextResponse) {
   await dbConnect();
 
   try {
-      const { userName, password } = await req.json();
-      console.log(userName, password);
-      
-      if (!userName || !password) {
-          return NextResponse.json({success : false, message : 'Please provide username and password'} , {status : 400});
-        }
-        
-    const user = await User.findOne({ userName });
+    const { userNameOrEmail, password } = await req.json();
+
+    if (!userNameOrEmail || !password) {
+      return NextResponse.json({ success: false, message: 'Please provide username/email and password' }, { status: 400 });
+    }
+
+    // Check if userNameOrEmail is an email or username
+    const query = userNameOrEmail.includes('@') ? { email: userNameOrEmail } : { userName: userNameOrEmail };
+    const user = await User.findOne(query);
 
     if (!user) {
-      return NextResponse.json({success : false, message : `You don't have any account. Please create one`},{status : 404 });
-
+      return NextResponse.json({ success: false, message: `You don't have any account. Please create one` }, { status: 404 });
     }
 
     if (user.isLocked) {
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         user.loginAttempts = 0;
         await user.save();
       } else {
-        return NextResponse.json({success : false, message : 'Account locked. Please try again after 30 minutes'},{status : 401});
+        return NextResponse.json({ success: false, message: 'Account locked. Please try again after 30 minutes' }, { status: 401 });
       }
     }
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         user.lockUntil = Date.now() + LOCK_TIME;
       }
       await user.save();
-      return NextResponse.json({success : false, message : 'Invalid username or password. '},{status : 401});
+      return NextResponse.json({ success: false, message: 'Invalid username/email or password.' }, { status: 401 });
     }
 
     user.loginAttempts = 0;
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     await user.save();
 
     const token = jwt.sign(
-      { id: user._id, userName: user.userName },
+      { id: user._id, userName: user.userName, email: user.email },
       process.env.JWT_SECRET as string,
       { expiresIn: '7d' }
     );
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       success: true,
       message: "Signed in successfully!",
       token,
-      data : user
+      data: user
     });
 
     response.headers.set('Set-Cookie', cookie.serialize('token', token, {

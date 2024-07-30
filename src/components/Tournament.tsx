@@ -95,12 +95,12 @@ export default function Tournaments() {
   return (
     <>
   
-      <div className="flex flex-col min-h-screen bg-muted/40 bg-black">
-        <main className="flex-1 p-4 sm:p-6 bg-black text-orange-600">
+      <div className="flex flex-col min-h-screen bg-muted/40 bg-gray-900">
+        <main className="flex-1 p-4 sm:p-6  bg-gray-900">
           <h2 className="text-2xl font-bold mb-4">All Tournaments</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {tournaments.map((tournament, index) => (
-              <Card key={index} className="bg-black text-orange-600">
+              <Card key={index} className="bg-gray-900 text-orange-600">
                 <CardHeader>
                   <img
                     src={tournament.image}
@@ -116,70 +116,77 @@ export default function Tournaments() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <div className="text-sm text-muted-foreground">Room ID</div>
+                        <div className="text-sm text-gray-200">Room ID</div>
                         <div>{tournament.roomId}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Password</div>
+                        <div className="text-sm text-gray-200">Password</div>
                         <div>{tournament.password}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <div className="text-sm text-muted-foreground">Entry Price</div>
+                        <div className="text-sm text-gray-200">Entry Price</div>
                         <div>{tournament.entryPrice}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Mode</div>
+                        <div className="text-sm text-gray-200">Mode</div>
                         <div>{tournament.mode}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <div className="text-sm text-muted-foreground">Map</div>
+                        <div className="text-sm text-gray-200">Map</div>
                         <div>{tournament.map}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Winning Price</div>
+                        <div className="text-sm text-gray-200">Winning Price</div>
                         <div>{tournament.winningPrice}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <div className="text-sm text-muted-foreground">Eligibility</div>
+                        <div className="text-sm text-gray-200">Eligibility</div>
                         <div>{tournament.eligibility}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Owner</div>
+                        <div className="text-sm text-gray-200">Owner</div>
                         <div>{tournament.owner}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <div className="text-sm text-muted-foreground">Participants</div>
+                        <div className="text-sm text-gray-200">Participants</div>
                         <div>{tournament.participants}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Team Size</div>
+                        <div className="text-sm text-gray-200">Team Size</div>
                         <div>{tournament.teamSize}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <div className="text-sm text-muted-foreground">Launch Date</div>
+                        <div className="text-sm text-gray-200">Launch Date</div>
                         <div>{tournament.launchDate}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Collection</div>
+                        <div className="text-sm text-gray-200">Collection</div>
                         <div>{tournament.collection}</div>
                       </div>
                     </div>
                     {(tournament.status === "Ongoing" || tournament.status === "Upcoming") && (
                       <button
                       onClick={register}
-                       className="mt-4 w-full py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
+                       className="mt-4 w-full py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-700 transition-colors">
                         Register
                       </button>
+                    )}
+                    {(tournament.status === "Ended")&&(
+                       <button
+                  
+                        className="mt-4 w-full py-2 bg-gray-400 text-white rounded-lg hover:bg-orange-700 transition-colors">
+                         Ended
+                       </button>
                     )}
                   </div>
                 </CardContent>

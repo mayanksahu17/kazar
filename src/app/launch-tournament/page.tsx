@@ -40,6 +40,8 @@ const TournamentModel = ({ value, ...props }: any) => {
       )
 
       setImageUrl(response.data.URL)
+      console.log(response.data.URL);
+      
       return response.data.URL
     } catch (error) {
       toast.error('Failed to upload image.')
@@ -75,10 +77,13 @@ const TournamentModel = ({ value, ...props }: any) => {
         setFormData({
           ...formData ,
           "token" : token })
-        const response = await axios.post('/api/createTournament', {
-          ...formData,
-          thumbnail: thumbnailUrl
-        })
+          console.log({...formData , thumbnailUrl});
+          
+        const response = { status :  201}
+        // await axios.post('/api/createTournament', {
+        //   ...formData,
+        //   thumbnail: thumbnailUrl
+        // })
 
         if (response.status === 201) {
           toast.success('Tournament created successfully!')

@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -27,7 +28,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-background border-b flex items-center justify-between px-4 py-3 sm:px-6 bg-black text-orange-600">
+    <header className="bg-black text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
           <MountainIcon className="h-6 w-6" />
@@ -38,27 +39,27 @@ export default function Header() {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle navigation menu"
         >
-          <XIcon className="h-6 w-6" />
+          {isMenuOpen ? <XIcon className="h-6 w-6" /> : <GiHamburgerMenu className="h-6 w-6" />}
         </button>
-        <nav className={`${isMenuOpen ? 'block' : 'hidden'} md:flex items-center gap-4  text-orange-600`}>
-          <Link href="/about" className="text-sm font-medium text-muted-foreground text-orange-600 hover:text-white" prefetch={false}>
+        <nav className={`${isMenuOpen ? 'block' : 'hidden'} md:flex items-center space-x-4 text-orange-600`}>
+          <Link href="/about" className="text-sm font-medium text-gray-200 hover:text-white" prefetch={false}>
             About
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-white text-orange-600">Team</Link>
+              <Link href="#" className="text-sm font-medium text-gray-200 hover:text-white">Team</Link>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center">
-              <DropdownMenuItem className="text-orange-600">New Team</DropdownMenuItem>
-              <DropdownMenuItem className="text-orange-600">All Teams</DropdownMenuItem>
+              <DropdownMenuItem>New Team</DropdownMenuItem>
+              <DropdownMenuItem>All Teams</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           {!isAuthenticated ? (
             <>
-              <Link href="/sign-in" className="text-sm font-medium text-muted-foreground hover:text-foreground text-orange-600" prefetch={false}>
+              <Link href="/sign-in" className="text-sm font-medium text-gray-200 hover:text-foreground" prefetch={false}>
                 Sign in
               </Link>
-              <Link href="/sign-up" className="text-sm font-medium text-muted-foreground hover:text-foreground text-orange-600" prefetch={false}>
+              <Link href="/sign-up" className="text-sm font-medium text-gray-200 hover:text-foreground" prefetch={false}>
                 Sign up
               </Link>
             </>
@@ -66,7 +67,7 @@ export default function Header() {
             <>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-white text-orange-600">Wallet</Link>
+                  <Link href="#" className="text-sm font-medium text-gray-200 hover:text-white">Wallet</Link>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center">
                   <div className="h-32 w-32 sm:h-max sm:w-max">
@@ -79,7 +80,7 @@ export default function Header() {
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Link href="/launch-tournament" className="text-sm font-medium text-muted-foreground hover:text-white text-orange-600">Launch Tournament</Link>
+              <Link href="/launch-tournament" className="text-sm font-medium text-gray-200 hover:text-white">Launch </Link>
             </>
           )}
         </nav>
@@ -126,7 +127,8 @@ function MountainIcon(props: any) {
   );
 }
 
- export function XIcon(props: any) {
+
+export function XIcon(props: any) {
   return (
     <svg
       {...props}
