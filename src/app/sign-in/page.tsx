@@ -84,7 +84,7 @@ export default function SignInComponent() {
             />
           </div>
           <Link href="/sign-up" className="text-sm font-medium hover:underline text-muted-foreground" prefetch={false}>
-            Don't have an account? Create one.
+            Don&apos;t have an account? Create one.
           </Link>
           <Button type="submit" className="w-full text-gray-300 bg-gray-800" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
