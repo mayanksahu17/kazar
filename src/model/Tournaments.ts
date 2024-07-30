@@ -15,11 +15,12 @@ export interface Tournament extends Document{
     winningPrice : Number,
     eligiblity : string ,
     owner : user,
+    time : Number,
     participants : Team,
     requiredTeamsize : Number,
     launchDate : Date,
-    Collection : Number
-    thumbNail : string
+    Collection : Number,
+    thumbNail : string,
 }
 
 const tournamentSchema : Schema<Tournament> = new Schema({
@@ -64,6 +65,9 @@ const tournamentSchema : Schema<Tournament> = new Schema({
     },
     thumbNail : {
         type : String,
+    },
+    time : {
+        type : Number
     }
     
 

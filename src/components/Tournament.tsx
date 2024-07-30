@@ -149,10 +149,7 @@ export default function Tournaments() {
                         <div className="text-sm text-gray-200">Eligibility</div>
                         <div>{tournament.eligibility}</div>
                       </div>
-                      <div>
-                        <div className="text-sm text-gray-200">Owner</div>
-                        <div>{tournament.owner}</div>
-                      </div>
+                     
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
@@ -169,10 +166,7 @@ export default function Tournaments() {
                         <div className="text-sm text-gray-200">Launch Date</div>
                         <div>{tournament.launchDate}</div>
                       </div>
-                      <div>
-                        <div className="text-sm text-gray-200">Collection</div>
-                        <div>{tournament.collection}</div>
-                      </div>
+                    
                     </div>
                     {(tournament.status === "Ongoing" || tournament.status === "Upcoming") && (
                       <button

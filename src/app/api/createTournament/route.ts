@@ -6,11 +6,7 @@ import dbConnect from "@/lib/dbConnect";
 
 export async function POST(req: NextRequest) {
   await dbConnect();
-  
 
-  
-
-  
   try {
     const {
       token,
@@ -30,9 +26,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: false,
         message: "You are not logged in",
-      }, {
-        status: 203
-      });
+      }, { status: 403 }); // Use 403 Forbidden instead of 203
     }
 
     const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
@@ -47,17 +41,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
+    // Convert types if needed
+    const parsedEntryPrice = parseFloat(entryPrice);
+    const parsedWinningPrice = parseFloat(winningPrice);
+    const parsedRequiredTeamSize = parseInt(requiredTeamSize, 10);
+    const parsedEligibility = parseInt(eligibility, 10);
+    const parsedLaunchDate = new Date(launchDate);
+    
+    if (isNaN(parsedLaunchDate.getTime())) {
+      return NextResponse.json({ message: "Invalid date format" }, { status: 400 });
+    }
+
     const tournament = await Tournaments.create({
       title,
       mode,
       map,
-      winningPrice,
-      eligibility,
+      winningPrice: parsedWinningPrice,
+      eligibility: parsedEligibility,
       owner: userId,
-      launchDate,
-      requiredTeamSize,
+      launchDate: parsedLaunchDate,
+      requiredTeamSize: parsedRequiredTeamSize,
       Collection: 0,
-      entryPrice,
+      entryPrice: parsedEntryPrice,
       thumbnail
     });
 
@@ -69,8 +74,8 @@ export async function POST(req: NextRequest) {
     ]);
 
     return NextResponse.json({ message: "Tournament created successfully", data: tournament }, { status: 201 });
-  } catch (error) {
-    console.error("Error creating tournament:", error);
-    return NextResponse.json({ message: "Error creating tournament" }, { status: 500 });
+  } catch (error : any) {
+    console.error("Error creating tournament:", error.message);
+    return NextResponse.json({ message: "Error creating tournament", error: error.message }, { status: 500 });
   }
 }

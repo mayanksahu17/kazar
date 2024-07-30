@@ -28,7 +28,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-900 text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
+    <header className="bg-black text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
           <MountainIcon className="h-6 w-6" />
@@ -89,13 +89,14 @@ export default function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="h-9 w-9">
-              <AvatarImage src="/placeholder-user.jpg" />
               <AvatarFallback>JP</AvatarFallback>
               <span className="sr-only">Toggle user menu</span>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <Link href = {"/profile"}>
             <DropdownMenuItem>My Account</DropdownMenuItem>
+            </Link>
             <DropdownMenuItem>Wallet</DropdownMenuItem>
             <DropdownMenuItem>Raise Ticket</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
