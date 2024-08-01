@@ -50,8 +50,12 @@ export default function Header() {
               <Link href="#" className="text-sm font-medium text-gray-200 hover:text-white">Team</Link>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center">
-              <DropdownMenuItem>New Team</DropdownMenuItem>
+              <Link href = "create-team">
+                <DropdownMenuItem>New Team</DropdownMenuItem>
+              </Link>
+              <Link href = "/all-teams">
               <DropdownMenuItem>All Teams</DropdownMenuItem>
+              </Link>
             </DropdownMenuContent>
           </DropdownMenu>
           {!isAuthenticated ? (

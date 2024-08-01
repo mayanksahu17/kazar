@@ -17,6 +17,8 @@ export interface user extends Document{
     loginAttempts: number;
     lockUntil: number ;
     verifyCode : string;
+    invitation : string;
+
 }
 
 
@@ -76,6 +78,9 @@ const UserSchema : Schema<user> = new Schema({
         type : String,
         required : [true, "verify code is required"]
     },
+    invitation : {
+        type : "string"
+    }
     
     
 

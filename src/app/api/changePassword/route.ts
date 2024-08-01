@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
     return NextResponse.json({ message: "Password updated successfully" });
-  } catch (error) {
+  } catch (error) {    
     console.error("Error updating password:", error);
     return NextResponse.json({ message: "Error updating password" }, { status: 500 });
   }

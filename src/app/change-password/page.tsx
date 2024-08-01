@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from 'axios';
 
-const validatePassword = (password : string) => {
+const validatePassword = (password: string) => {
   const lengthCheck = password.length >= 8;
   const numberCheck = /\d/.test(password);
   const specialCharCheck = /[!@#$%^&*(),.?":{}|<>]/.test(password);
@@ -31,7 +31,7 @@ const ChangePassword = () => {
   const [passwordsMatch, setPasswordsMatch] = useState(false);
   const router = useRouter();
 
-  const handleChangePassword = async (e : any) => {
+  const handleChangePassword = async (e: any) => {
     e.preventDefault();
     if (!passwordsMatch || !passwordStrength) {
       toast.error("Passwords do not match or are not strong enough");
@@ -39,11 +39,9 @@ const ChangePassword = () => {
     }
 
     try {
-        console.log("febi");
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       const response = await axios.post("/api/changePassword", { newPassword, token });
-      console.log(response);
-      
+
       if (response.status === 200) {
         toast.success("Password changed successfully");
         router.push("/sign-in");
@@ -55,26 +53,25 @@ const ChangePassword = () => {
     }
   };
 
-  const handlePasswordChange = (e : any) => {
+  const handlePasswordChange = (e: any) => {
     const password = e.target.value;
     setNewPassword(password);
     setPasswordStrength(validatePassword(password));
     setPasswordsMatch(password === confirmPassword);
   };
 
-  const handleConfirmPasswordChange = (e : any) => {
+  const handleConfirmPasswordChange = (e: any) => {
     const confirmPassword = e.target.value;
     setConfirmPassword(confirmPassword);
     setPasswordsMatch(newPassword === confirmPassword);
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-orange-500">
-      <ToastContainer />
-      <div className="mt-[10%] ml-[40%]">
-        <Card className="w-[350px] text-orange-600 bg-black">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900  p-4">
+        <ToastContainer />
+        <Card className="w-full max-w-md  text-white bg-gray-800">
           <CardHeader>
-            <CardTitle>Change Password</CardTitle>
+            <CardTitle className={"text-orange-600 text-2xl font-bold"}>Change Password</CardTitle>
             <CardDescription>Enter your new password and confirm it.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -83,26 +80,26 @@ const ChangePassword = () => {
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="newPassword">New Password</Label>
                   <Input
-                    id="newPassword"
-                    type="password"
-                    placeholder="Enter your new password"
-                    value={newPassword}
-                    onChange={handlePasswordChange}
+                      id="newPassword"
+                      type="password"
+                      placeholder="Enter your new password"
+                      value={newPassword}
+                      onChange={handlePasswordChange}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your new password"
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="Confirm your new password"
+                      value={confirmPassword}
+                      onChange={handleConfirmPasswordChange}
                   />
                 </div>
               </div>
-              <CardFooter className="flex justify-between">
-                <Button type="submit" className='mt-4' disabled={!passwordStrength || !passwordsMatch}>
+              <CardFooter className="flex flex-col mt-4">
+                <Button type="submit" disabled={!passwordStrength || !passwordsMatch}>
                   Change Password
                 </Button>
               </CardFooter>
@@ -110,7 +107,6 @@ const ChangePassword = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
   );
 };
 

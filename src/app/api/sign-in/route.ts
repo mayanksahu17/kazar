@@ -4,7 +4,6 @@ import { User } from '@/model/User';
 import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import cookie from 'cookie';
-import createError from 'http-errors';
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_TIME = 30 * 60 * 1000; // 30 minutes

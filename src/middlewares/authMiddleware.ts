@@ -3,12 +3,13 @@ import { jwtVerify } from 'jose';
 
 export async function authMiddleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
+  console.log(token)
 
   if (!token) {
     return NextResponse.redirect(new URL('/login', req.url));
   }
  
-  
+
     try {
     const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
     req.user = payload as { _id: string; userName: string };

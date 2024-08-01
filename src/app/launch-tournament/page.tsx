@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Label } from '@/components/ui/label';
@@ -7,9 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { time } from 'console';
 
-const TournamentModel = ({ value, ...props }: any) => {
+const TournamentModel = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
@@ -23,11 +22,17 @@ const TournamentModel = ({ value, ...props }: any) => {
     eligibility: '',
     owner: '',
     launchDate: '',
-    time : "",
+    time: '',
     requiredTeamSize: '',
     entryPrice: '',
     thumbnail: ''
   });
+
+  useEffect(() => {
+    // Load token from local storage when component mounts
+    const token = localStorage.getItem("token") || "";
+    setFormData((prev) => ({ ...prev, token }));
+  }, []);
 
   const uploadThumbnail = async () => {
     if (!image) return null;
@@ -42,8 +47,6 @@ const TournamentModel = ({ value, ...props }: any) => {
       );
 
       setImageUrl(response.data.URL);
-      console.log(response.data.URL);
-      
       return response.data.URL;
     } catch (error) {
       toast.error('Failed to upload image.');
@@ -74,17 +77,14 @@ const TournamentModel = ({ value, ...props }: any) => {
 
     try {
       const thumbnailUrl = await uploadThumbnail();
-      let token =   localStorage.getItem("token") || "";
       if (thumbnailUrl) {
-        setFormData({
+        const updatedFormData = {
           ...formData,
-          token: token,
-          thumbnail: thumbnailUrl
-        });
-        console.log({...formData, thumbnailUrl});
-        
-        // Replace with your API endpoint
-        const response = await axios.post('/api/createTournament', { ...formData, thumbnail: thumbnailUrl });
+          thumbnail: thumbnailUrl,
+          time: `${formData.launchDate}T${formData.time}:00Z` // Combine date and time
+        };
+
+        const response = await axios.post('/api/createTournament', updatedFormData);
 
         if (response.status === 201) {
           toast.success('Tournament created successfully!');
@@ -193,9 +193,9 @@ const TournamentModel = ({ value, ...props }: any) => {
                 required
                 className="bg-gray-700 text-white"
               />
-            </div> 
+            </div>
             <div>
-              <Label htmlFor="time">Launch day Time </Label>
+              <Label htmlFor="time">Launch Time</Label>
               <Input
                 id="time"
                 type="time"
@@ -205,7 +205,7 @@ const TournamentModel = ({ value, ...props }: any) => {
                 required
                 className="bg-gray-700 text-white"
               />
-            </div> 
+            </div>
             <div>
               <Label htmlFor="requiredTeamSize">Required Team Size</Label>
               <Input
@@ -254,3 +254,4 @@ const TournamentModel = ({ value, ...props }: any) => {
 };
 
 export default TournamentModel;
+  

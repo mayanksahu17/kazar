@@ -77,7 +77,7 @@ const tournaments = [
     "launchDate": "2023-08-01",
     "collection": "Esports"
   }
-]
+] 
 
 
 export default function Tournaments() {

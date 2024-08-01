@@ -1,7 +1,7 @@
+// middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
-import {  rateLimitMiddleware } from './middlewares/rateLimitMiddleware';
-import {  authMiddleware } from './middlewares/authMiddleware';
-
+import { rateLimitMiddleware } from './middlewares/rateLimitMiddleware';
+import { authMiddleware } from './middlewares/authMiddleware';
 
 export async function middleware(req: NextRequest) {
   // Apply rate limit middleware
@@ -12,14 +12,23 @@ export async function middleware(req: NextRequest) {
   response = await authMiddleware(req);
   if (response) return response;
 
-  console.log('User:', req.user); // This should now print the user object if authentication is successful
+  const token = req.cookies.get('token');
+  console.log(token)
 
+  // Redirect authenticated users away from sign-in and sign-up pages
+  if (token && (req.nextUrl.pathname === '/sign-in' || req.nextUrl.pathname === '/sign-up')) {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+
+  // Allow access to the route
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/secure/:path*', // Match all routes under /secure
-    '/api/:path*',    // Match all routes under /api
+    '/sign-in',
+    '/sign-up',
+    '/secure/:path*',
+    '/api/:path*',
   ],
 };

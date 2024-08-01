@@ -13,14 +13,19 @@ export interface Tournament extends Document{
     mode : string,
     map : string,
     winningPrice : Number,
-    eligiblity : string ,
+    eligible : string ,
     owner : user,
     time : Number,
-    participants : Team,
-    requiredTeamsize : Number,
+    participants : any,
     launchDate : Date,
     Collection : Number,
     thumbNail : string,
+    maxTeams: number;
+    currentTeams: number;
+    sponsors: string[];
+    createdAt: Date;
+    updatedAt: Date;
+
 }
 
 const tournamentSchema : Schema<Tournament> = new Schema({
@@ -45,7 +50,7 @@ const tournamentSchema : Schema<Tournament> = new Schema({
     winningPrice : {
         type : Number,
         },
-    eligiblity : {
+    eligible : {
         type : String,
     },
     owner : {
@@ -53,8 +58,7 @@ const tournamentSchema : Schema<Tournament> = new Schema({
         ref : "User",
     },
     participants : {
-        type : Schema.Types.ObjectId,
-        ref : "Team",
+        type : String   
         },
     launchDate : {
         type : Date,
@@ -68,9 +72,30 @@ const tournamentSchema : Schema<Tournament> = new Schema({
     },
     time : {
         type : Number
-    }
-    
+    },  
+    maxTeams: {
+         type: Number,
+          required: true
+         },
+    currentTeams: {
+         type: Number,
+          default: 0
+         },
+    sponsors: {
+         type: [String], 
+         default: []
+         },
+         createdAt: { type: Date, default: Date.now },
+         updatedAt: { type: Date, default: Date.now }
 
 })
+
+
+
+tournamentSchema.pre<Tournament>('save', function(next) {
+    this.updatedAt = new Date();
+    next();
+  });
+
 
 export const Tournaments = (mongoose.models.Tournament as mongoose.Model<Tournament>) ||  mongoose.model<Tournament>("Tournament", tournamentSchema)

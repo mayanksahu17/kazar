@@ -30,7 +30,7 @@ const ForgotPassword = () => {
       const response = await axios.post("/api/node-mail", { email });
       if (response.status === 200) {
         console.log(response);
-        
+
         toast.success("OTP sent successfully");
         setOtpSent(true);
       } else {
@@ -56,20 +56,19 @@ const ForgotPassword = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error); 
-      
+      console.log(error);
+
       toast.error("An error occurred while verifying OTP");
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-orange-500">
-      <ToastContainer />
-      <div className="mt-[10%] ml-[40%]">
-        <Card className="w-[350px] text-orange-600 bg-black">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-orange-500 p-4">
+        <ToastContainer />
+        <Card className="w-full max-w-md text-white bg-gray-800">
           <CardHeader>
-            <CardTitle>Forgot Password</CardTitle>
-            <CardDescription>Enter your email and Verify your OTP.</CardDescription>
+            <CardTitle className={"text-orange-500 text-2xl font-bold"}>Forgot Password</CardTitle>
+            <CardDescription>Enter your email and verify your OTP.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmitOtp}>
@@ -77,25 +76,25 @@ const ForgotPassword = () => {
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="email">Email</Label>
                   <Input
-                    id="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                      id="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="otp">OTP</Label>
                   <Input
-                    id="otp"
-                    placeholder="Enter your OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    disabled={!otpSent}
+                      id="otp"
+                      placeholder="Enter your OTP"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      disabled={!otpSent}
                   />
                 </div>
               </div>
-              <CardFooter className="flex justify-between mt-4">
-                <Button type="button" onClick={sendOtp} disabled={isSendingOtp}>
+              <CardFooter className="flex flex-col sm:flex-row justify-between mt-4">
+                <Button type="button" onClick={sendOtp} disabled={isSendingOtp} className="mb-2 sm:mb-0 sm:mr-2">
                   {isSendingOtp ? "Sending..." : "Send OTP"}
                 </Button>
                 {otpSent && <Button type="submit">Submit</Button>}
@@ -104,7 +103,6 @@ const ForgotPassword = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
   );
 };
 

@@ -4,22 +4,22 @@ import { user } from "./User";
  
 
 export interface Team extends Document{
-    teamName : string,
-    player1 : user
-    player2 : user
-    player3 : user
-    player4 : user
-    registered : boolean
-    leader : user
+    teamName : string;
+    player1 : string;
+    player2 : string;
+    player3 : string;
+    player4 : string;
+    registeredTournament : [];
+    leader : user;
 }
 
 const TeamSchema : Schema<Team> = new Schema({
     teamName : String,
-    player1 : {type : Schema.Types.ObjectId, ref : 'User', default : null},
-    player2 : {type : Schema.Types.ObjectId, ref : 'User', default : null},
-    player3 : {type : Schema.Types.ObjectId, ref : 'User', default : null},
-    player4 : {type : Schema.Types.ObjectId, ref : 'User', default : null},
-    registered : Boolean,
+    player1 : String,
+    player2 : String,
+    player3 : String,
+    player4 : String,
+    registeredTournament : [],
     leader : {type : Schema.Types.ObjectId, ref : 'User'}
 
 })

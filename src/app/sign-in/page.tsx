@@ -31,8 +31,8 @@ export default function SignInComponent() {
       localStorage.setItem("token", response?.data.token);
 
       if (response.status === 200) {
-        toast.success(response?.data.message);
         router.push("/");
+        toast.success(response?.data.message);
       } else if (response.status === 404) {
         toast.error(response.data.message);
       } else {
