@@ -17,8 +17,7 @@ export interface user extends Document{
     loginAttempts: number;
     lockUntil: number ;
     verifyCode : string;
-    invitation : string;
-
+    teams : [];
 }
 
 
@@ -78,9 +77,10 @@ const UserSchema : Schema<user> = new Schema({
         type : String,
         required : [true, "verify code is required"]
     },
-    invitation : {
-        type : "string"
-    }
+    teams : [{
+         type : Schema.Types.ObjectId,
+        ref : "Teams"
+    }]
     
     
 

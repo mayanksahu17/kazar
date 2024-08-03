@@ -1,26 +1,26 @@
 import mongoose, {Schema, Document, } from "mongoose";
-import { user } from "./User";
+
 
  
 
 export interface Team extends Document{
     teamName : string;
-    player1 : string;
-    player2 : string;
-    player3 : string;
-    player4 : string;
+    player1 : String;
+    player2 : String;
+    player3 : String;
+    player4 : String;
     registeredTournament : [];
-    leader : user;
+    leader : String;
 }
 
 const TeamSchema : Schema<Team> = new Schema({
     teamName : String,
-    player1 : String,
-    player2 : String,
-    player3 : String,
-    player4 : String,
+    player1 : {type : String, default : null},
+    player2 : {type : String, default : null},
+    player3 : {type : String, default : null},
+    player4 : {type : String, default : null},
     registeredTournament : [],
-    leader : {type : Schema.Types.ObjectId, ref : 'User'}
+    leader : {type : String , default : null}
 
 })
 

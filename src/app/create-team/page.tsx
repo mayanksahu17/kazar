@@ -1,16 +1,19 @@
 "use client"
-
+import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
 import axios from 'axios';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ToastContainer , toast } from 'react-toastify';
+import { useRouter } from "next/navigation";
 
 const CreateTeam = () => {
     const [teamName, setTeamName] = useState('');
     const [players, setPlayers] = useState([{ id: 1, name: '' }]);
     const [leader, setLeader] = useState('');
+    const router = useRouter();
 
     const handleAddPlayer = () => {
         if (players.length < 4) {
@@ -31,26 +34,36 @@ const CreateTeam = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
         const teamData = {
+            token,
             teamName,
-            player1Name: players[0]?.name || '',
-            player2Name: players[1]?.name || '',
-            player3Name: players[2]?.name || '',
-            player4Name: players[3]?.name || '',
+            members: {
+                player1: players[0]?.name || '',
+                player2: players[1]?.name || '',
+                player3: players[2]?.name || '',
+                player4: players[3]?.name || '',
+            },
             leader,
         };
 
         try {
-            const response = await axios.post('/api/create-team', teamData);
+            console.log(teamData);
+            
+            const response = await axios.post('/api/teams/create-team', teamData);
             console.log(response.data);
+            toast.success(response.data.message);
+            router.push("/all-teams");
         } catch (error) {
             console.error(error);
+            toast.error("Failed to create team");
         }
     };
 
     return (
-        <div className="  mx-auto p-4 bg-gray-900 min-h-screen">
-            <h1 className="text-3xl  font-bold mb-4 text-orange-600">Create new Team</h1>
+        <div className="mx-auto p-4 bg-gray-900 min-h-screen">
+            <ToastContainer />
+            <h1 className="text-3xl font-bold mb-4 text-orange-600">Create new Team</h1>
             <Card className="bg-gray-800 text-white">
                 <CardHeader>
                     <h2 className="text-xl font-semibold">Team Details</h2>

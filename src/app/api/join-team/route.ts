@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "Team not found" }, { status: 404 });
         }
 
-        // Check if the user is already a member of the team
+        // Check if the user is already a member of the te̥̥̥̥̥̥̥̥̥̥̥̥̥̥̥̥̥̥̥am
         const isMember = [team.player1, team.player2, team.player3, team.player4].some(player => player?.toString() === user._id.toString());
 
         if (isMember) {
