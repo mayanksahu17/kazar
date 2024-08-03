@@ -11,7 +11,7 @@ interface Tournament {
   _id: string;
   token: string;
   title: string;
-  mode: string;
+  mode: string; 
   map: string;
   winningPrice: number;
   rank1Price: number;
@@ -122,10 +122,7 @@ export default function Tournaments() {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <div className="text-sm text-gray-200">Eligibility</div>
-                          <div>{tournament.eligibility}</div>
-                        </div>
+                        
                         <div>
                           <div className="text-sm text-gray-200">Owner</div>
                           <div>{tournament.owner}</div>
@@ -137,6 +134,10 @@ export default function Tournaments() {
                           <div>{new Date(tournament.launchDate).toLocaleDateString()}</div>
                         </div>
                       </div>
+                      <div>
+                          <div className="text-sm text-gray-200">Eligibility/Rules*</div>
+                          <div>{tournament.eligibility}</div>
+                        </div>
                       {isRegistrationOpen(tournament.launchDate) ? (
                         <button
                           onClick={register}
