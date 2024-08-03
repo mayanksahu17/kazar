@@ -22,7 +22,7 @@ export default function SignInComponent() {
     try {
       console.log(userNameOrEmail, password);
       
-      const response = await axios.post("/api/sign-in", {
+      const response = await axios.post("/api/auth/sign-in", {
         userNameOrEmail,
         password,
       });

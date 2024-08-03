@@ -43,10 +43,10 @@ export async function POST(req: NextRequest) {
 
     // Validate members
     if (users.length !== memberUsernames.length) {
-      return NextResponse.json({ success: false, message: "One or more members do not exist" }, { status: UNAUTHORIZED });
+      return NextResponse.json({ success: false, message: "One or more members do not exist" }, { status: 200 });
     }
 
-    // Validate leader
+  // Validate leader
     const leaderUser = users.find(user => user.userName === leader);
     if (!leaderUser) {
       return NextResponse.json({ success: false, message: "Leader must be one of the team members" }, { status: UNAUTHORIZED });

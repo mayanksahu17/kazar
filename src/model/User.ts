@@ -1,6 +1,5 @@
 import mongoose, {Schema, Document, } from "mongoose";
-import { Tournaments } from "./Tournaments";
-import { Tournament } from "./Tournaments";
+import { ITournament } from "./Tournaments";
 import { TransectionHistory } from "./TrasectionHistory";
 import { history } from "./History";
 export interface user extends Document{
@@ -11,7 +10,7 @@ export interface user extends Document{
     bgmiId : Number,
     upi : string ,
     walletBalance : Number ,
-    tournaments : [any]
+    tournaments: mongoose.Types.ObjectId[];
     transectionHistory : [TransectionHistory] 
     isLocked: boolean;
     loginAttempts: number;
@@ -55,7 +54,7 @@ const UserSchema : Schema<user> = new Schema({
          },
     tournaments : [{
         type : Schema.Types.ObjectId,
-        ref : "Tournaments",
+        ref : "Tournament",
         }],
     transectionHistory : [{
         type : Schema.Types.ObjectId,

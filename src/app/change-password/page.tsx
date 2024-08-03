@@ -40,7 +40,7 @@ const ChangePassword = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post("/api/changePassword", { newPassword, token });
+      const response = await axios.post("/api/auth/changePassword", { newPassword, token });
 
       if (response.status === 200) {
         toast.success("Password changed successfully");

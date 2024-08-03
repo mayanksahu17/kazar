@@ -27,7 +27,7 @@ const ForgotPassword = () => {
   const sendOtp = async () => {
     setIsSendingOtp(true);
     try {
-      const response = await axios.post("/api/node-mail", { email });
+      const response = await axios.post("/api/auth/node-mail", { email });
       if (response.status === 200) {
         console.log(response);
 
@@ -46,7 +46,7 @@ const ForgotPassword = () => {
   const handleSubmitOtp = async (e : any) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/verifyOtp", { otp });
+      const response = await axios.post("/api/auth/verifyOtp", { otp });
       if (response.status === 200) {
         console.log(response);
         localStorage.setItem("token",response.data.token)

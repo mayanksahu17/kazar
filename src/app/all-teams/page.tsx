@@ -1,9 +1,11 @@
 "use client";
+import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { Card, CardFooter, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
+import { toast } from 'react-toastify'; // Import toast for notifications
 
 interface Team {
   _id: string;
@@ -55,9 +57,30 @@ const Page: React.FC = () => {
     // Add logic to leave team
   };
 
-  const handleDeleteTeam = (teamId: string) => {
-    console.log(`Deleting team: ${teamId}`);
-    // Add logic to delete team
+  const handleDeleteTeam = async (teamId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        toast.error("Unauthorized. Please log in.");
+        return;
+      }
+
+      const response = await axios.delete('/api/teams/delete-team', {
+        data: { teamId, token },
+      });
+
+      if (response.status === 200) {
+        toast.success("Team deleted successfully");
+        // Remove the deleted team from the local state
+        setTeams(teams.filter(team => team._id !== teamId));
+      } else {
+        toast.error(response.data.message || "Failed to delete team");
+      }
+    } catch (error) {
+      console.error("Error deleting team:", error);
+      toast.error("Internal Server Error");
+    }
   };
 
   return (
@@ -94,11 +117,11 @@ const Page: React.FC = () => {
                   {players.map((player, index) => (
                     <CardContent key={index} className="bg-gray-800 text-white p-4 flex justify-between items-center">
                       <span>{player.name}: {player.id === userId ? 'You' : player.id}</span>
-                      {isLeader && player.id !== userId ? (
+                      {/* {isLeader && player.id !== userId ? (
                         <Button className="p-4 ml-10 bg-green-400" onClick={() => handleRemoveMember(team._id, player.id)}>Remove</Button>
                       ) : (
                         !isLeader && player.id === userId && <Button className="p-4 ml-10 bg-blue-500" onClick={() => handleLeaveTeam(team._id)}>Leave</Button>
-                      )}
+                      )} */}
                     </CardContent>
                   ))}
                   <CardFooter className="bg-gray-900 text-white p-4 flex justify-between items-center">

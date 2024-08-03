@@ -5,97 +5,42 @@ import { Team } from "./Teams";
 
 
 
-export interface Tournament extends Document{
-    title : string,
-    roomId : string,
-    password : string,
-    entryPrice : Number,
-    mode : string,
-    map : string,
-    winningPrice : Number,
-    eligible : string ,
-    owner : user,
-    time : Number,
-    participants : any,
-    launchDate : Date,
-    Collection : Number,
-    thumbNail : string,
-    maxTeams: number;
-    currentTeams: number;
-    sponsors: string[];
-    createdAt: Date;
-    updatedAt: Date;
+  export interface ITournament extends Document {
+    owner: string;
+    title: string;
+    mode: string;
+    map: string;
+    winningPrice: Number;
+    rank1Price: Number;
+    rank2Price: Number;
+    rank3Price: Number;
+    eligibility: string;
+    launchDate: Date;
+    time: string;
+    requiredTeamSize: number;
+    entryPrice: number;
+    thumbnail: string;
+    status : string;
+  }
 
-}
-
-const tournamentSchema : Schema<Tournament> = new Schema({
-    title : {
-        type : String,
-    },
-    roomId : {
-        type : String,
-        },
-    password : {
-        type : String,
-    },
-    entryPrice : {
-        type : Number,
-        },
-    mode : {
-        type : String,
-        }, 
-    map : {
-        type : String,
-    },
-    winningPrice : {
-        type : Number,
-        },
-    eligible : {
-        type : String,
-    },
-    owner : {
-        type : Schema.Types.ObjectId,
-        ref : "User",
-    },
-    participants : {
-        type : String   
-        },
-    launchDate : {
-        type : Date,
-    },
-    Collection : {
-        type : Number,
-        default : 0
-    },
-    thumbNail : {
-        type : String,
-    },
-    time : {
-        type : Number
-    },  
-    maxTeams: {
-         type: Number,
-          required: true
-         },
-    currentTeams: {
-         type: Number,
-          default: 0
-         },
-    sponsors: {
-         type: [String], 
-         default: []
-         },
-         createdAt: { type: Date, default: Date.now },
-         updatedAt: { type: Date, default: Date.now }
-
-})
-
-
-
-tournamentSchema.pre<Tournament>('save', function(next) {
-    this.updatedAt = new Date();
-    next();
+  const tournamentSchema: Schema<ITournament> = new Schema({
+    owner: { type: String, required: true },
+    title: { type: String, required: true },
+    mode: { type: String, required: true },
+    map: { type: String, required: true },
+    winningPrice: { type: Number, required: true },
+    rank1Price: { type: Number, required: true },
+    rank2Price: { type: Number, required: true },
+    rank3Price: { type: Number, required: true },   
+    eligibility: { type: String, required: true },
+    launchDate: { type: Date, required: true },
+    time: { type: String, required: true },
+    requiredTeamSize: { type: Number, required: true },
+    entryPrice: { type: Number, required: true },
+    thumbnail: { type: String, required: true },
+    status: { type: String, default : "Upcoming" }
   });
 
 
-export const Tournaments = (mongoose.models.Tournament as mongoose.Model<Tournament>) ||  mongoose.model<Tournament>("Tournament", tournamentSchema)
+
+export const Tournaments = (mongoose.models.Tournament as mongoose.Model<ITournament>) ||  mongoose.model<ITournament>("Tournament", tournamentSchema)

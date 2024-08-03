@@ -52,11 +52,16 @@ const CreateTeam = () => {
             
             const response = await axios.post('/api/teams/create-team', teamData);
             console.log(response.data);
-            toast.success(response.data.message);
-            router.push("/all-teams");
-        } catch (error) {
+            if (response.data.message === "One or more members do not exist") {
+                toast.error(response.data.message);
+            }else if(response.data.message ==="Team created successfully"){
+                toast.success(response.data.message);
+                router.push("/all-teams");
+            }
+        } catch (error : any) {
+
             console.error(error);
-            toast.error("Failed to create team");
+            toast.error(error.message);
         }
     };
 

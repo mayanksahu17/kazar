@@ -9,13 +9,13 @@ export async function GET(req:NextRequest) {
         const Tournament =  await Tournaments.find()
         if(! Tournament){
             return NextResponse.json({message: "No tournaments found"}, {status: 404})
-        } else{
+        } 
             return NextResponse.json({
                 success : true,
                 message : "Tournament found successfully",
                 data : Tournament
             }, {status: 200})
-        }
+        
     } catch (error) {
         NextResponse.json({
             message : "Internal server error",

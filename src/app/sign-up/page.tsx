@@ -34,7 +34,7 @@ const SignUp: React.FC = () => {
     userName: '',
     email: '',
     password: '',
-    mobileNumber: '',
+    mobileNumber: '+91',
     bgmiId: ''
   });
 
@@ -57,7 +57,7 @@ const SignUp: React.FC = () => {
 
     try {
         setLoading(true)
-        const response = await axios.post('api/sign-up', formData);
+        const response = await axios.post('api/auth/sign-up', formData);
         console.log(response);
         
         toast.success('Sign up successful');

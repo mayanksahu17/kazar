@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Label } from '@/components/ui/label';
@@ -8,28 +8,46 @@ import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
+interface FormData {
+  token: string;
+  title: string;
+  mode: string;
+  map: string;
+  winningPrice: number;
+  rank1Price: number;
+  rank2Price: number;
+  rank3Price: number;
+  eligibility: string;
+  launchDate: string;
+  time: string;
+  requiredTeamSize: number;
+  entryPrice: number;
+  thumbnail: string;
+}
+
 const TournamentModel = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     token: "",
-    title: '',
+    title: '',    
     mode: '',
     map: '',
-    winningPrice: '',
+    winningPrice: 0,
+    rank1Price: 0,
+    rank2Price: 0,
+    rank3Price: 0,
     eligibility: '',
-    owner: '',
     launchDate: '',
     time: '',
-    requiredTeamSize: '',
-    entryPrice: '',
+    requiredTeamSize: 0,
+    entryPrice: 0,
     thumbnail: ''
   });
 
   useEffect(() => {
-    // Load token from local storage when component mounts
     const token = localStorage.getItem("token") || "";
     setFormData((prev) => ({ ...prev, token }));
   }, []);
@@ -58,20 +76,23 @@ const TournamentModel = () => {
     router.push('/');
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.type === 'file') {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    if (e.target.type === 'file' && e.target instanceof HTMLInputElement) {
       if (e.target.files && e.target.files[0]) {
         setImage(e.target.files[0]);
       }
     } else {
-      setFormData({
-        ...formData,
-        [e.target.id]: e.target.value
-      });
+      const { id, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [id]: id === 'winningPrice' || id === 'rank1Price' || id === 'rank2Price' || id === 'rank3Price' || id === 'requiredTeamSize' || id === 'entryPrice'
+          ? parseFloat(value)
+          : value
+      }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -81,14 +102,14 @@ const TournamentModel = () => {
         const updatedFormData = {
           ...formData,
           thumbnail: thumbnailUrl,
-          time: `${formData.launchDate}T${formData.time}:00Z` // Combine date and time
+          time: `${formData.launchDate}T${formData.time}:00Z`
         };
 
-        const response = await axios.post('/api/createTournament', updatedFormData);
+        const response = await axios.post('/api/tournament/createTournament', updatedFormData);
 
         if (response.status === 201) {
           toast.success('Tournament created successfully!');
-          router.push('/'); // Redirect to the tournaments page or any other page
+          router.push('/');
         } else {
           toast.error('Failed to create tournament.');
         }
@@ -100,6 +121,37 @@ const TournamentModel = () => {
     }
   };
 
+  const renderInputField = (id: keyof FormData, type: string, placeholder: string, value: string | number) => (
+    <div>
+      <Label htmlFor={id}>{placeholder}</Label>
+      <Input
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={handleChange}
+        required
+        className="bg-gray-700 text-white"
+      />
+    </div>
+  );
+
+  const renderSelectField = (id: keyof FormData, options: { value: string, label: string }[]) => (
+    <div>
+      <Label htmlFor={id}>{id.charAt(0).toUpperCase() + id.slice(1)}</Label>
+      <select
+        id={id}
+        value={formData[id]}
+        onChange={handleChange}
+        className="w-full rounded p-1 bg-gray-800 text-white border"
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>{option.label}</option>
+        ))}
+      </select>
+    </div>
+  );
+
   return (
     <>
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
@@ -110,126 +162,38 @@ const TournamentModel = () => {
             <p className="mt-2 text-gray-300">Enter your tournament details below</p>
           </div>
           <form className="space-y-4" onSubmit={handleSubmit}>
+            {renderInputField('title', 'text', 'Title', formData.title)}
+            {renderSelectField('mode', [
+              { value: 'solo', label: 'Solo' },
+              { value: 'squad', label: 'Squad' },
+              { value: 'duo', label: 'Duo' }
+            ])}
+            {renderSelectField('map', [
+              { value: 'miramar', label: 'Miramar' },
+              { value: 'shanok', label: 'Shanok' },
+              { value: 'vikendi', label: 'Vikendi' },
+              { value: 'erangle', label: 'Erangle' },
+              { value: 'livik', label: 'Livik' }
+            ])}
+            {renderInputField('winningPrice', 'number', 'Pool Price', formData.winningPrice)}
+            {renderInputField('rank1Price', 'number', '#1 Rank Price', formData.rank1Price)}
+            {renderInputField('rank2Price', 'number', '#2 Rank Price', formData.rank2Price)}
+            {renderInputField('rank3Price', 'number', '#3 Rank Price', formData.rank3Price)}
             <div>
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                type="text"
-                placeholder="Enter the title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="mode">Mode</Label>
-              <Input
-                id="mode"
-                type="text"
-                placeholder="Enter the mode"
-                value={formData.mode}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="map">Map</Label>
-              <Input
-                id="map"
-                type="text"
-                placeholder="Enter the map"
-                value={formData.map}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="winningPrice">Winning Price</Label>
-              <Input
-                id="winningPrice"
-                type="text"
-                placeholder="Enter the winning price"
-                value={formData.winningPrice}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="eligibility">Eligibility</Label>
-              <Input
+              <Label htmlFor="eligibility">Eligibility and Rules</Label>
+              <textarea
                 id="eligibility"
-                type="text"
-                placeholder="Enter the eligibility"
+                rows={7}
+                placeholder="Description"
                 value={formData.eligibility}
                 onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
+                className="w-full px-4 py-2 mb-2 border rounded-lg text-white bg-gray-800"
               />
             </div>
-            <div>
-              <Label htmlFor="owner">Owner</Label>
-              <Input
-                id="owner"
-                type="text"
-                placeholder="Enter the owner"
-                value={formData.owner}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="launchDate">Launch Date</Label>
-              <Input
-                id="launchDate"
-                type="date"
-                placeholder="Enter the launch date"
-                value={formData.launchDate}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="time">Launch Time</Label>
-              <Input
-                id="time"
-                type="time"
-                placeholder="Enter the launch time"
-                value={formData.time}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="requiredTeamSize">Required Team Size</Label>
-              <Input
-                id="requiredTeamSize"
-                type="number"
-                placeholder="Enter the required team size"
-                value={formData.requiredTeamSize}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="entryPrice">Entry Price</Label>
-              <Input
-                id="entryPrice"
-                type="number"
-                placeholder="Enter the entry price"
-                value={formData.entryPrice}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
+            {renderInputField('launchDate', 'date', 'Launch Date', formData.launchDate)}
+            {renderInputField('time', 'time', 'Launch Time', formData.time)}
+            {renderInputField('requiredTeamSize', 'number', 'Required number of Teams', formData.requiredTeamSize)}
+            {renderInputField('entryPrice', 'number', 'Entry Price per Team', formData.entryPrice)}
             <div>
               <Label htmlFor="thumbnail">Thumbnail</Label>
               <Input
@@ -254,4 +218,3 @@ const TournamentModel = () => {
 };
 
 export default TournamentModel;
-  
