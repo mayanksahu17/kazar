@@ -36,6 +36,8 @@ export default function Tournaments() {
     try {
       const response = await axios.get("/api/tournament/getAlltournaments");
       setTournaments(response.data.data);
+      console.log(response.data.data);
+      
     } catch (error) {
       console.error("Error fetching tournaments:", error);
       toast.error("Failed to load tournaments");
