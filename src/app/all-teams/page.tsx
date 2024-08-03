@@ -18,17 +18,27 @@ interface Team {
 
 const Page: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
-  const userId = 'shivi';
+  const [userId, setUserId] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
     async function getTeams() {
       try {
-        const response = await axios.post("/api/teams/get-all-teams" , {token : localStorage.getItem("token")});
+        setLoading(true); // Start loading
+        const token = localStorage.getItem("token");
+
+        const response = await axios.post("/api/teams/get-all-teams", { token });
         if (response.data.success) {
           setTeams(response.data.teams);
         }
+
+        const userResponse = await axios.get("/api/teams/get-user");
+        setUserId(userResponse.data.data);
       } catch (error) {
         console.error('Error fetching teams:', error);
+      } finally {
+        setLoading(false); // Stop loading
       }
     }
 
@@ -51,53 +61,61 @@ const Page: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-900 p-4 rounded-lg shadow-md w-full min-h-screen">
+    <div className="mx-auto p-4 bg-gray-900 min-h-screen">
       <h1 className="text-orange-600 font-bold text-3xl mb-8">Your Teams</h1>
-      {teams.length === 0 ? (
+      {loading ? (
         <div className="text-white text-center mt-20">
-          <p className="text-xl">You are not part of any team yet.</p>
-          <p className="text-lg">Create or join a team to get started!</p>
-          <Button className='bg-green-500 p-4 mt-10' >Create Team</Button>
+          <p className="text-xl">Loading your teams...</p>
         </div>
       ) : (
-        teams.map((team) => {
-          const isLeader = userId === team.leader;
-          const players = [
-            { id: team.player1, name: "Player 1" },
-            { id: team.player2, name: "Player 2" },
-            { id: team.player3, name: "Player 3" },
-            { id: team.player4, name: "Player 4" },
-          ];
+        <>
+          {teams.length === 0 ? (
+            <div className="text-white text-center mt-20">
+              <p className="text-xl">You are not part of any team yet.</p>
+              <p className="text-lg">Create or join a team to get started!</p>
+              <Button onClick={() => { router.push("/create-team") }} className='bg-green-500 p-4 mt-10'>Create Team</Button>
+            </div>
+          ) : (
+            teams.map((team) => {
+              const isLeader = userId === team.leader;
+              const players = [
+                { id: team.player1, name: "Player 1" },
+                { id: team.player2, name: "Player 2" },
+                { id: team.player3, name: "Player 3" },
+                { id: team.player4, name: "Player 4" },
+              ];
 
-          return (
-            <Card key={team._id} className="mb-4">
-              <CardHeader className="bg-gray-900 text-orange-500 font-bold text-2xl">
-                {team.teamName}
-                {isLeader && <span className="ml-2 text-green-500 text-xl">(You are the leader)</span>}
-              </CardHeader>
-              {players.map((player, index) => (
-                <CardContent key={index} className="bg-gray-800 text-white p-4 flex justify-between items-center">
-                  <span>{player.name}: {player.id === userId ? 'You' : player.id}</span>
-                  {isLeader && player.id !== userId ? (
-                    <Button className="p-4 ml-10" onClick={() => handleRemoveMember(team._id, player.id)}>Remove</Button>
-                  ) : (
-                    !isLeader && player.id === userId && <Button className="p-4 ml-10" onClick={() => handleLeaveTeam(team._id)}>Leave</Button>
-                  )}
-                </CardContent>
-              ))}
-              <CardFooter className="bg-gray-900 text-white p-4 flex justify-between items-center">
-                {isLeader ? (
-                  <>
-                    <span>You are the leader</span>
-                    <Button className="p-4 ml-10" onClick={() => handleDeleteTeam(team._id)}>Delete Team</Button>
-                  </>
-                ) : (
-                  <span>Leader: {team.leader}</span>
-                )}
-              </CardFooter>
-            </Card>
-          );
-        })
+              return (
+                <Card key={team._id} className="mb-4 border-bold rounded">
+                  <CardHeader className="bg-gray-900 text-orange-500 font-bold text-2xl">
+                    {team.teamName}
+                    {isLeader && <span className="ml-2 text-green-500 text-xl">(You are the leader)</span>}
+                  </CardHeader>
+                  {players.map((player, index) => (
+                    <CardContent key={index} className="bg-gray-800 text-white p-4 flex justify-between items-center">
+                      <span>{player.name}: {player.id === userId ? 'You' : player.id}</span>
+                      {isLeader && player.id !== userId ? (
+                        <Button className="p-4 ml-10 bg-green-400" onClick={() => handleRemoveMember(team._id, player.id)}>Remove</Button>
+                      ) : (
+                        !isLeader && player.id === userId && <Button className="p-4 ml-10 bg-blue-500" onClick={() => handleLeaveTeam(team._id)}>Leave</Button>
+                      )}
+                    </CardContent>
+                  ))}
+                  <CardFooter className="bg-gray-900 text-white p-4 flex justify-between items-center">
+                    {isLeader ? (
+                      <>
+                        <span>You are the leader</span>
+                        <Button className="p-4 ml-10 bg-red-500" onClick={() => handleDeleteTeam(team._id)}>Delete Team</Button>
+                      </>
+                    ) : (
+                      <span>Leader: {team.leader}</span>
+                    )}
+                  </CardFooter>
+                </Card>
+              );
+            })
+          )}
+        </>
       )}
     </div>
   );
