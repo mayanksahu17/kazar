@@ -56,6 +56,7 @@ export default function Tournaments() {
       toast.error("Please login to register");
       router.push("/sign-in");
     }
+    router.push("/payment")
   };
 
   // Function to get the time remaining until the tournament starts
@@ -79,7 +80,7 @@ export default function Tournaments() {
     <>
       <div className="flex flex-col min-h-screen bg-muted/40 bg-gray-900">
         <main className="flex-1 p-4 sm:p-6 bg-gray-900">
-          <h2 className="text-2xl font-bold mb-4">All Tournaments</h2>
+          {/* <h2 className="text-2xl font-bold mb-4">All Tournaments</h2> */}
           {loading ? (
             <div className="text-center text-gray-200">Loading...</div>
           ) : (
@@ -119,15 +120,19 @@ export default function Tournaments() {
                           <div>{tournament.map}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-200">Winning Price</div>
+                          <div className="text-sm text-gray-200"> Price Pool</div>
                           <div>{tournament.winningPrice}</div>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         
                         <div>
-                          <div className="text-sm text-gray-200">Owner</div>
+                          <div className="text-sm text-gray-200">Organiser</div>
                           <div>{tournament.owner}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-200">#1 Winning Price</div>
+                          <div>{tournament.rank1Price}</div>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
@@ -135,11 +140,26 @@ export default function Tournaments() {
                           <div className="text-sm text-gray-200">Launch Date</div>
                           <div>{new Date(tournament.launchDate).toLocaleDateString()}</div>
                         </div>
+                        <div>
+                          <div className="text-sm text-gray-200">#2 Winning Price</div>
+                          <div>{tournament.rank2Price}</div>
+                        </div>
                       </div>
+                      <div className="grid grid-cols-2 gap-2">
+                     
                       <div>
                           <div className="text-sm text-gray-200">Eligibility/Rules*</div>
                           <div>{tournament.eligibility}</div>
                         </div>
+                        <div>
+                          <div className="text-sm text-gray-200">#2 Winning Price</div>
+                          <div>{tournament.rank2Price}</div>
+                        </div>
+                     </div>
+                     
+
+
+
                       {isRegistrationOpen(tournament.launchDate) ? (
                         <button
                           onClick={register}

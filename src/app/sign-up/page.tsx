@@ -1,5 +1,4 @@
 "use client"
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
@@ -10,7 +9,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Cookies from 'js-cookie';
 import { useRouter } from "next/navigation";
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 interface SignUpFormData {
   userName: string;
@@ -21,15 +21,14 @@ interface SignUpFormData {
 }
 
 const SignUp: React.FC = () => {
-
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
-    const getCookie = (name: string): string | undefined => {
-        return Cookies.get(name);
-      };
-      const router = useRouter();
+  const getCookie = (name: string): string | undefined => {
+    return Cookies.get(name);
+  };
+  const router = useRouter();
 
-    
   const [formData, setFormData] = useState<SignUpFormData>({
     userName: '',
     email: '',
@@ -56,17 +55,21 @@ const SignUp: React.FC = () => {
     }
 
     try {
-        setLoading(true)
-        const response = await axios.post('api/auth/sign-up', formData);
-        console.log(response);
-        
-        toast.success('Sign up successful');
-        router.push('/sign-in');
-      } catch (error : any) {
-        toast.error(error?.response?.data?.message);
-      }finally{
-        setLoading(false)
-      }
+      setLoading(true);
+      const response = await axios.post('api/auth/sign-up', formData);
+      console.log(response);
+
+      toast.success('Sign up successful');
+      router.push('/sign-in');
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -77,7 +80,7 @@ const SignUp: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tight text-foreground text-orange-600">Sign up your account</h1>
           <p className="mt-2 text-muted-foreground">Enter your Username and Details below</p>
         </div>
-        <form className="space-y-4 text-orange-500 " onSubmit={handleSubmit}>
+        <form className="space-y-4 text-orange-500" onSubmit={handleSubmit}>
           <div>
             <Label htmlFor="userName">Username</Label>
             <Input id="userName" type="text" placeholder="Enter your username" value={formData.userName} onChange={handleChange} required />
@@ -90,7 +93,22 @@ const SignUp: React.FC = () => {
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
             </div>
-            <Input id="password" type="password" placeholder="Enter your password" value={formData.password} onChange={handleChange} required />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <span
+                className="absolute right-3 top-2 cursor-pointer"
+                onClick={togglePasswordVisibility}
+              >
+                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+              </span>
+            </div>
           </div>
           <div>
             <Label htmlFor="mobileNumber">Mobile Number</Label>
@@ -98,13 +116,13 @@ const SignUp: React.FC = () => {
           </div>
           <div>
             <Label htmlFor="bgmiId">Bgmi Id</Label>
-            <Input id="bgmiId" type="text" placeholder="Enter your bgmiID" value={formData.bgmiId} onChange={handleChange} required />
+            <Input id="bgmiId" type="number" placeholder="Enter your bgmiID" value={formData.bgmiId} onChange={handleChange} required />
           </div>
-          <Link href="/sign-in" className="text-sm font-medium  hover:underline text-muted-foreground" prefetch={false}>
-            already have an account sign-in
+          <Link href="/sign-in" className="text-sm font-medium hover:underline text-muted-foreground" prefetch={false}>
+            Already have an account? Sign-in
           </Link>
           <Button type="submit" className="w-full text-orange-600">
-           {loading ? `Signing up...` : `Sign up`} 
+            {loading ? 'Signing up...' : 'Sign up'}
           </Button>
         </form>
       </div>

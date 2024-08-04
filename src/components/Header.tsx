@@ -69,21 +69,7 @@ export default function Header() {
             </>
           ) : (
             <>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Link href="#" className="text-sm font-medium text-gray-200 hover:text-white">Wallet</Link>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="center">
-                  <div className="h-32 w-32 sm:h-max sm:w-max">
-                    <div className="text-green-500 text-sm ml-2">Verified</div>
-                    <h1 className="text-2xl font-bold text-center">Balance: $100</h1>
-                    <Input placeholder="UPI id" className="mt-2" />
-                    <Input placeholder="Amount" className="mt-2" />
-                    <Button className="text-black bg-slate-300 m-2">Deposit</Button>
-                    <Button className="text-black bg-slate-300 m-2">Withdraw</Button>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+
               <Link href="/launch-tournament" className="text-sm font-medium text-gray-200 hover:text-white">Launch </Link>
             </>
           )}

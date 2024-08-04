@@ -7,9 +7,7 @@ export async function GET(req:NextRequest) {
     await dbConnect()
     try {
         const Tournament =  await Tournaments.find()
-        if(! Tournament){
-            return NextResponse.json({message: "No tournaments found"}, {status: 404})
-        } 
+       
             return NextResponse.json({
                 success : true,
                 message : "Tournament found successfully",
