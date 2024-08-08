@@ -104,7 +104,8 @@ const TournamentModel = () => {
           thumbnail: thumbnailUrl,
           time: `${formData.launchDate}T${formData.time}:00Z`
         };
-
+        console.log(JSON.stringify(updatedFormData));
+        
         const response = await axios.post('/api/tournament/createTournament', updatedFormData);
 
         if (response.status === 201) {

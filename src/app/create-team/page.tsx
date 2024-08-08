@@ -1,23 +1,52 @@
 "use client"
 import 'react-toastify/dist/ReactToastify.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ToastContainer , toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { useRouter } from "next/navigation";
+import debounce from 'lodash.debounce';
 
 const CreateTeam = () => {
     const [teamName, setTeamName] = useState('');
-    const [players, setPlayers] = useState([{ id: 1, name: '' }]);
+    const [players, setPlayers] = useState([{ id: 1, name: '', suggestions: [] }]);
     const [leader, setLeader] = useState('');
     const router = useRouter();
 
+    const fetchUsernames = async (query: string) => {
+        try {
+            const response = await axios.get(`/api/suggest-username/get-all-username?query=${query}`);
+            return response.data.data;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+    const debouncedFetchUsernames = debounce(async (id: number, query: string) => {
+        const suggestions = await fetchUsernames(query);
+        setPlayers((prevPlayers) => 
+            prevPlayers.map((player) => 
+                player.id === id ? { ...player, suggestions } : player
+            )
+        );
+    }, 300);
+
+    const handleInputChange = (id: number, value: string) => {
+        setPlayers((prevPlayers) =>
+            prevPlayers.map((player) =>
+                player.id === id ? { ...player, name: value } : player
+            )
+        );
+        debouncedFetchUsernames(id, value);
+    };
+
     const handleAddPlayer = () => {
         if (players.length < 4) {
-            setPlayers([...players, { id: players.length + 1, name: '' }]);
+            setPlayers([...players, { id: players.length + 1, name: '', suggestions: [] }]);
         }
     };
 
@@ -25,11 +54,12 @@ const CreateTeam = () => {
         setPlayers(players.filter(player => player.id !== id));
     };
 
-    const handleInputChange = (id: number, value: string) => {
-        const updatedPlayers = players.map((player) =>
-            player.id === id ? { ...player, name: value } : player
+    const handleSuggestionClick = (id: number, suggestion: string) => {
+        setPlayers((prevPlayers) =>
+            prevPlayers.map((player) =>
+                player.id === id ? { ...player, name: suggestion, suggestions: [] } : player
+            )
         );
-        setPlayers(updatedPlayers);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -48,18 +78,14 @@ const CreateTeam = () => {
         };
 
         try {
-            console.log(teamData);
-            
             const response = await axios.post('/api/teams/create-team', teamData);
-            console.log(response.data);
             if (response.data.message === "One or more members do not exist") {
                 toast.error(response.data.message);
-            }else if(response.data.message ==="Team created successfully"){
+            } else if (response.data.message === "Team created successfully") {
                 toast.success(response.data.message);
                 router.push("/all-teams");
             }
-        } catch (error : any) {
-
+        } catch (error: any) {
             console.error(error);
             toast.error(error.message);
         }
@@ -87,7 +113,7 @@ const CreateTeam = () => {
                             />
                         </div>
                         {players.map((player) => (
-                            <div className="mb-4 flex items-center" key={player.id}>
+                            <div className="mb-4 flex items-center relative" key={player.id}>
                                 <div className="flex-1">
                                     <Label htmlFor={`player${player.id}`}>{`Player ${player.id}`}</Label>
                                     <Input
@@ -98,6 +124,19 @@ const CreateTeam = () => {
                                         className="w-full px-3 py-2 border rounded"
                                         required
                                     />
+                                    {player.suggestions.length > 0 && (
+                                        <ul className="absolute z-10 bg-gray-700 w-full mt-1 rounded shadow-lg">
+                                            {player.suggestions.map((suggestion, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="px-4 py-2 cursor-pointer hover:bg-gray-600"
+                                                    onClick={() => handleSuggestionClick(player.id, suggestion)}
+                                                >
+                                                    {suggestion}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
                                 </div>
                                 <Button type="button" onClick={() => handleRemovePlayer(player.id)} className="ml-2 mt-6 bg-red-500">
                                     Remove

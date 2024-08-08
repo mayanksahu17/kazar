@@ -51,8 +51,8 @@ export default function Component() {
         </div>
         {selectedTab === 'upcoming' && <Tournaments />}
         {selectedTab === 'tdm' && <TDM />}
-        {selectedTab === 'registered' && <Tournaments />}
-        {/* {selectedTab === 'registered' && <Registered />} */}
+        {/* {selectedTab === 'registered' && <Tournaments />} */}
+        {selectedTab === 'registered' && <Registered />}
         <Footer />
       </div>
     </>

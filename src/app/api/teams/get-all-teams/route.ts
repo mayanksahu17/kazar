@@ -29,12 +29,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Retrieve all teams associated with the user
-    console.log(user.teams
-    );
-    
     const teams = await Teams.find({ _id: { $in: user.teams } }).lean();
+    
+    // Extract team names
+    const teamNames = teams.map((team) =>  { if(team.leader === user.userName) { return team.teamName } else { return null;}});
 
-    return NextResponse.json({ success: true, teams }, { status: SUCCESS });
+    return NextResponse.json({ success: true, teams, teamNames }, { status: SUCCESS });
+
+    
 
   } catch (error: any) {
     console.error(error);

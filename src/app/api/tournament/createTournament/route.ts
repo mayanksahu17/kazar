@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
       entryPrice,
       thumbnail,
     } = await req.json();
+    console.log("image " ,thumbnail);
+    
     
     // Token validation
     if (!token) {

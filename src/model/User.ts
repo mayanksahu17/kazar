@@ -17,6 +17,7 @@ export interface user extends Document{
     lockUntil: number ;
     verifyCode : string;
     teams : [];
+    registeredTournaments : mongoose.Types.ObjectId[];
 }
 
 
@@ -79,7 +80,11 @@ const UserSchema : Schema<user> = new Schema({
     teams : [{
          type : Schema.Types.ObjectId,
         ref : "Teams"
-    }]
+    }],
+    registeredTournaments : [{
+        type : Schema.Types.ObjectId,
+        ref : "Tournament",
+        }], 
     
     
 

@@ -4,14 +4,16 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import axios from "axios";
+import Modal from "@/components/ui/Model"; // Import the Modal component
 
 // Define the shape of the tournament data
 interface Tournament {
   _id: string;
   token: string;
   title: string;
-  mode: string; 
+  mode: string;
   map: string;
   winningPrice: number;
   rank1Price: number;
@@ -26,9 +28,19 @@ interface Tournament {
   owner: string;
 }
 
+// Define the shape of the team data
+interface Team {
+  _id: string;
+  teamName: string;
+}
+
 export default function Tournaments() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
+  const [teams, setTeams] = useState<string[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<string>("");
   const router = useRouter();
 
   // Function to fetch tournament data
@@ -36,8 +48,6 @@ export default function Tournaments() {
     try {
       const response = await axios.get("/api/tournament/getAlltournaments");
       setTournaments(response.data.data);
-      console.log(response.data.data);
-      
     } catch (error) {
       console.error("Error fetching tournaments:", error);
       toast.error("Failed to load tournaments");
@@ -46,17 +56,52 @@ export default function Tournaments() {
     }
   };
 
+  // Function to fetch team names
+  const fetchTeams = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post("/api/teams/get-all-teams", { token });
+      setTeams(response.data.teamNames);
+    } catch (error) {
+      console.error("Error fetching teams:", error);
+      toast.error("Failed to load teams");
+    }
+  };
+
   useEffect(() => {
     fetchTournaments();
   }, []);
 
   // Function to handle user registration
-  const register = () => {
+  const register = (tournament: Tournament) => {
     if (!localStorage.getItem("token")) {
       toast.error("Please login to register");
       router.push("/sign-in");
+      return;
     }
-    router.push("/payment")
+    setSelectedTournament(tournament);
+    fetchTeams();
+    setShowModal(true);
+  };
+
+  const handleTeamSelect = () => {
+    if (selectedTournament) {
+      if (selectedTournament.mode === "solo") {
+        // If solo mode, proceed directly to payment without selecting a team
+        router.push(`/payment/${selectedTournament._id}+${selectedTournament.entryPrice}`);
+      } else if (selectedTournament.mode === "squad") {
+        if (teams.length === 0) {
+          // If squad mode and user has no teams, show a message and redirect
+          toast.error("You don't have any team. Please create one.");
+          router.push("/create-team");
+        } else if (selectedTeam) {
+          // If squad mode and user has teams, proceed with the selected team
+          router.push(`/payment/${selectedTeam}+${selectedTournament.entryPrice}+${selectedTournament.title}`);
+        } else {
+          toast.error("Please select a team");
+        }
+      }
+    }
   };
 
   // Function to get the time remaining until the tournament starts
@@ -80,7 +125,6 @@ export default function Tournaments() {
     <>
       <div className="flex flex-col min-h-screen bg-muted/40 bg-gray-900">
         <main className="flex-1 p-4 sm:p-6 bg-gray-900">
-          {/* <h2 className="text-2xl font-bold mb-4">All Tournaments</h2> */}
           {loading ? (
             <div className="text-center text-gray-200">Loading...</div>
           ) : (
@@ -88,7 +132,7 @@ export default function Tournaments() {
               {tournaments.map((tournament) => (
                 <Card key={tournament._id} className="bg-gray-900 text-orange-600">
                   <CardHeader>
-                    <img
+                    <Image
                       src={tournament.thumbnail}
                       alt={`${tournament.title} Thumbnail`}
                       className="rounded-t-lg w-full h-[200px] object-cover"
@@ -125,14 +169,15 @@ export default function Tournaments() {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        
                         <div>
                           <div className="text-sm text-gray-200">Organiser</div>
                           <div>{tournament.owner}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-200">#1 Winning Price</div>
-                          <div>{tournament.rank1Price}</div>
+                          <div className="text-sm text-gray-200 ">#1 Rank : ₹{tournament.rank1Price}</div>
+                          <div className="text-sm text-gray-200 ">#2 Rank : ₹{tournament.rank2Price}</div>
+                          <div className="text-sm text-gray-200 ">#3 Rank : ₹{tournament.rank3Price}</div>
+                         
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
@@ -140,29 +185,11 @@ export default function Tournaments() {
                           <div className="text-sm text-gray-200">Launch Date</div>
                           <div>{new Date(tournament.launchDate).toLocaleDateString()}</div>
                         </div>
-                        <div>
-                          <div className="text-sm text-gray-200">#2 Winning Price</div>
-                          <div>{tournament.rank2Price}</div>
-                        </div>
+                
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                     
-                      <div>
-                          <div className="text-sm text-gray-200">Eligibility/Rules*</div>
-                          <div>{tournament.eligibility}</div>
-                        </div>
-                        <div>
-                          <div className="text-sm text-gray-200">#2 Winning Price</div>
-                          <div>{tournament.rank2Price}</div>
-                        </div>
-                     </div>
-                     
-
-
-
                       {isRegistrationOpen(tournament.launchDate) ? (
                         <button
-                          onClick={register}
+                          onClick={() => register(tournament)}
                           className="mt-4 w-full py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-700 transition-colors"
                         >
                           Register
@@ -182,6 +209,50 @@ export default function Tournaments() {
           )}
         </main>
       </div>
+
+      {showModal && selectedTournament && (
+        <Modal show={showModal} onClose={() => setShowModal(false)}>
+          <h2 className="text-xl font-bold mb-4">Register for {selectedTournament.title}</h2>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Eligibility and Rules</h3>
+            <p>{selectedTournament.eligibility}</p>
+          </div>
+          {selectedTournament.mode !== "solo" && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Select Your Team</h3>
+              <select
+                className="w-full p-2 bg-gray-700 text-white rounded-lg"
+                value={selectedTeam}
+                onChange={(e) => setSelectedTeam(e.target.value)}
+              >
+                <option value="" disabled>Select your team</option>
+                {teams.map((team) =>{
+               if(team === null){
+                  return;
+               }else{
+                return  (
+                  <option key={team} value={team}>
+                    {team}
+                  </option>
+                )
+               }
+                }
+                   )}
+              </select>
+            </div>
+          )}
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Entry Price</h3>
+            <p>{selectedTournament.entryPrice}</p>
+          </div>
+          <button
+            onClick={handleTeamSelect}
+            className="mt-4 w-full py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-700 transition-colors"
+          >
+            Proceed to Payment
+          </button>
+        </Modal>
+      )}
     </>
   );
 }
