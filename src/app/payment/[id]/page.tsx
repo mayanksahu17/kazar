@@ -18,6 +18,7 @@ const PaymentPage: React.FC = ({ params }: any) => {
   const [tournamentName, setTournamentName] = useState<string>("");
   const [teamName, setTeamName] =useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -70,6 +71,8 @@ const PaymentPage: React.FC = ({ params }: any) => {
 
             if (res.status === 200) {
               toast.success("You are registered for the tournament!");
+              setIsPaymentSuccessful(true)
+              setIsProcessing(false);
               localStorage.setItem("team","")
               localStorage.setItem("tName","")
               router.push("/");
@@ -110,11 +113,12 @@ const PaymentPage: React.FC = ({ params }: any) => {
     <>
       <Suspense fallback={<Loading />}>
         <ToastContainer />
-        <div className="flex flex-col items-center min-h-screen bg-gray-900">
+        <div className="flex flex-col items-center  min-h-screen bg-gray-900">
           <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-          <div className="p-6 bg-gray-800 rounded-lg shadow-md">
+          <div className="p-6 bg-gray-800 rounded-lg shadow-md mt-[100px]">
             <h1 className="text-2xl font-bold mb-4 text-white">Payment Page</h1>
-            <p className="mb-4 text-white">Amount to pay: ₹{amount}</p>
+            <p className="mb-4 text-white"> Tournament : {localStorage.getItem("tName")}</p>
+            <p className="mb-4 text-white">Entry price to pay: ₹{amount}</p>
             <button
               onClick={makePayment}
               disabled={isProcessing}
@@ -127,6 +131,7 @@ const PaymentPage: React.FC = ({ params }: any) => {
               {isProcessing ? "Processing..." : "Pay Now"}
             </button>
           </div>
+          {(isPaymentSuccessful) ? ( <p className="mb-4 text-green-500 font-semibold">Payment  Successfully completed you will be redirected to dashboard</p>) : ""}
         </div>
       </Suspense>
     </>

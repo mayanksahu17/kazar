@@ -35,7 +35,7 @@ export default function Header() {
           <span className="sr-only">Acme Inc</span>
         </Link>
         <button 
-          className="md:hidden text-orange-600" 
+          className="md:hidden text-orange-600"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle navigation menu"
         >
@@ -79,17 +79,17 @@ export default function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="h-9 w-9">
-              <AvatarFallback>JP</AvatarFallback>
+              <AvatarFallback>M</AvatarFallback>
               <span className="sr-only">Toggle user menu</span>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <Link href = {"/profile"}>
-            <DropdownMenuItem>My Account</DropdownMenuItem>
+            {/* <DropdownMenuItem>My Account</DropdownMenuItem> */}
             </Link>
-            <DropdownMenuItem>Wallet</DropdownMenuItem>
-            <DropdownMenuItem>Raise Ticket</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            {/* <DropdownMenuItem>Wallet</DropdownMenuItem> */}
+            {/* <DropdownMenuItem>Raise Ticket</DropdownMenuItem> */}
+            {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
