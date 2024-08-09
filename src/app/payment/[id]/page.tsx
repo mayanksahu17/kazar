@@ -1,170 +1,125 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect, Suspense } from "react";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import Image from 'next/image';
-import QRCodeImage from '/public/qr-code.jpg'; // Ensure this path is correct
+import Script from "next/script";
+import Loading from "@/components/Loading";
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 const PaymentPage: React.FC = ({ params }: any) => {
-  const [transactionId, setTransactionId] = useState<string>('');
-  const [image, setImage] = useState<File | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [imageUrl, setImageUrl] = useState<string>('');
-  const [amount, setAmount] = useState<number>(0);
-  const [selectedTeam, setSelectedTeam] = useState<string>('');
-  const [selectedTournamentName , setTournamentName] = useState<string>("")
+  const [amount, setAmount] = useState(0);
+  const [tournamentName, setTournamentName] = useState<string>("");
+  const [teamName, setTeamName] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
-  const upiId = '6263420394@ybl';
 
   useEffect(() => {
-   
-    
     if (params.id) {
-      const [team, amt] = (params.id as string).split('%2B');
-      setSelectedTeam(team);
+      const [team, amt, tname] = (params.id as string).split("%2B");
+      setTeamName(team);
+      setTournamentName(tname.replace("%20", " "));
       setAmount(parseFloat(amt));
     }
   }, [params.id]);
 
-  const uploadThumbnail = async () => {
-    if (!image) {
-      toast.error('No image selected for upload');
-      return null;
-    }
-
+  const makePayment = async () => {
     try {
-      const formData = new FormData();
-      formData.append('Image', image);
+      setIsProcessing(true);
+      const key = process.env.RAZOR_PAY_KEY_ID;
+      if (!key) throw new Error("Razorpay key is missing");
 
-      const response = await axios.post(
-        'https://printovert-backend.onrender.com/api/v1/users/cloudinary/v2/upload/outService',
-        formData
-      );
-
-      setImageUrl(response.data.URL);
-      return response.data.URL;
-    } catch (error) {
-      toast.error('Failed to upload image.');
-      return null;
-    }
-  };
-
-  const handleTransactionIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTransactionId(e.target.value);
-  };
-
-  const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setImage(e.target.files[0]);
-    }
-  };
-
-  const handleCopyUPI = () => {
-    navigator.clipboard.writeText(upiId).then(() => {
-      toast.success('UPI ID copied to clipboard');
-    }).catch(() => {
-      toast.error('Failed to copy UPI ID');
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!transactionId || !image) {
-      toast.error('Transaction ID and screenshot are required');
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      // Upload image and proceed with form submission
-      const uploadedImageUrl = await uploadThumbnail();
-      if (!uploadedImageUrl) {
-        throw new Error('Image upload failed');
-      }
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await axios.post('/api/register-payment', {
-        transactionId,
-        imageUrl: uploadedImageUrl,
+      const payload = {
         amount,
-        teamName: selectedTeam,
-        token
+        teamName,
+        token: localStorage.getItem("token"),
+        tournamentName,
+      };
+
+      const { data } = await axios.post("/api/payment/register-payment", payload);
+      const order = data.order;
+
+      const options = {
+        key: key,
+        name: "mmantratech",
+        currency: order.currency,
+        amount: order.amount,
+        order_id: order.id,
+        description: "Tournament Payment",
+        handler: async (response: any) => {
+          try {
+            const res = await axios.post("/api/payment/confirm-payment", {
+              ...payload,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+
+            if (res.status === 200) {
+              toast.success("You are registered for the tournament!");
+              router.push("/");
+            } else {
+              toast.error("Payment verification failed.");
+            }
+          } catch (error) {
+            toast.error("An error occurred during payment verification.");
+          }
+        },
+        prefill: {
+          name: "mmantratech",
+          email: "mmantratech@gmail.com",
+          contact: "0000000000",
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+
+      paymentObject.on("payment.failed", (response: any) => {
+        toast.error("Payment failed. Please try again.");
       });
-
-      toast.success('Payment details submitted successfully');
-      setTimeout(()=>{
-
-      },2000)
-      router.push('/');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'An error occurred');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "An unexpected error occurred."
+      );
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
+
   return (
-    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 bg-gray-900 text-orange-600">
-        {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70">
-          <div className="text-white">Processing...</div>
-        </div>
-      )}
-      <ToastContainer />
-      <div className="mx-auto w-full max-w-md space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground text-orange-600">Make a Payment</h1>
-          <p className="mt-2 text-muted-foreground">Scan the QR code below and complete your payment</p>
-        </div>
-        <span className='text-center flex ml-20'> Amount to be paid  :&nbsp; <h1 className='font-bold'> {"₹"}{amount}</h1> </span>
-        <div className="flex justify-center">
-          <Image src={QRCodeImage} alt="QR Code" width={200} height={200} />
-        </div>
-        <div className='text-center mt-4'>
-          <p>Or send to this UPI ID</p>
-          <p className="font-semibold">{upiId}</p>
-          <Button onClick={handleCopyUPI} className="mt-2 text-orange-600 bg-green-950">
-            Click to copy
-          </Button>
-        </div>
-        <form className="space-y-4 text-orange-500 mt-6" onSubmit={handleSubmit}>
-          <div>
-            <Label htmlFor="transactionId">Transaction ID</Label>
-            <Input
-              id="transactionId"
-              type="text"
-              placeholder="Enter your transaction ID"
-              value={transactionId}
-              onChange={handleTransactionIdChange}
-              required
-            />
+    <>
+      <Suspense fallback={<Loading />}>
+        <ToastContainer />
+        <div className="flex flex-col items-center min-h-screen bg-gray-900">
+          <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+          <div className="p-6 bg-gray-800 rounded-lg shadow-md">
+            <h1 className="text-2xl font-bold mb-4 text-white">Payment Page</h1>
+            <p className="mb-4 text-white">Amount to pay: ₹{amount}</p>
+            <button
+              onClick={makePayment}
+              disabled={isProcessing}
+              className={`px-4 py-2 rounded text-white ${
+                isProcessing
+                  ? "bg-gray-600 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600"
+              }`}
+            >
+              {isProcessing ? "Processing..." : "Pay Now"}
+            </button>
           </div>
-          <div>
-            <Label htmlFor="screenshot">Upload Screenshot</Label>
-            <Input
-              id="screenshot"
-              type="file"
-              accept="image/*"
-              onChange={handleScreenshotChange}
-              required
-            />
-          </div>
-          <Button type="submit" className="w-full text-orange-600 bg-green-950" disabled={loading}>
-            {loading ? 'Submitting...' : 'Submit Payment'}
-          </Button>
-        </form>
-      </div>
-    </div>
+        </div>
+      </Suspense>
+    </>
   );
 };
 

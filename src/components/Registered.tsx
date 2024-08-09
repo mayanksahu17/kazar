@@ -43,7 +43,7 @@ export default function Tournaments() {
     }
 
     try {
-      const response = await axios.post("/api/tournament/getAlltournaments", { token });
+      const response = await axios.post("/api/tournament/registered-tournament", { token });
       if (response.data && response.data.data) {
         setTournaments(response.data.data);
         // Assuming response.data.data contains an array of tournament IDs user has registered for
@@ -63,22 +63,7 @@ export default function Tournaments() {
     fetchTournaments();
 
 
-  // Function to handle user registration
-  const register = (tournamentId: string) => {
-    if (!localStorage.getItem("token")) {
-      toast.error("Please login to register");
-      router.push("/sign-in");
-      return;
-    }
-    // Check if already registered
-    if (userRegisteredTournaments.has(tournamentId)) {
-      toast.info("You are already registered for this tournament");
-      return;
-    }
-    // Proceed to payment
-    router.push(`/payment/${tournamentId}`);
-  };
-
+ 
   // Function to get the time remaining until the tournament starts
   const getTimeRemaining = (launchDate: string) => {
     const now = new Date();
@@ -176,17 +161,17 @@ export default function Tournaments() {
 
                       {isRegistrationOpen(tournament.launchDate) ? (
                         <button
-                          onClick={() => register(tournament._id)}
+                         
                           className={`mt-4 w-full py-2 ${
                             userRegisteredTournaments.has(tournament._id)
                               ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-orange-500 hover:bg-orange-700"
+                              : "bg-gray-400 cursor-not-allowed"
                           } text-white rounded-lg transition-colors`}
                           disabled={userRegisteredTournaments.has(tournament._id)}
                         >
-                          {userRegisteredTournaments.has(tournament._id)
+                          {userRegisteredTournaments.has(tournament.title)
                             ? "Registered"
-                            : "Register"}
+                            : "Registered"}
                         </button>
                       ) : (
                         <button

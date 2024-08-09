@@ -62,6 +62,11 @@ const CreateTeam = () => {
         );
     };
 
+    const handleCancel = () => {
+        router.push('/');
+      };
+    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
@@ -158,9 +163,9 @@ const CreateTeam = () => {
                             />
                         </div>
                         <div className="text-right">
-                            <Button type="submit" className="bg-green-500">
-                                Create Team
-                            </Button>
+                        
+                            <Button type="submit" onClick={handleCancel} className="w-full bg-green-600 hover:bg-green-700">   Create Team   </Button>
+                            <Button type="button" onClick={handleCancel} className=" mt-5 w-full bg-gray-600 hover:bg-gray-700">  Cancel   </Button>
                         </div>
                     </form>
                 </CardContent>
