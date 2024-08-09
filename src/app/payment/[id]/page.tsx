@@ -16,19 +16,18 @@ declare global {
 const PaymentPage: React.FC = ({ params }: any) => {
   const [amount, setAmount] = useState(0);
   const [tournamentName, setTournamentName] = useState<string>("");
-  const [teamName, setTeamName] = useState<string>("");
+  const [teamName, setTeamName] =useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (params.id) {
-      const [team, amt, tname] = (params.id as string).split("%2B");
-      setTeamName(team);
-      console.log( "before", tname);
-      
-      setTournamentName(tname?.replace("%20", " "));
-      console.log( "after", tname);
-
+     
+      const amt = (params.id as string)
+      const team_L = localStorage.getItem("team") as string
+      const tName_L = localStorage.getItem("tName") as string
+      setTeamName(team_L);
+      setTournamentName(tName_L);
       setAmount(parseFloat(amt));
     }
   }, [params.id]);
@@ -71,6 +70,8 @@ const PaymentPage: React.FC = ({ params }: any) => {
 
             if (res.status === 200) {
               toast.success("You are registered for the tournament!");
+              localStorage.setItem("team","")
+              localStorage.setItem("tName","")
               router.push("/");
             } else {
               toast.error("Payment verification failed.");

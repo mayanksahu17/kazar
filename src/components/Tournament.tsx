@@ -96,7 +96,7 @@ export default function Tournaments() {
 
 
   const handleTeamSelect = async() => {
-    console.log("test log 1");
+   
     
     if (selectedTournament) {
       if (selectedTournament.mode === "solo") {
@@ -109,11 +109,10 @@ export default function Tournaments() {
           toast.error("You don't have any team. Please create one.");
           router.push("/create-team");
         } else if (selectedTeam) {
-          console.log("test log 1");
-         // await makePayment(selectedTournament.entryPrice ,selectedTeam , selectedTournament.title )
-          console.log("test log 3");
           // If squad mode and user has teams, proceed with the selected team
-           router.push(`/payment/${selectedTeam}+${selectedTournament.entryPrice}+${selectedTournament.title}`);
+          localStorage.setItem("team",selectedTeam)
+          localStorage.setItem("tName",selectedTournament.title)
+           router.push(`/payment/${selectedTournament.entryPrice}`);
         } else {
           toast.error("Please select a team");
         }
