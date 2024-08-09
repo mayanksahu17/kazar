@@ -15,7 +15,7 @@ const Modal = ({ show, onClose, children }: ModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+      <div className="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-2xl sm:w-max">
         <div className="bg-gray-900 text-gray-200 p-4 flex justify-between items-center">
           <h2 className="text-lg font-semibold"> Register</h2>
           <button

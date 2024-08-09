@@ -24,7 +24,11 @@ const PaymentPage: React.FC = ({ params }: any) => {
     if (params.id) {
       const [team, amt, tname] = (params.id as string).split("%2B");
       setTeamName(team);
-      setTournamentName(tname.replace("%20", " "));
+      console.log( "before", tname);
+      
+      setTournamentName(tname?.replace("%20", " "));
+      console.log( "after", tname);
+
       setAmount(parseFloat(amt));
     }
   }, [params.id]);
@@ -32,7 +36,9 @@ const PaymentPage: React.FC = ({ params }: any) => {
   const makePayment = async () => {
     try {
       setIsProcessing(true);
-      const key = process.env.RAZOR_PAY_KEY_ID;
+      const key = process.env.RAZOR_PAY_KEY_ID || "rzp_test_g1g3enpX7nMKYG";
+      
+      
       if (!key) throw new Error("Razorpay key is missing");
 
       const payload = {
@@ -44,7 +50,7 @@ const PaymentPage: React.FC = ({ params }: any) => {
 
       const { data } = await axios.post("/api/payment/register-payment", payload);
       const order = data.order;
-
+      let res;
       const options = {
         key: key,
         name: "mmantratech",
@@ -53,8 +59,10 @@ const PaymentPage: React.FC = ({ params }: any) => {
         order_id: order.id,
         description: "Tournament Payment",
         handler: async (response: any) => {
+
+          
           try {
-            const res = await axios.post("/api/payment/confirm-payment", {
+             res = await axios.post("/api/payment/confirm-payment", {
               ...payload,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpayOrderId: response.razorpay_order_id,
@@ -72,9 +80,10 @@ const PaymentPage: React.FC = ({ params }: any) => {
           }
         },
         prefill: {
-          name: "mmantratech",
-          email: "mmantratech@gmail.com",
-          contact: "0000000000",
+          name: "Mayank sahu",
+          email: "mayanksahu0024@gmail.com",
+          contact: "6263420394",
+          
         },
         theme: {
           color: "#3399cc",

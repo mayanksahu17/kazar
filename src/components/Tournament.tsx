@@ -48,6 +48,8 @@ export default function Tournaments() {
   // Function to fetch tournament data
   const fetchTournaments = async () => {
     try {
+     
+      
       const response = await axios.get("/api/tournament/getAlltournaments");
       const currentDate = new Date();
       const validTournaments = response.data.data.filter((tournament: Tournament) => {
