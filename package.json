@@ -52,6 +52,7 @@
     "resend": "^3.4.0",
     "sharp": "^0.33.4",
     "shortid": "^2.2.16",
+    "spinner": "^0.3.4",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "toast": "^0.5.4",

@@ -2,10 +2,10 @@
 import React, { useState, useEffect, Suspense } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import Loading from "@/components/Loading";
+import "react-toastify/dist/ReactToastify.css";
 
 declare global {
   interface Window {
@@ -13,56 +13,62 @@ declare global {
   }
 }
 
-const PaymentPage: React.FC = ({ params }: any) => {
-  const [amount, setAmount] = useState(0);
+interface PaymentPageProps {
+  params: {
+    id: string;
+  };
+}
+
+const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
+  const [amount, setAmount] = useState<number>(0);
   const [tournamentName, setTournamentName] = useState<string>("");
-  const [teamName, setTeamName] =useState<string>("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
+  const [teamName, setTeamName] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [loading,setLoading] = useState(false)
+  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
     if (params.id) {
-     
-      const amt = (params.id as string)
-      const team_L = localStorage.getItem("team") as string
-      const tName_L = localStorage.getItem("tName") as string
-      setTeamName(team_L);
-      setTournamentName(tName_L);
-      setAmount(parseFloat(amt));
+      const storedTeamName = localStorage.getItem("team");
+      const storedTournamentName = localStorage.getItem("tName");
+      if (storedTeamName) setTeamName(storedTeamName);
+      if (storedTournamentName) setTournamentName(storedTournamentName);
+      setAmount(parseFloat(params.id));
     }
   }, [params.id]);
 
   const makePayment = async () => {
+    setIsProcessing(true);
+
     try {
-      setIsProcessing(true);
-      const key = process.env.RAZOR_PAY_KEY_ID || "rzp_test_g1g3enpX7nMKYG";
-      
-      
+      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_g1g3enpX7nMKYG";
       if (!key) throw new Error("Razorpay key is missing");
+
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("User is not authenticated");
 
       const payload = {
         amount,
         teamName,
-        token: localStorage.getItem("token"),
+        token,
         tournamentName,
       };
 
-      const { data } = await axios.post("/api/payment/register-payment", payload);
+      const { data } = await axios.post("/api/tournament/register-tournament", payload);
       const order = data.order;
-      let res;
+
       const options = {
-        key: key,
-        name: "mmantratech",
+        key,
+        name: "Mayank Sahu",
         currency: order.currency,
         amount: order.amount,
         order_id: order.id,
         description: "Tournament Payment",
         handler: async (response: any) => {
-
-          
           try {
-             res = await axios.post("/api/payment/confirm-payment", {
+            setLoading(true)
+            const res = await axios.post("/api/payment/confirm-payment", {
               ...payload,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpayOrderId: response.razorpay_order_id,
@@ -71,23 +77,21 @@ const PaymentPage: React.FC = ({ params }: any) => {
 
             if (res.status === 200) {
               toast.success("You are registered for the tournament!");
-              setIsPaymentSuccessful(true)
-              setIsProcessing(false);
-              localStorage.setItem("team","")
-              localStorage.setItem("tName","")
+              setIsPaymentSuccessful(true);
+              clearLocalStorage();
+              setLoading(false)
               router.push("/");
             } else {
               toast.error("Payment verification failed.");
             }
           } catch (error) {
-            toast.error("An error occurred during payment verification.");
+            handlePaymentError(error, "Payment verification failed.");
           }
         },
         prefill: {
-          name: "Mayank sahu",
+          name: "Mayank Sahu",
           email: "mayanksahu0024@gmail.com",
           contact: "6263420394",
-          
         },
         theme: {
           color: "#3399cc",
@@ -101,23 +105,32 @@ const PaymentPage: React.FC = ({ params }: any) => {
         toast.error("Payment failed. Please try again.");
       });
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "An unexpected error occurred."
-      );
+      handlePaymentError(error, "An unexpected error occurred.");
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handlePaymentError = (error: unknown, message: string) => {
+    console.error(error);
+    toast.error(message);
+    setIsProcessing(false);
+  };
+
+  const clearLocalStorage = () => {
+    localStorage.removeItem("team");
+    localStorage.removeItem("tName");
   };
 
   return (
     <>
       <Suspense fallback={<Loading />}>
         <ToastContainer />
-        <div className="flex flex-col items-center  min-h-screen bg-gray-900">
+        <div className="flex flex-col items-center min-h-screen bg-gray-900">
           <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-          <div className="p-6 bg-gray-800 rounded-lg shadow-md mt-[100px]">
+          <div className="p-6 bg-gray-800 rounded-lg shadow-md mt-24">
             <h1 className="text-2xl font-bold mb-4 text-white">Payment Page</h1>
-            <p className="mb-4 text-white"> Tournament : {localStorage.getItem("tName")}</p>
+            <p className="mb-4 text-white">Tournament: {tournamentName}</p>
             <p className="mb-4 text-white">Entry price to pay: ₹{amount}</p>
             <button
               onClick={makePayment}
@@ -131,7 +144,18 @@ const PaymentPage: React.FC = ({ params }: any) => {
               {isProcessing ? "Processing..." : "Pay Now"}
             </button>
           </div>
-          {(isPaymentSuccessful) ? ( <p className="mb-4 text-green-500 font-semibold">Payment  Successfully completed you will be redirected to dashboard</p>) : ""}
+          {isPaymentSuccessful && (
+            <p className="mb-4 text-green-500 font-semibold">
+              Payment successfully completed. You will be redirected to the dashboard.
+            </p>
+          ) }
+          {loading && (
+            <p className="mb-4 text-green-500 font-semibold">
+              Please hold on !
+              <br />
+             Sending the confirmation Email to the User...
+            </p>
+          ) }
         </div>
       </Suspense>
     </>

@@ -111,6 +111,8 @@ export default function Tournaments() {
         } else if (selectedTeam) {
           // If squad mode and user has teams, proceed with the selected team
           localStorage.setItem("team",selectedTeam)
+          console.log(selectedTournament.title);
+          
           localStorage.setItem("tName",selectedTournament.title)
            router.push(`/payment/${selectedTournament.entryPrice}`);
         } else {
