@@ -84,9 +84,11 @@ export default function Tournaments() {
   return (
     <div className="flex flex-col min-h-screen bg-muted/40 bg-gray-900">
       <main className="flex-1 p-4 sm:p-6 bg-gray-900">
-        {loading ? (
-          <div className="text-center text-gray-200">Loading...</div>
-        ) : tournaments.length === 0 ? (
+        {loading ?(
+        <div className="flex justify-center items-center h-20">
+          <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
+        </div>
+      ) : tournaments.length === 0 ? (
           <div className='ml-10 font-bold p-10 '>No tournaments Registered YET!</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

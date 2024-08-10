@@ -18,6 +18,7 @@ export interface user extends Document{
     verifyCode : string;
     teams : [];
     registeredTournaments : String;
+    isAdmin : Boolean;
 }
 
 
@@ -84,6 +85,10 @@ const UserSchema : Schema<user> = new Schema({
     registeredTournaments : [{
         type :  String
         }], 
+    isAdmin : {
+        type : Boolean,
+        default : false
+    }
     
     
 
