@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
             },
         });
 
+       
         const emailTemplate = render(
             <RegistrationEmail username={user.userName} tournamentName={tournamentName} team={teamName} />
         );
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
             subject: 'Registration Confirmation',
             html: emailTemplate,
         };
-
+        
         await transporter.sendMail(mailOptions);
 
         return NextResponse.json({

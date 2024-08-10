@@ -6,8 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 
+import { useRouter } from 'next/navigation';
+import { UploadButton } from '@/utils/uploadthings';
 interface FormData {
   token: string;
   title: string;
@@ -52,20 +53,12 @@ const TournamentModel = () => {
     setFormData((prev) => ({ ...prev, token }));
   }, []);
 
-  const uploadThumbnail = async () => {
-    if (!image) return null;
-
+  const uploadThumbnail = async (url : string) => {
     try {
-      const formData = new FormData();
-      formData.append('Image', image);
-
-      const response = await axios.post(
-        'https://printovert-backend.onrender.com/api/v1/users/cloudinary/v2/upload/outService',
-        formData
-      );
-
-      setImageUrl(response.data.URL);
-      return response.data.URL;
+     
+      setImageUrl(url)
+     
+      return
     } catch (error) {
       toast.error('Failed to upload image.');
       return null;
@@ -97,11 +90,11 @@ const TournamentModel = () => {
     setLoading(true);
 
     try {
-      const thumbnailUrl = await uploadThumbnail();
-      if (thumbnailUrl) {
+   
+      if (imageUrl) {
         const updatedFormData = {
           ...formData,
-          thumbnail: thumbnailUrl,
+          thumbnail: imageUrl,
           time: `${formData.launchDate}T${formData.time}:00Z`
         };
         console.log(JSON.stringify(updatedFormData));
@@ -197,16 +190,32 @@ const TournamentModel = () => {
             {renderInputField('entryPrice', 'number', 'Entry Price per Team', formData.entryPrice)}
             <div>
               <Label htmlFor="thumbnail">Thumbnail</Label>
-              <Input
+              <UploadButton
+               endpoint='imageUploader'
+               onClientUploadComplete={async(res) => {
+                // Do something with the response
+                await uploadThumbnail(res[0].url)
+                alert("Upload Completed");
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+               />
+              {/* <Input
                 id="thumbnail"
                 type="file"
                 onChange={handleChange}
                 required
                 className="bg-gray-700 text-white"
-              />
+              /> */}
             </div>
             <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Tournament'}
+              {loading ?  (
+        <div className="flex justify-center items-center h-20">
+          <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
+        </div>
+      )  : 'Create Tournament'}
             </Button>
             <Button type="button" onClick={handleCancel} className="w-full bg-gray-600 hover:bg-gray-700">
               Cancel

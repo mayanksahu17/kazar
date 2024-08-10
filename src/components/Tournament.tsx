@@ -101,9 +101,21 @@ export default function Tournaments() {
 
   const handleTeamSelect = async() => {
     if (selectedTournament) {
-      if (selectedTournament.mode === "solo") {
+      if (selectedTournament.mode === "duo") {
+        if (teams.length === 0) {
+          // If squad mode and user has no teams, show a message and redirect
+          toast.error("You don't have any team. Please create one.");
+          router.push("/create-team");
+        } else if (selectedTeam) {
+          // If squad mode and user has teams, proceed with the selected team
+           router.push(`/payment/${selectedTournament.entryPrice}`);
+        } else {
+          toast.error("Please select a team");
+        }
+
+      } else if (selectedTournament.mode === "solo") {
         // If solo mode, proceed directly to payment without selecting a team
-        router.push(`/payment/${selectedTournament._id}+${selectedTournament.entryPrice}`);
+        router.push(`/payment/${selectedTournament.entryPrice}`);
 
       } else if (selectedTournament.mode === "squad") {
         if (teams.length === 0) {
@@ -170,7 +182,7 @@ export default function Tournaments() {
                             <div className="grid grid-cols-2 gap-2">
                               <div>
                                 <div className="text-sm text-gray-200">Entry Price</div>
-                                <div>{tournament.entryPrice}</div>
+                                <div>₹{tournament.entryPrice}</div>
                               </div>
                               <div>
                                 <div className="text-sm text-gray-200">Mode</div>
@@ -232,8 +244,8 @@ export default function Tournaments() {
         {showModal && selectedTournament && (
             <Modal show={showModal} onClose={() => setShowModal(false)}>
               <h2 className="text-xl font-bold mb-4">Register for {selectedTournament.title}</h2>
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold">Eligibility and Rules</h3>
+                <h3 className="text-lg font-semibold text-red-600">Eligibility and Rules*</h3>
+              <div className="mb-4 px-20">
                 <p>{selectedTournament.eligibility}</p>
               </div>
               {selectedTournament.mode !== "solo" && (
@@ -262,7 +274,7 @@ export default function Tournaments() {
               )}
               <div className="mb-4">
                 <h3 className="text-lg font-semibold">Entry Price</h3>
-                <p>{selectedTournament.entryPrice}</p>
+                <p>₹{selectedTournament.entryPrice}</p>
               </div>
               <button
                   onClick={handleTeamSelect}

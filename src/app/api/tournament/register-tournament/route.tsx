@@ -2,13 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import shortid from 'shortid';
 import Razorpay from 'razorpay';
 import dbConnect from '@/lib/dbConnect';
-import { render } from '@react-email/render';
+import { jwtVerify } from 'jose';
 import { Teams } from '@/model/Teams';
 import { Tournaments } from '@/model/Tournaments';
 import { User } from '@/model/User';
-import RegistrationEmail from '@/emails/RegistrationEmail';
-import nodemailer from 'nodemailer';
-import { jwtVerify } from 'jose';
+import mongoose from 'mongoose';
 
 const UNAUTHORIZED = 401;
 const SUCCESS = 200;
@@ -49,7 +47,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Validate input data
-        if (!tournamentName || typeof amount !== 'number' || amount <= 0 ) {
+        if (!tournamentName || typeof amount !== 'number' || amount <= 0) {
             return NextResponse.json({ message: 'All fields are required and amount must be a positive number' }, { status: BAD_REQUEST });
         }
 
@@ -64,10 +62,41 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "You are already registered for this tournament" }, { status: BAD_REQUEST });
         }
 
-        // Initialize Razorpay object
-     
+        // Handle different tournament modes
+        if (tournament.mode === "solo") {
+            if (teamName && teamName.length > 0) {
+                // Treat teamName as userName for solo tournaments
+                const soloUser = await User.findOne({ username: teamName }).lean();
+                if (!soloUser) {
+                    return NextResponse.json({ message: "User not found" }, { status: BAD_REQUEST });
+                }
+                tournament.registeredSoloTeams.push(soloUser._id as mongoose.Types.ObjectId);
+            } else {
+                tournament.registeredSoloTeams.push(user._id as mongoose.Types.ObjectId);
+            }
+        } else if (tournament.mode === "duo" || tournament.mode === "squad") {
+            if (!teamName) {
+                return NextResponse.json({ message: "Team name is required for duo and squad tournaments" }, { status: BAD_REQUEST });
+            }
 
-        // Create an order -> generate the OrderID -> Send it to the Front-end
+            // Find the team by teamName
+            const team = await Teams.findOne({ teamName }).lean();
+            if (!team) {
+                return NextResponse.json({ message: "Team not found" }, { status: BAD_REQUEST });
+            }
+
+            // Push the teamId into the registeredTeams array
+            tournament.registeredTeams.push(team._id as mongoose.Types.ObjectId);
+            await Teams.findByIdAndUpdate({ _id : team._id}, {$push: { registeredTournament: tournament._id }} );
+        }
+
+        // Save the tournament changes
+        await Tournaments.findByIdAndUpdate(tournament._id, {
+            registeredTeams: tournament.registeredTeams,
+            registeredSoloTeams: tournament.registeredSoloTeams,
+        });
+
+        // Initialize Razorpay order
         const options = {
             amount: (amount * 100).toString(), // Razorpay expects amount in paise
             currency: "INR",
@@ -80,7 +109,6 @@ export async function POST(req: NextRequest) {
         // Update user with the registered tournament
         await User.findByIdAndUpdate(userId, { $push: { registeredTournaments: tournament.title } });
 
-    
         return NextResponse.json({
             message: 'Registration successful',
             order,

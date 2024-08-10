@@ -21,6 +21,9 @@ import { Team } from "./Teams";
     entryPrice: number;
     thumbnail: string;
     status : string;
+    registeredTeams :  mongoose.Types.ObjectId[];
+    registeredSoloTeams :  mongoose.Types.ObjectId[];
+  
   }
 
   const tournamentSchema: Schema<ITournament> = new Schema({
@@ -31,14 +34,16 @@ import { Team } from "./Teams";
     winningPrice: { type: Number, required: true },
     rank1Price: { type: Number, required: true },
     rank2Price: { type: Number, required: true },
-    rank3Price: { type: Number, required: true },   
+    rank3Price: { type: Number, required: true },
     eligibility: { type: String, required: true },
     launchDate: { type: Date, required: true },
     time: { type: String, required: true },
     requiredTeamSize: { type: Number, required: true },
     entryPrice: { type: Number, required: true },
     thumbnail: { type: String, required: true },
-    status: { type: String, default : "Upcoming" }
+    status: { type: String, default : "Upcoming" },
+    registeredTeams : [{ type : mongoose.Types.ObjectId , ref : "Team"}],
+    registeredSoloTeams : [{ type : mongoose.Types.ObjectId , ref : "User"}]
   });
 
 

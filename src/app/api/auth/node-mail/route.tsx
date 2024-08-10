@@ -31,15 +31,15 @@ export async function POST(req: NextRequest) {
       secure: true,
       port: 465,
       auth: {
-        user: 'mayanksahu0024@gmail.com',
-        pass: 'qdtj wcbt mtjs nihf',
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const emailTemplate = render(<VerificationEmail username={user.userName} otp={verifyCode} />);
     
     const receiver = {
-      from: 'mayanksahu0024@gmail.com',
+      from: 'scrimsscrown@gmail.com',
       to: email,
       subject: 'Verification Code',
       html: emailTemplate,

@@ -8,14 +8,27 @@ import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { GiHamburgerMenu } from "react-icons/gi";
+import axios from "axios";
 
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [userFirstLetter,setUserFirstLetter] = useState("")
   const router = useRouter();
+
+
+  const getUser = async(token : string)=>{
+    const response = await axios.post('/api/teams/get-user',{token})
+    // console.log(response.data.data[0].userName[0]);
+    
+    setUserFirstLetter(response.data.data[0].userName[0])
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    if (token) {
+     getUser(token)  
+    }
     setIsAuthenticated(!!token);
   }, []);
 
@@ -79,16 +92,23 @@ export default function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="h-9 w-9">
-              <AvatarFallback>M</AvatarFallback>
+              <AvatarFallback>{userFirstLetter.toUpperCase()}</AvatarFallback>
               <span className="sr-only">Toggle user menu</span>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <Link href = {"/profile"}>
-            {/* <DropdownMenuItem>My Account</DropdownMenuItem> */}
+            <DropdownMenuItem>My Account</DropdownMenuItem>
             </Link>
+            <Link href = {"/contact"}>
+            <DropdownMenuItem>Raise Ticket</DropdownMenuItem>
+            </Link>
+            <Link href = {"/start-tournament"}>
+            <DropdownMenuItem>Start Tournament</DropdownMenuItem>
+            </Link>
+
             {/* <DropdownMenuItem>Wallet</DropdownMenuItem> */}
-            {/* <DropdownMenuItem>Raise Ticket</DropdownMenuItem> */}
+            {/* <DropdownMenuItem Link={"/contact"}>Raise Ticket</DropdownMenuItem> */}
             {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>

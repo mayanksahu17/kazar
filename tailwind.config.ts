@@ -1,14 +1,15 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import { withUt } from "uploadthing/tw";
 
-const config = {
+const config: Config = {
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -22,7 +23,6 @@ const config = {
       fontFamily: {
         heading: ['var(--font-heading)', ...fontFamily.mono],
         body: ['var(--font-body)', ...fontFamily.mono],
-      
       },
       colors: {
         border: "hsl(var(--border))",
@@ -81,6 +81,6 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default withUt(config);

@@ -12,6 +12,7 @@ import debounce from 'lodash.debounce';
 
 const CreateTeam = () => {
     const [teamName, setTeamName] = useState('');
+    const [loading,setLoading] = useState(false)
     const [players, setPlayers] = useState([{ id: 1, name: '', suggestions: [] }]);
     const [leader, setLeader] = useState('');
     const router = useRouter();
@@ -83,14 +84,18 @@ const CreateTeam = () => {
         };
 
         try {
+            setLoading(true)
             const response = await axios.post('/api/teams/create-team', teamData);
             if (response.data.message === "One or more members do not exist") {
+                setLoading(false)
                 toast.error(response.data.message);
             } else if (response.data.message === "Team created successfully") {
+                setLoading(false)
                 toast.success(response.data.message);
                 router.push("/all-teams");
             }
         } catch (error: any) {
+            setLoading(false)
             console.error(error);
             toast.error(error.message);
         }
@@ -164,7 +169,11 @@ const CreateTeam = () => {
                         </div>
                         <div className="text-right">
                         
-                            <Button type="submit" onClick={handleCancel} className="w-full bg-green-600 hover:bg-green-700">   Create Team   </Button>
+                            <Button type="submit" onClick={handleCancel} className="w-full bg-green-600 hover:bg-green-700"> {loading ? (
+        <div className="flex justify-center items-center h-20">
+          <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
+        </div>
+      ) : " Create Team"}    </Button>
                             <Button type="button" onClick={handleCancel} className=" mt-5 w-full bg-gray-600 hover:bg-gray-700">  Cancel   </Button>
                         </div>
                     </form>

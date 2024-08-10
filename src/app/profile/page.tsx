@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import {Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
@@ -16,24 +16,29 @@ export default function ProfilePage() {
     email: "",
     mobileNumber: "",
     bgmiId: "",
-    walletBalance: 0,
     UPI: "",
   });
+
   const router = useRouter();
 
+  const getUser = async (token: string) => {
+    try {
+      const response = await axios.post('/api/teams/get-user', { token });
+      const userData = response.data.data[0];
+      setProfile(userData);
+    } catch (error) {
+      toast.error("Failed to load user data.");
+    }
+  };
+
   useEffect(() => {
-    // Hardcoded user data for now
-    const hardcodedData = {
-      _id: "669bcdfeeeb14eb59a02fb73",
-      userName: "test",
-      email: "1mayank0real0world@gmail.com",
-      mobileNumber: "6263420391",
-      bgmiId: "345235856",
-      walletBalance: 0,
-      UPI: "",
-    };
-    setProfile(hardcodedData);
-  }, []);
+    const token = localStorage.getItem("token");
+    if (token) {
+      getUser(token);
+    } else {
+      router.push('/login');  // Redirect to login if no token is found
+    }
+  }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -109,18 +114,6 @@ export default function ProfilePage() {
                 id="bgmiId"
                 name="bgmiId"
                 value={profile.bgmiId}
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="walletBalance">Wallet Balance</Label>
-              <Input
-                id="walletBalance"
-                name="walletBalance"
-                type="number"
-                value={profile.walletBalance}
                 onChange={handleChange}
                 required
                 className="bg-gray-700 text-white"

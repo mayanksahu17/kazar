@@ -82,6 +82,9 @@ const ForgotPassword = () => {
                       onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
+                <Button type="button" onClick={sendOtp} disabled={isSendingOtp} className="mb-2 sm:mb-0 sm:mr-2">
+                  {isSendingOtp ? "Sending..." : "Send OTP"}
+                </Button>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="otp">OTP</Label>
                   <Input
@@ -93,11 +96,10 @@ const ForgotPassword = () => {
                   />
                 </div>
               </div>
+              
               <CardFooter className="flex flex-col sm:flex-row justify-between mt-4">
-                <Button type="button" onClick={sendOtp} disabled={isSendingOtp} className="mb-2 sm:mb-0 sm:mr-2">
-                  {isSendingOtp ? "Sending..." : "Send OTP"}
-                </Button>
-                {otpSent && <Button type="submit">Submit</Button>}
+                
+                {otpSent && <Button type="submit" className="mb-2 sm:mb-0 sm:mr-2">Submit</Button>}
               </CardFooter>
             </form>
           </CardContent>

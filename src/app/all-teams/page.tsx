@@ -86,9 +86,9 @@ const Page: React.FC = () => {
   return (
     <div className="mx-auto p-4 bg-gray-900 min-h-screen">
       <h1 className="text-orange-600 font-bold text-3xl mb-8">Your Teams</h1>
-      {loading ? (
-        <div className="text-white text-center mt-20">
-          <p className="text-xl">Loading your teams...</p>
+      {loading ?  (
+        <div className="flex justify-center items-center h-20">
+          <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
         </div>
       ) : (
         <>

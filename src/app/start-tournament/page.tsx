@@ -2,16 +2,20 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 // Define the shape of the tournament data
 interface Tournament {
   _id: string;
   token: string;
   title: string;
-  mode: string; 
+  mode: string;
   map: string;
   winningPrice: number;
   rank1Price: number;
@@ -29,11 +33,12 @@ interface Tournament {
 export default function Tournaments() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+  const [roomData, setRoomData] = useState<Record<string, { Roomid: string; Roompass: string }>>({});
   const [userRegisteredTournaments, setUserRegisteredTournaments] = useState<Set<string>>(new Set());
   const router = useRouter();
 
   useEffect(() => {
-    // Function to fetch tournament data
     const fetchTournaments = async () => {
       const token = localStorage.getItem("token");
 
@@ -44,10 +49,9 @@ export default function Tournaments() {
       }
 
       try {
-        const response = await axios.post("/api/tournament/registered-tournament", { token });
+        const response = await axios.post("/api/tournament/launched-tournament", { token });
         if (response.data && response.data.data) {
           setTournaments(response.data.data);
-          // Assuming response.data.data contains an array of tournament IDs user has registered for
           setUserRegisteredTournaments(new Set(response.data.userRegisteredTournamentIds || []));
         } else {
           toast.warning("No tournaments found or data is malformed");
@@ -63,7 +67,31 @@ export default function Tournaments() {
     fetchTournaments();
   }, [router]);
 
-  // Function to get the time remaining until the tournament starts
+  const handleUpload = async (RoomId: string, Password: string, tournamentId: string, tournamentName: string) => {
+    if (!RoomId || !Password) {
+      toast.warning("Room ID and Password cannot be empty");
+      return;
+    }
+
+    setUploading((prev) => ({ ...prev, [tournamentId]: true }));
+
+    try {
+      const response = await axios.put("/api/tournament/launched-tournament", { RoomId, Password, tournamentName });
+      if (response.data) {
+        toast.success(`Tournament ${tournamentName} Launched successfully`);
+        setRoomData((prevData) => ({
+          ...prevData,
+          [tournamentId]: { Roomid: "", Roompass: "" },
+        }));
+      }
+    } catch (error) {
+      console.error("Error uploading tournament details:", error);
+      toast.error("Failed to upload tournament details");
+    } finally {
+      setUploading((prev) => ({ ...prev, [tournamentId]: false }));
+    }
+  };
+
   const getTimeRemaining = (launchDate: string) => {
     const now = new Date();
     const launch = new Date(launchDate);
@@ -74,22 +102,32 @@ export default function Tournaments() {
     return `${days}d ${hours}h`;
   };
 
-  // Function to check if registration is open
   const isRegistrationOpen = (launchDate: string) => {
     const now = new Date();
     const launch = new Date(launchDate);
     return launch >= now;
   };
 
+  const handleInputChange = (tournamentId: string, field: "Roomid" | "Roompass", value: string) => {
+    setRoomData((prevData) => ({
+      ...prevData,
+      [tournamentId]: {
+        ...prevData[tournamentId],
+        [field]: value,
+      },
+    }));
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-muted/40 bg-gray-900">
+      <ToastContainer />
       <main className="flex-1 p-4 sm:p-6 bg-gray-900">
-        {loading ?(
-        <div className="flex justify-center items-center h-20">
-          <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
-        </div>
-      ) : tournaments.length === 0 ? (
-          <div className='ml-10 font-bold p-10 '>No tournaments Registered YET!</div>
+        {loading ? (
+          <div className="flex justify-center items-center h-20">
+            <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
+          </div>
+        ) : tournaments.length === 0 ? (
+          <div className="ml-10 font-bold p-10">No tournaments Registered YET!</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {tournaments.map((tournament) => (
@@ -128,7 +166,7 @@ export default function Tournaments() {
                       </div>
                       <div>
                         <div className="text-sm text-gray-200">Price Pool</div>
-                        <div>{tournament.winningPrice}</div>
+                        <div>₹{tournament.winningPrice}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -138,7 +176,7 @@ export default function Tournaments() {
                       </div>
                       <div>
                         <div className="text-sm text-gray-200">#1 Winning Price</div>
-                        <div>{tournament.rank1Price}</div>
+                        <div>₹{tournament.rank1Price}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -148,7 +186,7 @@ export default function Tournaments() {
                       </div>
                       <div>
                         <div className="text-sm text-gray-200">#2 Winning Price</div>
-                        <div>{tournament.rank2Price}</div>
+                        <div>₹{tournament.rank2Price}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -159,21 +197,46 @@ export default function Tournaments() {
                     </div>
 
                     {isRegistrationOpen(tournament.launchDate) ? (
-                      <button
-                        className={`mt-4 w-full py-2 ${
-                          userRegisteredTournaments.has(tournament._id)
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-gray-400 cursor-not-allowed"
-                        } text-white rounded-lg transition-colors`}
-                        disabled={userRegisteredTournaments.has(tournament._id)}
-                      >
-                        {userRegisteredTournaments.has(tournament.title)
-                          ? "Registered"
-                          : "Registered"}
-                      </button>
+                      <>
+                        <div>
+                          <Label>Enter Room Id</Label>
+                          <Input
+                            value={roomData[tournament._id]?.Roomid || ""}
+                            onChange={(e) => handleInputChange(tournament._id, "Roomid", e.target.value)}
+                            placeholder="Room Id"
+                            disabled={uploading[tournament._id]}
+                          />
+                        </div>
+                        <div>
+                          <Label>Enter Room Password</Label>
+                          <Input
+                            value={roomData[tournament._id]?.Roompass || ""}
+                            onChange={(e) => handleInputChange(tournament._id, "Roompass", e.target.value)}
+                            placeholder="Room Password"
+                            disabled={uploading[tournament._id]}
+                          />
+                        </div>
+                        <Button
+                          onClick={() =>
+                            handleUpload(roomData[tournament._id]?.Roomid, roomData[tournament._id]?.Roompass, tournament._id, tournament.title)
+                          }
+                          className="mt-4 w-full py-2 bg-yellow-600 text-white rounded-lg"
+                          disabled={uploading[tournament._id]}
+                        >
+                          {uploading[tournament._id] ? (
+                            <div className="flex justify-center items-center">
+                              <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+                              Uploading...
+                            </div>
+                          ) : (
+                            "Upload"
+                          )}
+                        </Button>
+                      </>
                     ) : (
                       <button
                         className="mt-4 w-full py-2 bg-gray-400 text-white rounded-lg"
+                        disabled
                       >
                         Ended
                       </button>
