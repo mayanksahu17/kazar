@@ -92,12 +92,14 @@ export default function Tournaments() {
     setShowModal(true);
   };
 
- 
+ useEffect(()=>{
+  localStorage.setItem("team",selectedTeam)
+  const title = selectedTournament?.title || ""
+  localStorage.setItem("tName",title)
+ },[selectedTeam,selectedTournament])
 
 
   const handleTeamSelect = async() => {
-   
-    
     if (selectedTournament) {
       if (selectedTournament.mode === "solo") {
         // If solo mode, proceed directly to payment without selecting a team
@@ -110,10 +112,6 @@ export default function Tournaments() {
           router.push("/create-team");
         } else if (selectedTeam) {
           // If squad mode and user has teams, proceed with the selected team
-          localStorage.setItem("team",selectedTeam)
-          console.log(selectedTournament.title);
-          
-          localStorage.setItem("tName",selectedTournament.title)
            router.push(`/payment/${selectedTournament.entryPrice}`);
         } else {
           toast.error("Please select a team");

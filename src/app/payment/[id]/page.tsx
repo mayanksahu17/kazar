@@ -105,6 +105,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
         toast.error("Payment failed. Please try again.");
       });
     } catch (error) {
+      clearLocalStorage()
       handlePaymentError(error, "An unexpected error occurred.");
     } finally {
       setIsProcessing(false);
@@ -113,6 +114,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
 
   const handlePaymentError = (error: unknown, message: string) => {
     console.error(error);
+    clearLocalStorage()
     toast.error(message);
     setIsProcessing(false);
   };
