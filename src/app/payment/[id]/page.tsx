@@ -26,6 +26,9 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [loading,setLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState<boolean>(false);
+  const [Email,setEmail] = useState("")
+  const [userName,setUserName] = useState("")
+  const [mobileNnumber,setMobileNumber] = useState("")
   const router = useRouter();
 
   useEffect(() => {
@@ -36,6 +39,9 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
       if (storedTournamentName) setTournamentName(storedTournamentName);
       setAmount(parseFloat(params.id));
     }
+    setEmail(localStorage.getItem("email") as string)
+    setMobileNumber(localStorage.getItem("mobileNumber") as string)
+    setUserName(localStorage.getItem("userName") as string)
   }, [params.id]);
 
   const makePayment = async () => {
@@ -89,9 +95,9 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
           }
         },
         prefill: {
-          name: "Mayank Sahu",
-          email: "mayanksahu0024@gmail.com",
-          contact: "6263420394",
+          name: Email,
+          email: userName,
+          contact: mobileNnumber,
         },
         theme: {
           color: "#3399cc",

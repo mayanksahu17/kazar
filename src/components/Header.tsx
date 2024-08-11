@@ -20,7 +20,13 @@ export default function Header() {
 
   const getUser = async(token : string)=>{
     const response = await axios.post('/api/teams/get-user',{token})
-    // console.log(response.data.data[0].userName[0]);
+    
+    // console.log(response.data.data[0].mobileNumber);
+    // console.log(response.data.data[0].userName);
+    // console.log(response.data.data[0].email);
+    localStorage.setItem("userName" ,response.data.data[0].userName )
+    localStorage.setItem("email" ,response.data.data[0].email )
+    localStorage.setItem("mobileNumber" ,response.data.data[0].mobileNumber )
     
     setUserFirstLetter(response.data.data[0].userName[0])
   }
