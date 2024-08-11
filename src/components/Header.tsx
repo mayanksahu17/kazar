@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { GiHamburgerMenu } from "react-icons/gi";
 import axios from "axios";
+import scrims from "../../public/scrims.jpg"
 
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -44,8 +45,11 @@ export default function Header() {
     <header className="bg-black text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
-          <MountainIcon className="h-6 w-6" />
-          <span className="sr-only">Acme Inc</span>
+          {/* <MountainIcon className="h-6 w-6" /> */}
+          <div>
+            <img src="https://utfs.io/f/b20ac6fe-f3d3-4df6-998a-2084302d59e6-apa690.png" alt="" width={100} height={100}/>
+          </div>
+          <span className="sr-only text-orange-600">Acme Inc</span>
         </Link>
         <button 
           className="md:hidden text-orange-600"

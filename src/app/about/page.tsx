@@ -38,11 +38,11 @@ const About: NextPage = () => {
             </p>
           </section>
           <div className="text-center">
-            <Link href="/sign-up" passHref>
+            {/* <Link href="/sign-up" passHref>
               <button className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600">
                 Sign Up Now
               </button>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

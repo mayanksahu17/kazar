@@ -122,6 +122,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Contact
 If you have any questions, suggestions, or feedback, feel free to reach out:
 
-Email: support@scrimscrown.com
+Email: scrimsscrown@gmail.com
 Discord: Join our community server
 Twitter: @ScrimsCrown
