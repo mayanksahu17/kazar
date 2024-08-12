@@ -229,6 +229,22 @@ export default function Tournaments() {
                               Uploading...
                             </div>
                           ) : (
+                            "Launch Winning Team"
+                          )}
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleUpload(roomData[tournament._id]?.Roomid, roomData[tournament._id]?.Roompass, tournament._id, tournament.title)
+                          }
+                          className="mt-4 w-full py-2 bg-yellow-600 text-white rounded-lg"
+                          disabled={uploading[tournament._id]}
+                        >
+                          {uploading[tournament._id] ? (
+                            <div className="flex justify-center items-center">
+                              <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+                              Uploading...
+                            </div>
+                          ) : (
                             "Upload"
                           )}
                         </Button>
@@ -245,6 +261,7 @@ export default function Tournaments() {
                 </CardContent>
               </Card>
             ))}
+            
           </div>
         )}
       </main>

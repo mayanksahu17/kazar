@@ -17,6 +17,13 @@ const CreateTeam = () => {
     const [leader, setLeader] = useState('');
     const router = useRouter();
 
+    useEffect(()=>{
+        const token = localStorage.getItem("token")
+        if (!token) {
+            router.push("/sign-in")
+        }
+    },[])
+
     const fetchUsernames = async (query: string) => {
         try {
             const response = await axios.get(`/api/suggest-username/get-all-username?query=${query}`);

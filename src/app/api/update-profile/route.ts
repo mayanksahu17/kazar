@@ -3,6 +3,7 @@ import dbConnect from "@/lib/dbConnect";
 import { User } from "@/model/User";
 import validator from "validator";
 import { jwtVerify } from "jose";
+import { UpdateIcon } from "@radix-ui/react-icons";
 
 export async function POST(req:NextRequest) {
 try {
@@ -24,7 +25,7 @@ try {
             email,
             mobileNumber,
             bgmiId,
-            upi
+            upi 
         })
     
         return NextResponse.json({

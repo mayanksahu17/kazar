@@ -36,6 +36,18 @@ const About: NextPage = () => {
             <p className="mt-2 text-gray-300">
               Ready to show off your skills and compete with the best? Join our community today and take your BGMI experience to the next level. Sign up, join a tournament, and let the games begin!
             </p>
+            <div className="mt-4 flex justify-center space-x-4">
+              <Link href="https://www.instagram.com/scrim.scrown/" passHref>
+                <span className="text-orange-500 hover:text-orange-600 cursor-pointer">
+                  Follow us on Instagram
+                </span>
+              </Link>
+              <Link href="https://x.com/scrimscrow" passHref>
+                <span className="text-orange-500 hover:text-orange-600 cursor-pointer">
+                  Follow us on Twitter
+                </span>
+              </Link>
+            </div>
           </section>
           <div className="text-center">
             {/* <Link href="/sign-up" passHref>

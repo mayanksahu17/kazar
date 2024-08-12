@@ -49,13 +49,13 @@ export default function Header() {
 
   return (
     <header className="bg-black text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
-      <div className="flex items-center gap-4">
-        <Link href="/" className="flex items-center gap-2" prefetch={false}>
+      <div className="flex items-center ">
+        <Link href="/" className="flex items-center " prefetch={false}>
           {/* <MountainIcon className="h-6 w-6" /> */}
           <div>
-            <img src="https://utfs.io/f/b20ac6fe-f3d3-4df6-998a-2084302d59e6-apa690.png" alt="" width={100} height={100}/>
+            <img src="https://utfs.io/f/b20ac6fe-f3d3-4df6-998a-2084302d59e6-apa690.png" alt="" width={70} height={70}/>
+          {/* <span className="sr-only text-orange-600">Scrims Crown</span> */}
           </div>
-          <span className="sr-only text-orange-600">Acme Inc</span>
         </Link>
         <button 
           className="md:hidden text-orange-600"

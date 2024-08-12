@@ -29,6 +29,9 @@ const Page: React.FC = () => {
       try {
         setLoading(true); // Start loading
         const token = localStorage.getItem("token");
+        if (!token) {
+          router.push("/sign-in")
+        }
 
         const response = await axios.post("/api/teams/get-all-teams", { token });
         if (response.data.success) {

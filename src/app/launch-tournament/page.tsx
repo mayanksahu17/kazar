@@ -6,9 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
-
 import { useRouter } from 'next/navigation';
 import { UploadButton } from '@/utils/uploadthings';
+
 interface FormData {
   token: string;
   title: string;
@@ -34,8 +34,8 @@ const TournamentModel = () => {
   const [formData, setFormData] = useState<FormData>({
     token: "",
     title: '',    
-    mode: '',
-    map: '',
+    mode: 'none',
+    map: 'none',
     winningPrice: 0,
     rank1Price: 0,
     rank2Price: 0,
@@ -48,20 +48,22 @@ const TournamentModel = () => {
     thumbnail: ''
   });
 
+  const [errors, setErrors] = useState({
+    mode: '',
+    map: '',
+    launchDate: '',
+  });
+
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
     setFormData((prev) => ({ ...prev, token }));
   }, []);
 
-  const uploadThumbnail = async (url : string) => {
+  const uploadThumbnail = async (url: string) => {
     try {
-     
-      setImageUrl(url)
-     
-      return
+      setImageUrl(url);
     } catch (error) {
       toast.error('Failed to upload image.');
-      return null;
     }
   };
 
@@ -70,34 +72,70 @@ const TournamentModel = () => {
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    if (e.target.type === 'file' && e.target instanceof HTMLInputElement) {
-      if (e.target.files && e.target.files[0]) {
-        setImage(e.target.files[0]);
-      }
-    } else {
-      const { id, value } = e.target;
-      setFormData((prev) => ({
-        ...prev,
-        [id]: id === 'winningPrice' || id === 'rank1Price' || id === 'rank2Price' || id === 'rank3Price' || id === 'requiredTeamSize' || id === 'entryPrice'
-          ? parseFloat(value)
-          : value
-      }));
+    const { id, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [id]: id === 'winningPrice' || id === 'rank1Price' || id === 'rank2Price' || id === 'rank3Price' || id === 'requiredTeamSize' || id === 'entryPrice'
+        ? parseFloat(value)
+        : value
+    }));
+
+    // Reset the corresponding error message on change
+    setErrors((prev) => ({
+      ...prev,
+      [id]: '',
+    }));
+  };
+
+  const validateForm = () => {
+    const currentErrors = {
+      mode: '',
+      map: '',
+      launchDate: '',
+    };
+    let isValid = true;
+
+    // Date validation
+    const currentDate = new Date();
+    const selectedDate = new Date(formData.launchDate);
+    if (!formData.launchDate || selectedDate < currentDate) {
+      currentErrors.launchDate = 'Please enter a valid future date.';
+      isValid = false;
     }
+
+    // Mode validation
+    if (formData.mode === 'none') {
+      currentErrors.mode = 'Please select a mode.';
+      isValid = false;
+    }
+
+    // Map validation
+    if (formData.map === 'none') {
+      currentErrors.map = 'Please select a map.';
+      isValid = false;
+    }
+
+    setErrors(currentErrors);
+    return isValid;
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    if (!validateForm()) {
+      setLoading(false);
+      return;
+    }
+
     try {
-   
       if (imageUrl) {
         const updatedFormData = {
           ...formData,
           thumbnail: imageUrl,
           time: `${formData.launchDate}T${formData.time}:00Z`
         };
-        console.log(JSON.stringify(updatedFormData));
         
         const response = await axios.post('/api/tournament/createTournament', updatedFormData);
 
@@ -115,7 +153,7 @@ const TournamentModel = () => {
     }
   };
 
-  const renderInputField = (id: keyof FormData, type: string, placeholder: string, value: string | number) => (
+  const renderInputField = (id: keyof FormData, type: string, placeholder: string, value: string | number, error?: string) => (
     <div>
       <Label htmlFor={id}>{placeholder}</Label>
       <Input
@@ -127,10 +165,11 @@ const TournamentModel = () => {
         required
         className="bg-gray-700 text-white"
       />
+      {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   );
 
-  const renderSelectField = (id: keyof FormData, options: { value: string, label: string }[]) => (
+  const renderSelectField = (id: keyof FormData, options: { value: string, label: string }[], error?: string) => (
     <div>
       <Label htmlFor={id}>{id.charAt(0).toUpperCase() + id.slice(1)}</Label>
       <select
@@ -143,6 +182,7 @@ const TournamentModel = () => {
           <option key={option.value} value={option.value}>{option.label}</option>
         ))}
       </select>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   );
 
@@ -158,17 +198,19 @@ const TournamentModel = () => {
           <form className="space-y-4" onSubmit={handleSubmit}>
             {renderInputField('title', 'text', 'Title', formData.title)}
             {renderSelectField('mode', [
+              { value: 'none', label: 'none' },
               { value: 'solo', label: 'Solo' },
               { value: 'squad', label: 'Squad' },
               { value: 'duo', label: 'Duo' }
-            ])}
+            ], errors.mode)}
             {renderSelectField('map', [
+              { value: 'none', label: 'none' },
               { value: 'miramar', label: 'Miramar' },
               { value: 'shanok', label: 'Shanok' },
               { value: 'vikendi', label: 'Vikendi' },
               { value: 'erangle', label: 'Erangle' },
               { value: 'livik', label: 'Livik' }
-            ])}
+            ], errors.map)}
             {renderInputField('winningPrice', 'number', 'Pool Price', formData.winningPrice)}
             {renderInputField('rank1Price', 'number', '#1 Rank Price', formData.rank1Price)}
             {renderInputField('rank2Price', 'number', '#2 Rank Price', formData.rank2Price)}
@@ -184,7 +226,7 @@ const TournamentModel = () => {
                 className="w-full px-4 py-2 mb-2 border rounded-lg text-white bg-gray-800"
               />
             </div>
-            {renderInputField('launchDate', 'date', 'Launch Date', formData.launchDate)}
+            {renderInputField('launchDate', 'date', 'Launch Date', formData.launchDate, errors.launchDate)}
             {renderInputField('time', 'time', 'Launch Time', formData.time)}
             {renderInputField('requiredTeamSize', 'number', 'Required number of Teams', formData.requiredTeamSize)}
             {renderInputField('entryPrice', 'number', 'Entry Price per Team', formData.entryPrice)}
@@ -193,29 +235,20 @@ const TournamentModel = () => {
               <UploadButton
                endpoint='imageUploader'
                onClientUploadComplete={async(res) => {
-                // Do something with the response
-                await uploadThumbnail(res[0].url)
+                await uploadThumbnail(res[0].url);
                 alert("Upload Completed");
               }}
               onUploadError={(error: Error) => {
-                // Do something with the error.
                 alert(`ERROR! ${error.message}`);
               }}
                />
-              {/* <Input
-                id="thumbnail"
-                type="file"
-                onChange={handleChange}
-                required
-                className="bg-gray-700 text-white"
-              /> */}
             </div>
             <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={loading}>
-              {loading ?  (
-        <div className="flex justify-center items-center h-20">
-          <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
-        </div>
-      )  : 'Create Tournament'}
+              {loading ? (
+                <div className="flex justify-center items-center h-20">
+                  <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
+                </div>
+              ) : 'Create Tournament'}
             </Button>
             <Button type="button" onClick={handleCancel} className="w-full bg-gray-600 hover:bg-gray-700">
               Cancel

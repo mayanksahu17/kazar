@@ -16,7 +16,7 @@ export default function ProfilePage() {
     email: "",
     mobileNumber: "",
     bgmiId: "",
-    UPI: "",
+    upi: "",
   });
 
   const router = useRouter();
@@ -124,7 +124,7 @@ export default function ProfilePage() {
               <Input
                 id="UPI"
                 name="UPI"
-                value={profile.UPI}
+                value={profile.upi}
                 onChange={handleChange}
                 className="bg-gray-700 text-white"
               />
