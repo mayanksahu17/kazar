@@ -55,7 +55,6 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
       if (!token) throw new Error("User is not authenticated");
 
       const payload = {
-        amount,
         teamName,
         token,
         tournamentName,
@@ -66,20 +65,30 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
 
       const options = {
         key,
-        name: "Mayank Sahu",
+        name: "Scrims Crown",
         currency: order.currency,
         amount: order.amount,
         order_id: order.id,
         description: "Tournament Payment",
+        image : "https://utfs.io/f/b20ac6fe-f3d3-4df6-998a-2084302d59e6-apa690.png",
         handler: async (response: any) => {
           try {
             setLoading(true)
+
+            const res1 = await axios.put("/api/tournament/register-tournament", {
+              ...payload,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            if (res1.status === 200) {
             const res = await axios.post("/api/payment/confirm-payment", {
               ...payload,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpayOrderId: response.razorpay_order_id,
               razorpaySignature: response.razorpay_signature,
             });
+           
 
             if (res.status === 200) {
               toast.success("You are registered for the tournament!");
@@ -88,8 +97,9 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
               setLoading(false)
               router.push("/");
             } else {
-              toast.error("Payment verification failed.");
-            }
+              toast.error("Payment verification failed. go to contact page");
+
+            }}
           } catch (error) {
             handlePaymentError(error, "Payment verification failed.");
           }

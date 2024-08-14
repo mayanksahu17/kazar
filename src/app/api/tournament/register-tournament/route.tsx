@@ -22,8 +22,8 @@ export async function POST(req: NextRequest) {
     await dbConnect();
 
     try {
-        const { amount, teamName, token, tournamentName } = await req.json();
-
+        const {  token, tournamentName } = await req.json();
+        let amount = 0;
         // Validate the presence of the token
         if (!token) {
             return NextResponse.json({ message: "Unauthorized" }, { status: UNAUTHORIZED });
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Validate input data
-        if (!tournamentName || typeof amount !== 'number' || amount <= 0) {
+        if (!tournamentName || typeof amount !== 'number' ) {
             return NextResponse.json({ message: 'All fields are required and amount must be a positive number' }, { status: BAD_REQUEST });
         }
 
@@ -56,6 +56,82 @@ export async function POST(req: NextRequest) {
         if (!tournament) {
             return NextResponse.json({ message: "Tournament not found" }, { status: BAD_REQUEST });
         }
+        amount = tournament.entryPrice;
+
+        // Check if the user is already registered for the tournament
+        if (user.registeredTournaments?.includes(tournament.title)) {
+            return NextResponse.json({ message: "You are already registered for this tournament" }, { status: BAD_REQUEST });
+        }
+
+        // Initialize Razorpay order
+        const options = {
+            amount: (amount * 100).toString(), // Razorpay expects amount in paise
+            currency: "INR",
+            receipt: shortid.generate(),
+            payment_capture: 1,
+        };
+
+        const order = await razorpay.orders.create(options);
+
+        // Update user with the registered tournament
+
+        return NextResponse.json({
+            message: 'Payment successful',
+            order,
+            user
+        }, { status: SUCCESS });
+
+    } catch (err: any) {
+        console.error('Server error:', err);
+        return NextResponse.json({ error: 'Internal Server Error', details: err.message }, { status: SERVER_ERROR });
+    }
+}
+
+
+
+
+
+
+
+export async function PUT(req: NextRequest) {
+    await dbConnect();
+
+    try {
+        const {  teamName, token, tournamentName } = await req.json();
+        let amount = 0;
+        // Validate the presence of the token
+        if (!token) {
+            return NextResponse.json({ message: "Unauthorized" }, { status: UNAUTHORIZED });
+        }
+
+        // Verify JWT token
+        let payload;
+        try {
+            const verified = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET!));
+            payload = verified.payload;
+        } catch (err) {
+            return NextResponse.json({ message: "Unauthorized - Invalid Token" }, { status: UNAUTHORIZED });
+        }
+
+        const userId = payload.id as string;
+
+        // Find the user by ID
+        const user = await User.findById(userId).lean();
+        if (!user) {
+            return NextResponse.json({ message: "Unauthorized - User not found" }, { status: UNAUTHORIZED });
+        }
+
+        // Validate input data
+        if (!tournamentName || typeof amount !== 'number' ) {
+            return NextResponse.json({ message: 'All fields are required and amount must be a positive number' }, { status: BAD_REQUEST });
+        }
+
+        // Find the tournament by name
+        const tournament = await Tournaments.findOne({ title: tournamentName }).lean();
+        if (!tournament) {
+            return NextResponse.json({ message: "Tournament not found" }, { status: BAD_REQUEST });
+        }
+        amount = tournament.entryPrice;
 
         // Check if the user is already registered for the tournament
         if (user.registeredTournaments?.includes(tournament.title)) {
@@ -96,22 +172,15 @@ export async function POST(req: NextRequest) {
             registeredSoloTeams: tournament.registeredSoloTeams,
         });
 
-        // Initialize Razorpay order
-        const options = {
-            amount: (amount * 100).toString(), // Razorpay expects amount in paise
-            currency: "INR",
-            receipt: shortid.generate(),
-            payment_capture: 1,
-        };
-
-        const order = await razorpay.orders.create(options);
+        
+       
+       
 
         // Update user with the registered tournament
         await User.findByIdAndUpdate(userId, { $push: { registeredTournaments: tournament.title } });
 
         return NextResponse.json({
             message: 'Registration successful',
-            order,
             user
         }, { status: SUCCESS });
 
@@ -120,3 +189,5 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Internal Server Error', details: err.message }, { status: SERVER_ERROR });
     }
 }
+
+

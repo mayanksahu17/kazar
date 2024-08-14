@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
         if (teamName === "") {
             teamName = user.userName
         }
+       
     
         // Send confirmation email to the user
         const transporter = nodemailer.createTransport({
