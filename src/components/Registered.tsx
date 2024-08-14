@@ -39,7 +39,8 @@ export default function Tournaments() {
 
       if (!token) {
         toast.error("You must be logged in to view tournaments");
-        router.push("/sign-in");
+        // router.push("/sign-in");
+        setLoading(false)
         return;
       }
 

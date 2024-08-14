@@ -48,26 +48,6 @@ const VerificationEmail: React.FC<{ username: string; otp: string }> = ({ userna
         </Text>
       </Row>
       <Row>
-        <Button
-          href={`#`}
-          style={{
-            display: 'inline-block',
-            padding: '10px 20px',
-            fontSize: '16px',
-            color: '#ffffff',
-            backgroundColor: '#007bff',
-            borderRadius: '5px',
-            textDecoration: 'none',
-            cursor: 'pointer',
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            // Note: This onClick event won't work in most email clients.
-            navigator.clipboard.writeText(otp);
-          }}
-        >
-          Copy OTP
-        </Button>
         <Text>
           (Please copy the OTP manually if the button does not work in your email client)
         </Text>

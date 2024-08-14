@@ -15,7 +15,8 @@ try {
             email,
             mobileNumber,
             bgmiId,
-            upi
+            upi,
+            bgmiUsername
         } = await req.json()
 
         const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
@@ -25,7 +26,8 @@ try {
             email,
             mobileNumber,
             bgmiId,
-            upi 
+            upi,
+            bgmiUsername
         })
     
         return NextResponse.json({

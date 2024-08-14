@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 import { UploadButton } from '@/utils/uploadthings';
 import Link from 'next/link';
 
@@ -53,10 +54,16 @@ const TournamentModel = () => {
     mode: '',
     map: '',
     launchDate: '',
+    checkbox: '',
   });
+
+  const [isChecked, setIsChecked] = useState<boolean>(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
+    if (!token || token === "") {
+      router.push("/sign-in")
+    }
     setFormData((prev) => ({ ...prev, token }));
   }, []);
 
@@ -89,11 +96,20 @@ const TournamentModel = () => {
     }));
   };
 
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(e.target.checked);
+    setErrors((prev) => ({
+      ...prev,
+      checkbox: '',
+    }));
+  };
+
   const validateForm = () => {
     const currentErrors = {
       mode: '',
       map: '',
       launchDate: '',
+      checkbox: '',
     };
     let isValid = true;
 
@@ -117,6 +133,12 @@ const TournamentModel = () => {
       isValid = false;
     }
 
+    // Checkbox validation
+    if (!isChecked) {
+      currentErrors.checkbox = 'You must agree with the Cancellation and Refund Policy.';
+      isValid = false;
+    }
+
     setErrors(currentErrors);
     return isValid;
   };
@@ -137,14 +159,19 @@ const TournamentModel = () => {
           thumbnail: imageUrl,
           time: `${formData.launchDate}T${formData.time}:00Z`
         };
-        
-        const response = await axios.post('/api/tournament/createTournament', updatedFormData);
 
-        if (response.status === 201) {
-          toast.success('Tournament created successfully!');
-          router.push('/');
-        } else {
-          toast.error('Failed to create tournament.');
+        if ((updatedFormData.rank1Price +updatedFormData.rank2Price + updatedFormData.rank3Price) !==  updatedFormData.winningPrice  ) {
+          toast.error('An the pool amount is not valid for all rank.');
+          
+        }else{
+          const response = await axios.post('/api/tournament/createTournament', updatedFormData);
+
+          if (response.status === 201) {
+            toast.success('Tournament created successfully!');
+            router.push('/');
+          } else {
+            toast.error('Failed to create tournament.');
+          }
         }
       }
     } catch (error) {
@@ -189,6 +216,7 @@ const TournamentModel = () => {
 
   return (
     <>
+    <Header />
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <ToastContainer />
         <div className="mx-auto w-full max-w-md space-y-6 p-8 bg-gray-800 rounded-lg border border-gray-700">
@@ -227,10 +255,6 @@ const TournamentModel = () => {
                 className="w-full px-4 py-2 mb-2 border rounded-lg text-white bg-gray-800"
               />
             </div>
-            {renderInputField('launchDate', 'date', 'Launch Date', formData.launchDate, errors.launchDate)}
-            {renderInputField('time', 'time', 'Launch Time', formData.time)}
-            {renderInputField('requiredTeamSize', 'number', 'Required number of Teams', formData.requiredTeamSize)}
-            {renderInputField('entryPrice', 'number', 'Entry Price per Team', formData.entryPrice)}
             <div>
               <Label htmlFor="thumbnail">Thumbnail</Label>
               <UploadButton
@@ -244,14 +268,23 @@ const TournamentModel = () => {
               }}
                />
             </div>
-            <div className='flex text-blue-500'>
-            <Input type='checkbox' className='h-4 w-4 mt-1 mr-2'/>
-            <Link href = "/legaldocs/cancellation&refund" >
-            I agree with Cancellation and Refund Policy
-            </Link>
-            </div>
+            {renderInputField('launchDate', 'date', 'Launch Date', formData.launchDate, errors.launchDate)}
+            {renderInputField('time', 'time', 'Launch Time', formData.time)}
+            {renderInputField('requiredTeamSize', 'number', 'Required number of Teams', formData.requiredTeamSize)}
+            {renderInputField('entryPrice', 'number', 'Entry Price per Team', formData.entryPrice)}
            
-          
+            <div className='flex text-blue-500'>
+              <Input 
+                type='checkbox' 
+                className='h-4 w-4 mt-1 mr-2' 
+                checked={isChecked} 
+                onChange={handleCheckboxChange} 
+              />
+              <Link href="/legaldocs/cancellation&refund">
+                I agree with the Cancellation and Refund Policy
+              </Link>
+            </div>
+            {errors.checkbox && <p className="text-red-500 text-sm">{errors.checkbox}</p>}
             <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={loading}>
               {loading ? (
                 <div className="flex justify-center items-center h-20">

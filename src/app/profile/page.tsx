@@ -17,6 +17,7 @@ export default function ProfilePage() {
     mobileNumber: "",
     bgmiId: "",
     upi: "",
+    bgmiUsername: "",
   });
 
   const router = useRouter();
@@ -63,6 +64,32 @@ export default function ProfilePage() {
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error updating profile.");
+    }
+  };
+
+  const handleDelete = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("You are not logged in.");
+      return;
+    }
+
+    try {
+      const response = await axios.delete("/api/auth/delete-account", {
+        data: { token },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        toast.success("Account deleted successfully!");
+        localStorage.clear()
+        router.push("/sign-up");  // Redirect to signup or any other page after account deletion
+      } else {
+        toast.error("Failed to delete account.");
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Error deleting account.");
     }
   };
 
@@ -129,13 +156,29 @@ export default function ProfilePage() {
                 className="bg-gray-700 text-white"
               />
             </div>
+            <div>
+              <Label htmlFor="UPI">BGMI Username</Label>
+              <Input
+                id="UPI"
+                name="UPI"
+                value={profile.bgmiUsername}
+                onChange={handleChange}
+                className="bg-gray-700 text-white"
+              />
+            </div>
           </div>
-          <div className="text-center">
-            <Button type="submit" className="bg-orange-500 hover:bg-orange-600">
+
+          <div className="text-center gap-2">
+            <Button type="submit" className="bg-green-900 hover:bg-green-600">
               Update Profile
             </Button>
           </div>
         </form>
+        <div className="text-center gap-2 mt-4">
+          <Button onClick={handleDelete} className="bg-red-900 hover:bg-red-600">
+            Delete account
+          </Button>
+        </div>
       </div>
     </div>
   );

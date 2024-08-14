@@ -19,6 +19,7 @@ export interface user extends Document{
     teams : [];
     registeredTournaments : String;
     isAdmin : Boolean;
+    bgmiUsername : string
 }
 
 
@@ -88,6 +89,10 @@ const UserSchema : Schema<user> = new Schema({
     isAdmin : {
         type : Boolean,
         default : false
+    },
+    bgmiUsername : {
+        type : String,
+        default : null
     }
     
     

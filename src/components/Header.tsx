@@ -48,7 +48,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-black text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
+    <header className="bg-gray-900 text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
       <div className="flex items-center ">
         <Link href="/" className="flex items-center " prefetch={false}>
           {/* <MountainIcon className="h-6 w-6" /> */}
@@ -93,7 +93,7 @@ export default function Header() {
           ) : (
             <>
 
-              <Link href="/launch-tournament" className="text-sm font-medium text-gray-200 hover:text-white">Launch </Link>
+              <Link href="/" className="text-sm font-medium text-gray-200 hover:text-white">Home </Link>
             </>
           )}
         </nav>

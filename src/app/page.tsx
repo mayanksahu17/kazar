@@ -6,8 +6,11 @@ import { useRouter } from "next/navigation";
 import Tournaments from '@/components/Tournament';
 import Registered from "@/components/Registered";
 import TDM from "@/components/TDM";
+import Hero from "@/components/Hero"
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 async function getTournaments() {
   const response = await axios.get("/api/foo");
@@ -30,8 +33,12 @@ export default function Component() {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen bg-black text-orange-500">
+  
+      <div className="flex flex-col min-h-screen bg-gray-900 text-orange-500">
+      <ToastContainer />
         <Header />
+        <Hero />
+        <div className="border"> </div>
         <div className="text-orange-600 flex items-center justify-center font-bold sm:px-6 border-b ">
           <div className={`border p-2 rounded ${selectedTab === 'upcoming' ? 'bg-orange-800 text-white' : ''}`}>
             <Button onClick={() => handleTabClick('upcoming')}>
