@@ -16,11 +16,14 @@ const Footer: React.FC = () => {
           <Link href="/contact" passHref>
             <span className="text-gray-300 hover:text-orange-500 cursor-pointer mb-2 md:mb-0">Contact</span>
           </Link>
-          <Link href="/terms" passHref>
+          <Link href="/legaldocs/terms-of-service" passHref>
             <span className="text-gray-300 hover:text-orange-500 cursor-pointer mb-2 md:mb-0">Terms of Service</span>
           </Link>
-          <Link href="/privacy" passHref>
+          <Link href="/legaldocs/privacy" passHref>
             <span className="text-gray-300 hover:text-orange-500 cursor-pointer">Privacy Policy</span>
+          </Link>
+          <Link href="/legaldocs/cancellation&refund" passHref>
+            <span className="text-gray-300 hover:text-orange-500 cursor-pointer">Cancellation and Refund Policy</span>
           </Link>
         </div>
       </div>

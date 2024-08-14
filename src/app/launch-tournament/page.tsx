@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { UploadButton } from '@/utils/uploadthings';
+import Link from 'next/link';
 
 interface FormData {
   token: string;
@@ -243,6 +244,14 @@ const TournamentModel = () => {
               }}
                />
             </div>
+            <div className='flex text-blue-500'>
+            <Input type='checkbox' className='h-4 w-4 mt-1 mr-2'/>
+            <Link href = "/legaldocs/cancellation&refund" >
+            I agree with Cancellation and Refund Policy
+            </Link>
+            </div>
+           
+          
             <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={loading}>
               {loading ? (
                 <div className="flex justify-center items-center h-20">

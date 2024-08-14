@@ -22,7 +22,7 @@ const CreateTeam = () => {
         if (!token) {
             router.push("/sign-in")
         }
-    },[])
+    })
 
     const fetchUsernames = async (query: string) => {
         try {

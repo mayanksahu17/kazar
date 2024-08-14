@@ -48,7 +48,7 @@ const Page: React.FC = () => {
     }
 
     getTeams();
-  }, []);
+  });
 
   const handleRemoveMember = (teamId: string, memberId: string) => {
     console.log(`Removing member: ${memberId} from team: ${teamId}`);
