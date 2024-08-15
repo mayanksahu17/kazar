@@ -51,10 +51,8 @@ export default function Header() {
     <header className="bg-gray-900 text-orange-600 border-b flex items-center justify-between px-4 py-3 sm:px-6">
       <div className="flex items-center ">
         <Link href="/" className="flex items-center " prefetch={false}>
-          {/* <MountainIcon className="h-6 w-6" /> */}
           <div>
             <img src="https://utfs.io/f/b20ac6fe-f3d3-4df6-998a-2084302d59e6-apa690.png" alt="" width={70} height={70}/>
-          {/* <span className="sr-only text-orange-600">Scrims Crown</span> */}
           </div>
         </Link>
         <button 

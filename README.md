@@ -83,6 +83,8 @@ Before you begin, ensure you have met the following requirements:
 
 # Contributing
 We welcome contributions to Scrims Crown! Whether you’re fixing bugs, adding new features, or improving documentation, your help is highly appreciated.
+you can go through with the architechure of the project 
+https://app.eraser.io/workspace/FGEqg4Paajrgm8hKBVWN
 
 ## How to Contribute
 1.Fork the Repository:

@@ -149,8 +149,8 @@ export default function ProfilePage() {
             <div>
               <Label htmlFor="UPI">UPI ID</Label>
               <Input
-                id="UPI"
-                name="UPI"
+                id="upi"
+                name="upi"
                 value={profile.upi}
                 onChange={handleChange}
                 className="bg-gray-700 text-white"
@@ -159,8 +159,8 @@ export default function ProfilePage() {
             <div>
               <Label htmlFor="UPI">BGMI Username</Label>
               <Input
-                id="UPI"
-                name="UPI"
+                id="bgmiUsername"
+                name="bgmiUsername"
                 value={profile.bgmiUsername}
                 onChange={handleChange}
                 className="bg-gray-700 text-white"

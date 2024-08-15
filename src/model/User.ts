@@ -85,6 +85,7 @@ const UserSchema : Schema<user> = new Schema({
     }],
     registeredTournaments : [{
         type :  String
+        
         }], 
     isAdmin : {
         type : Boolean,
