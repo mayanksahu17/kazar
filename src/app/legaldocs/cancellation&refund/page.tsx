@@ -8,7 +8,7 @@ const CancellationRefundPolicy: React.FC = () => {
 
       <h2 className="text-2xl font-bold mb-4">1. Tournament Organizer Responsibilities</h2>
       <p className="mb-6">
-        <strong>Prize Pool Contribution:</strong> When a tournament organizer ("Organizer") creates a tournament on Scrims Crown, they must provide the prize pool upfront.
+        <strong>Prize Pool Contribution:</strong> When a tournament organizer (&quot;Organizer&quot;) creates a tournament on Scrims Crown, they must provide the prize pool upfront.
       </p>
       <p className="mb-6">
         <strong>Distribution:</strong> Scrims Crown will distribute the prize pool among the winners at the conclusion of the tournament. The remaining amount collected from users will be returned to the Organizer after deducting a 5% platform fee.

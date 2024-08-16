@@ -8,7 +8,7 @@ const TermsOfService: React.FC = () => {
 
       <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
       <p className="mb-6">
-        By accessing or using the Scrims Crown platform (the "Service"), you agree to comply with and be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the Service.
+        By accessing or using the Scrims Crown platform (the &quot;Service&quot;), you agree to comply with and be bound by these Terms of Service (&quot;Terms&quot;). If you do not agree to these Terms, please do not use the Service.
       </p>
 
       <h2 className="text-2xl font-bold mb-4">2. Effective Date</h2>
@@ -78,7 +78,7 @@ const TermsOfService: React.FC = () => {
 
       <h2 className="text-2xl font-bold mb-4">10. Disclaimer of Warranties</h2>
       <p className="mb-6">
-        The Service is provided on an "AS IS" and "AS AVAILABLE" basis. Scrims Crown makes no warranties, express or implied, regarding the operation or availability of the Service, or the information, content, and materials included therein. To the fullest extent permitted by law, Scrims Crown disclaims all warranties, express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement.
+        The Service is provided on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis. Scrims Crown makes no warranties, express or implied, regarding the operation or availability of the Service, or the information, content, and materials included therein. To the fullest extent permitted by law, Scrims Crown disclaims all warranties, express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement.
       </p>
 
       <h2 className="text-2xl font-bold mb-4">11. Governing Law</h2>
@@ -88,7 +88,7 @@ const TermsOfService: React.FC = () => {
 
       <h2 className="text-2xl font-bold mb-4">12. Changes to Terms</h2>
       <p className="mb-6">
-        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.
+        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days&apos; notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.
       </p>
       <p className="mb-6">
         By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, you are no longer authorized to use the Service.
