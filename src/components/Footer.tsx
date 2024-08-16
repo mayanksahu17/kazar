@@ -25,6 +25,9 @@ const Footer: React.FC = () => {
           <Link href="/legaldocs/cancellation&refund" passHref>
             <span className="text-gray-300 hover:text-orange-500 cursor-pointer">Cancellation and Refund Policy</span>
           </Link>
+          <Link href="/legaldocs/shippingandDelivery" passHref>
+            <span className="text-gray-300 hover:text-orange-500 cursor-pointer">Shipping and Delivery Policy</span>
+          </Link>
         </div>
       </div>
       <div className="mt-6 border-t border-gray-700 pt-4 text-center">
