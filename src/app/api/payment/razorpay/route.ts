@@ -17,7 +17,7 @@ const instance = new Razorpay({
 
 
 export async function POST(req : NextRequest) {
-    const { token , Tname ,  } = await  req.json()
+    const { token , Tname  } = await  req.json()
 
  
     

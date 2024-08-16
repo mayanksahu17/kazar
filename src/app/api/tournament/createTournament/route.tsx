@@ -4,9 +4,29 @@ import { User } from "@/model/User";
 import { Types } from "mongoose"; // Import Types from Mongoose
 import { jwtVerify } from "jose";
 import dbConnect from "@/lib/dbConnect";
+import Razorpay from "razorpay";
+import shortid from "shortid";
+import LaunchTournament from '@/emails/LaunchTournament';
+import nodemailer from 'nodemailer';
+import { render } from "@react-email/components";
+
+
+
+const UNAUTHORIZED = 401;
+const SUCCESS = 200;
+const SERVER_ERROR = 500;
+const BAD_REQUEST = 400;
+
+
+const razorpay = new Razorpay({
+    key_id: process.env.RAZOR_PAY_KEY_ID as string,
+    key_secret: process.env.RAZOR_PAY_KEY_SECRET as string,
+  });
+
 
 export async function POST(req: NextRequest) {
   await dbConnect();
+
 
   try {
     const {
@@ -26,6 +46,9 @@ export async function POST(req: NextRequest) {
       thumbnail,
     } = await req.json();
     console.log("image " ,thumbnail);
+
+
+
     
     
     // Token validation
@@ -113,6 +136,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Invalid thumbnail" }, { status: 400 });
     }
 
+
     // Create the tournament
     const newTournament = new Tournaments({
       owner : userName,
@@ -137,6 +161,32 @@ export async function POST(req: NextRequest) {
     userExists.tournaments.push(newTournament._id as Types.ObjectId);
     await userExists.save();
 
+    // Send confirmation email to the user
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      secure: true,
+      auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+      },
+  });
+
+      
+  const emailTemplate = render(
+    <LaunchTournament username = {userExists.userName as string} title= {title}/>
+);
+
+const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: userExists.email,
+    subject: 'Registration Confirmation',
+    html: emailTemplate,
+};
+
+await transporter.sendMail(mailOptions);
+
+
+
     return NextResponse.json(
       { message: "Tournament created successfully", data: newTournament },
       { status: 201 }
@@ -148,4 +198,71 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+
+export async function PUT(req:NextRequest) {
+  const {
+    token,
+    title,
+    winningPrice,
+    rank1Price,
+    rank2Price,
+    rank3Price,
+   
+  } = await req.json();
+
+  const tournament = await Tournaments.find({title})
+  // if (tournament) {
+  //   return NextResponse.json({
+  //     success : false,
+  //     message : "Tournament with same name already exists"
+  //   },{status : 401})
+  // }
+ if( winningPrice !== (rank1Price +  rank2Price + rank3Price)){
+  return NextResponse.json({
+    success : false,
+    message : "Winning price should be equal to the sum of rank prices"
+    },{status : 401})
+ }
+  // Token validation
+  if (!token) {
+    return NextResponse.json(
+      { success: false, message: "You are not logged in" },
+      { status: 403 }
+    );
+  }
+
+  const { payload } = await jwtVerify(
+    token,
+    new TextEncoder().encode(process.env.JWT_SECRET)
+  );
+  const userName = payload.userName;
+  const userId  = payload.id
+
+
+  const user = await User.findById({_id : userId})
+  if (!user) {
+    return NextResponse.json(
+      { success: false, message: "User not found" },
+      { status: 404 }
+      );
+    }
+
+    const options = {
+      amount: (winningPrice * 100).toString(), // Razorpay expects amount in paise
+      currency: "INR",
+      receipt: shortid.generate(),
+      payment_capture: 1,
+  };
+
+  const order = await razorpay.orders.create(options);
+
+  return NextResponse.json({
+    success : true,
+    message: 'Payment successful',
+    order,
+}, { status: SUCCESS });
+
+
 }

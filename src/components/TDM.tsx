@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from './ui/button';
+import { Badge } from "@/components/ui/badge";
 import axios from 'axios';
-import Image from 'next/image';
 import { toast } from 'react-toastify';
-import Modal from "@/components/ui/Model"; // Import the Modal component
+import Modal from "@/components/ui/Model";
 import { useRouter } from 'next/navigation';
-import { Badge } from '@/components/ui/badge'; // Import the Badge component
+import Script from 'next/script';
 
 interface TDM {
   _id: string;
@@ -29,6 +29,10 @@ export default function TdmPage() {
   const [selectedTdmId, setSelectedTdmId] = useState<string>("");
   const router = useRouter();
 
+  
+  const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_g1g3enpX7nMKYG";
+  if (!key) throw new Error("Razorpay key is missing");
+
   useEffect(() => {
     async function fetchTdms() {
       try {
@@ -41,7 +45,6 @@ export default function TdmPage() {
     fetchTdms();
   }, []);
 
-  // Function to fetch team names
   const fetchTeams = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -72,13 +75,49 @@ export default function TdmPage() {
         return;
       }
       
-      const response = await axios.put('/api/tdm/join', { tdmId: selectedTdmId, teamname: selectedTeam });
+      const response = await axios.post('/api/tdm/joinTDM', { tdmId: selectedTdmId, teamname: selectedTeam ,token : localStorage.getItem("token") });
+     
+       
+      if (response.status === 200) {
+        const order = response.data.order;
+        const userDetails = response.data.user
+        const options = {
+          key,
+          name: "Scrims Crown",
+          currency: order.currency,
+          amount: order.amount,
+          order_id: order.id,
+          description: "Tournament Payment",
+          image: "https://utfs.io/f/b20ac6fe-f3d3-4df6-998a-2084302d59e6-apa690.png",
+          handler: async (response: any) => {  
+            const res = await axios.put('/api/tdm/joinTDM', { tdmId: selectedTdmId, teamname: selectedTeam ,token : localStorage.getItem("token") });
+            if(res.status !== 200){
+              toast.success(res.data.message);
+            }
+          },
+          prefill: {
+            name: userDetails.userName,
+            email: userDetails.email,
+            contact: userDetails.mobileNumber,
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+  
+        paymentObject.on("payment.failed", () => {
+          toast.error("Payment failed. Please try again.");
+        });
+      } else {
+        toast.error('Failed to join tdm.');
+      }
       toast.success("Successfully joined the TDM!");
       setShowModal(false);
       setSelectedTeam("");
       setSelectedTdmId("");
 
-      // Refresh the TDM list after successful join
       const updatedTdms = await axios.get('/api/tdm/get-all');
       setTdms(updatedTdms.data.data);
     } catch (error) {
@@ -96,37 +135,33 @@ export default function TdmPage() {
     return `${days}d ${hours}h`;
   };
 
-  const isRegistrationOpen = (launchDate: string) => {
-    const now = new Date();
-    const launch = new Date(launchDate);
-    return launch >= now;
+  const getRegistrationStatus = (tdm: TDM) => {
+    const registeredTeams = [tdm.registeredTeam1, tdm.registeredTeam2].filter(Boolean).length;
+    return `Registered teams ${registeredTeams} of 2`;
   };
 
   return (
     <>
       <div className="bg-gray-900 min-h-screen p-8">
-        <h1 className="text-orange-600 text-3xl mb-8">Available TDMs</h1>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+        <h1 className="text-orange-600 text-3xl mb-8 font-bold"> </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {tdms?.map(tdm => (
             <Card key={tdm._id} className="bg-gray-800 text-white">
               <CardHeader>
                 <CardTitle className="text-orange-600">{tdm.name}</CardTitle>
-                <CardDescription>
-                  <Badge>
-                    {isRegistrationOpen(tdm.launchDate) 
-                      ? `Starts in ${getTimeRemaining(tdm.launchDate)}`
-                      : "Ended"}
-                  </Badge>
-                </CardDescription>
+                <CardDescription>{new Date(tdm.launchDate).toLocaleDateString()}</CardDescription>
+                <Badge>{`Starts in ${getTimeRemaining(tdm.launchDate)}`}</Badge>
               </CardHeader>
               <CardContent>
-                <img src={tdm.thumbnail} alt={tdm.name} className="w-full h-40 object-cover mb-4" />
+                <img src={tdm.thumbnail} alt={tdm.name} className="w-full h-40 object-cover mb-4" width={300} height={160} />
                 <p><span className="text-orange-600">Entry Price:</span> {tdm.entryPrice}</p>
                 <p><span className="text-orange-600">Winning Price:</span> {tdm.winningPrice}</p>
                 <p><span className="text-orange-600">Weapon:</span> {tdm.Weapon}</p>
+                <p>{getRegistrationStatus(tdm)}</p>
               </CardContent>
               <CardFooter>
-                {isRegistrationOpen(tdm.launchDate) && (!tdm.registeredTeam1 || !tdm.registeredTeam2) ? (
+                {!tdm.registeredTeam2 ? (
                   <Button
                     className="text-white bg-orange-600 hover:bg-orange-700"
                     onClick={() => handleJoinClick(tdm._id)}
@@ -134,7 +169,7 @@ export default function TdmPage() {
                     Join TDM
                   </Button>
                 ) : (
-                  <p className="text-orange-600">TDM is full or registration ended</p>
+                  <p className="text-orange-600">TDM is full</p>
                 )}
               </CardFooter>
             </Card>
@@ -149,26 +184,20 @@ export default function TdmPage() {
           <div className="mb-4 px-20">
             Mobile Players only!
           </div>
-          {selectedTdmId && (
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold">Select Your Team</h3>
-              <select
-                className="w-full p-2 bg-gray-700 text-white rounded-lg"
-                value={selectedTeam}
-                onChange={(e) => setSelectedTeam(e.target.value)}
-              >
-                <option value="" disabled>Select your team</option>
-                {teams.map((team) => (
-                  <option key={team} value={team}>
-                    {team}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
           <div className="mb-4">
-            <h3 className="text-lg font-semibold">Entry Price</h3>
-            <p>₹{tdms.find(tdm => tdm._id === selectedTdmId)?.entryPrice}</p>
+            <h3 className="text-lg font-semibold">Select Your Team</h3>
+            <select
+              className="w-full p-2 bg-gray-700 text-white rounded-lg"
+              value={selectedTeam}
+              onChange={(e) => setSelectedTeam(e.target.value)}
+            >
+              <option value="" disabled>Select your team</option>
+              {teams.map((team) => (
+                <option key={team} value={team}>
+                  {team}
+                </option>
+              ))}
+            </select>
           </div>
           <button
             onClick={handleTeamSelect}

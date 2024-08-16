@@ -1,6 +1,6 @@
 # Scrims Crown
 
-![Scrims Crown Banner](https://utfs.io/f/7ce77f8d-7130-45f6-a447-29a2b5f9dc2b-bdwyaz.png) <!-- Replace with your actual image path -->
+![Scrims Crown Banner](https://utfs.io/f/7bbcfc1d-3ec1-4026-ab78-7998c689f56d-xacm0x.png) <!-- Replace with your actual image path -->
 
 Welcome to **Scrims Crown**, the ultimate platform for organizing and participating in PUBG and BGMI tournaments. Our goal is to create a seamless and engaging experience for mobile gamers looking to showcase their skills, compete for glory, and win exciting prizes.
 

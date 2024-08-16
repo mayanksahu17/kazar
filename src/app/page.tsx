@@ -20,7 +20,7 @@ async function getTournaments() {
 export default function Component() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const router = useRouter();
-  const [selectedTab, setSelectedTab] = useState('upcoming'); // Initial tab
+  const [selectedTab, setSelectedTab] = useState('tdm'); // Initial tab
 
   useEffect(() => {
     const token = localStorage.getItem("token");

@@ -121,7 +121,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
         toast.error("Payment failed. Please try again.");
       });
     } catch (error) {
-      clearLocalStorage()
+      
       handlePaymentError(error, "An unexpected error occurred.");
     } finally {
       setIsProcessing(false);
@@ -145,6 +145,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({ params }) => {
       <Suspense fallback={<Loading />}>
         <ToastContainer />
         <div className="flex flex-col items-center min-h-screen bg-gray-900">
+        {/* <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script> */}
           <Script src="https://checkout.razorpay.com/v1/checkout.js" />
           <div className="p-6 bg-gray-800 rounded-lg shadow-md mt-24">
             <h1 className="text-2xl font-bold mb-4 text-white">Payment Page</h1>

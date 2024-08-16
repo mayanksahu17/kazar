@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
+import Header from "@/components/Header";
 // Define the shape of the tournament data
 interface Tournament {
   _id: string;
@@ -119,6 +119,8 @@ export default function Tournaments() {
   };
 
   return (
+    <>
+   <Header />
     <div className="flex flex-col min-h-screen bg-muted/40 bg-gray-900">
       <ToastContainer />
       <main className="flex-1 p-4 sm:p-6 bg-gray-900">
@@ -266,5 +268,6 @@ export default function Tournaments() {
         )}
       </main>
     </div>
+    </>
   );
 }

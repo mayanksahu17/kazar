@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
             <span className="text-gray-300 hover:text-orange-500 cursor-pointer mb-2 md:mb-0">Contact</span>
           </Link>
           <Link href="/legaldocs/terms-of-service" passHref>
-            <span className="text-gray-300 hover:text-orange-500 cursor-pointer mb-2 md:mb-0">Terms of Service</span>
+            <span className="text-gray-300 hover:text-orange-500 cursor-pointer mb-2 md:mb-0">Terms and Conditions </span>
           </Link>
           <Link href="/legaldocs/privacy" passHref>
             <span className="text-gray-300 hover:text-orange-500 cursor-pointer">Privacy Policy</span>

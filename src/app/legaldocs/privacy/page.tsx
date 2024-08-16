@@ -1,212 +1,111 @@
 import React from 'react';
 
-const PrivacyPolicy: React.FC = () => {
+const TermsOfService: React.FC = () => {
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 ">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Privacy Policy</h1>
+    <div className="max-w-3xl mx-auto p-8 bg-white text-gray-900">
+      <h1 className="text-3xl font-bold mb-4">Terms of Service</h1>
+      <p className="text-sm mb-6">Updated: 08.14.2024 V1.0</p>
 
-      <p className="text-sm text-gray-500 mb-4">Updated: 08.14.2024 V1.0</p>
+      <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
+      <p className="mb-6">
+        By accessing or using the Scrims Crown platform (the "Service"), you agree to comply with and be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the Service.
+      </p>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">ABOUT THIS DOCUMENT</h2>
-        <p className="text-gray-600 mb-4">
-          Scrims Crown (“Scrims Crown” or “us,” “our,” and similar expressions) offers esports services. When a user
-          of our services (“you” and similar expressions) registers, applies for, and uses our services, we collect, use, and share your personal data in the manner described in this policy. By personal data, we mean any information about an individual from which that person can be identified, either directly or indirectly.
-        </p>
-        <p className="text-gray-600">
-          This policy applies to your use of:
-          <ul className="list-disc list-inside ml-4 mt-2">
-            <li>Scrims Crown’s website</li>
-            <li>Any of Scrims Crown’s services accessible through the website.</li>
-          </ul>
-        </p>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">2. Effective Date</h2>
+      <p className="mb-6">These Terms are effective as of 08.14.2024 and may be updated periodically.</p>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">CONTENTS</h2>
-        <ul className="list-disc list-inside ml-4 text-gray-600">
-          <li>Data controller</li>
-          <li>Changes</li>
-          <li>The personal data we collect about you</li>
-          <li>How we collect the data</li>
-          <li>How we use the data</li>
-          <li>Disclosure and international transfers</li>
-          <li>Automated decisions</li>
-          <li>Data retention</li>
-          <li>Security</li>
-          <li>Data subject rights</li>
-        </ul>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">3. Eligibility</h2>
+      <p className="mb-6">
+        You must be at least 18 years of age to use the Service. By using the Service, you represent and warrant that you meet this age requirement.
+      </p>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">DATA CONTROLLER</h2>
-        <p className="text-gray-600">
-          Scrims Crown<br />
-          
-          Rambali Nagar Govind colony <br />
-          Indore
-          Madhya Pradesh - 452015
-        </p>
-        <p className="text-gray-600 mt-2">
-          Contact Number: 6263420394<br />
-          Email: scrimsscrown@gmail.com
-        </p>
-        <p className="text-gray-600 mt-4">
-          If you have any questions about this policy, including any requests concerning your rights as a data subject, please contact scrimsscrown@gmail.com.
-        </p>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">4. Account Registration</h2>
+      <p className="mb-6">
+        To access certain features of the Service, you may be required to register for an account. You agree to provide accurate, current, and complete information during the registration process and to update such information as necessary to keep it accurate, current, and complete.
+      </p>
+      <p className="mb-6">
+        You are responsible for safeguarding your account information and for any activities or actions under your account. You agree to notify Scrims Crown immediately of any unauthorized use of your account.
+      </p>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">CHANGES</h2>
-        <p className="text-gray-600">
-          We may update this policy from time to time in response to changing legal, technical, or business developments. When we update this policy, we will strive to inform you in a manner consistent with the significance of the changes we make.
-        </p>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">5. Rules of Conduct</h2>
+      <p className="mb-6">
+        You agree not to use the Service for any unlawful or prohibited purpose. You agree to comply with all applicable local, state, national, and international laws and regulations in connection with your use of the Service.
+      </p>
+      <ul className="list-disc list-inside mb-6">
+        <li>Impersonate any person or entity, or falsely state or otherwise misrepresent your affiliation with a person or entity.</li>
+        <li>Upload, post, email, transmit, or otherwise make available any content that you do not have a right to make available under any law or under contractual or fiduciary relationships.</li>
+        <li>Upload, post, email, transmit, or otherwise make available any content that infringes any patent, trademark, trade secret, copyright, or other proprietary rights of any party.</li>
+        <li>Interfere with or disrupt the Service or servers or networks connected to the Service.</li>
+        <li>Engage in any conduct that restricts or inhibits any other user from using or enjoying the Service.</li>
+      </ul>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">THE PERSONAL DATA WE COLLECT ABOUT YOU</h2>
-        <p className="text-gray-600 mb-4">
-          We may collect, use, store, and transfer the following kinds of personal data about you:
-        </p>
-        <ul className="list-disc list-inside ml-4 text-gray-600">
-          <li>
-            <strong>Contact Data:</strong> Your contact details, such as your name, email address, and phone number.
-          </li>
-          <li>
-            <strong>Device and Technical Data:</strong> Technical information, including your internet protocol (IP) address, browser type and version, time zone settings, browser plug-in types and versions, operating system and platform, device information, the type of mobile device you use, a unique device identifier, and your mobile network information.
-          </li>
-          <li>
-            <strong>Usage Data:</strong> Information about your use of our website and services, including full uniform resource locators (URLs), and information on the manner and time of use of the website, such as date and time, frequency and patterns of use, and other interaction information.
-          </li>
-          <li>
-            <strong>Communications Data:</strong> Your correspondence with our customer support and information on other communications between us, including any notifications we may send to you by email.
-          </li>
-          <li>
-            <strong>Marketing Data:</strong> Information on your preferences regarding marketing carried out by us and/or our partners.
-          </li>
-        </ul>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">6. User Restrictions</h2>
+      <p className="mb-6">
+        The Service is intended for personal, non-commercial use only. Users are prohibited from:
+      </p>
+      <ul className="list-disc list-inside mb-6">
+        <li>Using the Service for any illegal activities.</li>
+        <li>Creating accounts using automated means or under false pretenses.</li>
+        <li>Accessing the Service from regions where use of the Service is prohibited by law.</li>
+        <li>Using the Service to harass, abuse, or harm others.</li>
+      </ul>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">HOW WE COLLECT THE DATA</h2>
-        <p className="text-gray-600 mb-4">
-          We may collect personal data from you in the following ways:
-        </p>
-        <ul className="list-disc list-inside ml-4 text-gray-600">
-          <li><strong>Information provided by you:</strong> You may give us your Contact, Device, Communications, and Marketing Data by submitting it to us through our website or by communicating with us by phone, email, or otherwise.</li>
-          <li><strong>Automated technologies:</strong> We may automatically collect Technical and Usage Data, as well as certain Communications Data, based on your use of our website and services.</li>
-          <li><strong>Third parties or publicly available sources:</strong> We may receive personal data about you from the following third parties:
-            <ul className="list-disc list-inside ml-4 mt-2">
-              <li>Technical Data from analytics providers (cookies) and advertising networks.</li>
-            </ul>
-          </li>
-        </ul>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">7. Intellectual Property</h2>
+      <p className="mb-6">
+        The Service and its original content, features, and functionality are and will remain the exclusive property of Scrims Crown and its licensors. The Service is protected by copyright, trademark, and other laws of both the United States and foreign countries.
+      </p>
+      <p className="mb-6">
+        You agree not to reproduce, duplicate, copy, sell, resell, or exploit any portion of the Service without the express written permission of Scrims Crown.
+      </p>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">HOW WE USE THE DATA</h2>
-        <p className="text-gray-600 mb-4">
-          Below we have set out the purposes for which we intend to process your personal data and the legal bases we are relying on to do that:
-        </p>
+      <h2 className="text-2xl font-bold mb-4">8. Termination</h2>
+      <p className="mb-6">
+        We may terminate or suspend your account and bar access to the Service immediately, without prior notice or liability, if you breach these Terms. Upon termination, your right to use the Service will immediately cease.
+      </p>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-200 bg-white">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Purpose</th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Type of Data</th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Legal Basis</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border px-4 py-2 text-gray-600">Providing our services, customer support</td>
-                <td className="border px-4 py-2 text-gray-600">Contact, Device, Technical, Usage, Communications</td>
-                <td className="border px-4 py-2 text-gray-600">(a) Contract<br/>(b) Consent (where legally required)</td>
-              </tr>
-              <tr>
-                <td className="border px-4 py-2 text-gray-600">Analyzing and improving the use and functionality of our website and services</td>
-                <td className="border px-4 py-2 text-gray-600">Contact, Device, Technical, Usage, Communications</td>
-                <td className="border px-4 py-2 text-gray-600">(a) Contract<br/>(b) Legitimate interests</td>
-              </tr>
-              <tr>
-                <td className="border px-4 py-2 text-gray-600">Optional customization and improvement of user experience</td>
-                <td className="border px-4 py-2 text-gray-600">Contact, Device, Technical, Usage, Communications</td>
-                <td className="border px-4 py-2 text-gray-600">(a) Consent<br/>(b) Contract</td>
-              </tr>
-              <tr>
-                <td className="border px-4 py-2 text-gray-600">Managing our customer relationship, communicating with you and keeping records of our communications</td>
-                <td className="border px-4 py-2 text-gray-600">Contact, Communications, Marketing</td>
-                <td className="border px-4 py-2 text-gray-600">(a) Legitimate interests</td>
-              </tr>
-              <tr>
-                <td className="border px-4 py-2 text-gray-600">Offering and marketing relevant goods and/or services to you</td>
-                <td className="border px-4 py-2 text-gray-600">Contact, Marketing</td>
-                <td className="border px-4 py-2 text-gray-600">(a) Legitimate interests<br/>(b) Consent (where legally required)</td>
-              </tr>
-              <tr>
-                <td className="border px-4 py-2 text-gray-600">Analyzing the user base and use patterns of our services</td>
-                <td className="border px-4 py-2 text-gray-600">Technical, Usage</td>
-                <td className="border px-4 py-2 text-gray-600">(a) Legitimate interests</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">9. Limitation of Liability</h2>
+      <p className="mb-6">
+        In no event shall Scrims Crown, its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from:
+      </p>
+      <ul className="list-disc list-inside mb-6">
+        <li>Your use or inability to use the Service.</li>
+        <li>Any unauthorized access to or use of our servers and/or any personal information stored therein.</li>
+        <li>Any interruption or cessation of transmission to or from the Service.</li>
+        <li>Any bugs, viruses, trojan horses, or the like that may be transmitted to or through our Service by any third party.</li>
+        <li>Any errors or omissions in any content or for any loss or damage incurred as a result of the use of any content posted, emailed, transmitted, or otherwise made available through the Service.</li>
+        <li>The defamatory, offensive, or illegal conduct of any third party.</li>
+      </ul>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">DISCLOSURE AND INTERNATIONAL TRANSFERS</h2>
-        <p className="text-gray-600">
-          Where necessary for the purposes detailed above, your personal data may be disclosed to the following categories of recipients:
-        </p>
-        <ul className="list-disc list-inside ml-4 text-gray-600 mt-4">
-          <li>Our group companies.</li>
-          <li>Our service providers for email communications related to our services.</li>
-          <li>Our service providers for the purposes of legal and other services provided to us.</li>
-          <li>Buyers and potential buyers (and their agents and advisers) in connection with any (proposed) purchase, merger, or acquisition of any part of our business.</li>
-          <li>Competent courts, law enforcement bodies, or other authorities or third parties where we deem that disclosing your personal data is necessary to protect your vital interests or those of any other person, or for compliance with laws or regulations.</li>
-          <li>Any other person – but only with your separate consent.</li>
-        </ul>
-        <p className="text-gray-600 mt-4">
-          Scrims Crown stores your personal data in secure locations and servers. Your personal data may be transferred to countries outside your region only where we have taken appropriate safeguards to ensure that your personal data remains protected in accordance with this policy.
-        </p>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">10. Disclaimer of Warranties</h2>
+      <p className="mb-6">
+        The Service is provided on an "AS IS" and "AS AVAILABLE" basis. Scrims Crown makes no warranties, express or implied, regarding the operation or availability of the Service, or the information, content, and materials included therein. To the fullest extent permitted by law, Scrims Crown disclaims all warranties, express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement.
+      </p>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">AUTOMATED DECISIONS</h2>
-        <p className="text-gray-600">
-          In order to optimize the services we offer, we reserve the right to make automated decisions about our customers, including using machine learning algorithms and profiling.
-        </p>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">11. Governing Law</h2>
+      <p className="mb-6">
+        These Terms shall be governed and construed in accordance with the laws of India, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights. If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect.
+      </p>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">DATA RETENTION</h2>
-        <p className="text-gray-600">
-          We keep your personal data only as long as we have a legitimate business need to retain it for the purposes described above, including for satisfying any legal, accounting, or reporting requirements.
-        </p>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">12. Changes to Terms</h2>
+      <p className="mb-6">
+        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.
+      </p>
+      <p className="mb-6">
+        By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, you are no longer authorized to use the Service.
+      </p>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">SECURITY</h2>
-        <p className="text-gray-600">
-          To protect your personal data, we use appropriate technical and organizational measures designed to provide a level of security appropriate to the risk of processing and to protect your personal data against accidental or unlawful destruction, loss, alteration, and unauthorized disclosure or access.
-        </p>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">DATA SUBJECT RIGHTS</h2>
-        <p className="text-gray-600">
-          You have the right to obtain from us confirmation as to whether or not personal data concerning you is being processed by us, and where that is the case, access to that personal data. You may also have the right to request the erasure, restriction of processing, or objection to the processing of your personal data, as well as the right to receive the data in a structured, commonly used, and machine-readable format.
-        </p>
-        <p className="text-gray-600 mt-4">
-          Please contact us at scrimsscrown@gmail.com for any inquiries related to exercising these rights.
-        </p>
-        <p className="text-gray-600 mt-4">
-          If you consider our processing activities of your personal data to be inconsistent with applicable data protection laws, you may lodge a complaint with the relevant supervisory authority.
-        </p>
-      </section>
+      <h2 className="text-2xl font-bold mb-4">13. Contact Information</h2>
+      <p className="mb-6">
+        If you have any questions about these Terms, please contact us at:
+      </p>
+      <ul className="list-none mb-6">
+        <li><strong>Email</strong>: scrimsscrown@gmail.com</li>
+        <li><strong>Address</strong>:Rambali Nagar Govind colony, Indore
+        Madhya Pradesh - 452015</li>
+        <li><strong>Phone</strong>: +916263420394</li>
+      </ul>
     </div>
   );
 };
 
-export default PrivacyPolicy;
+export default TermsOfService;

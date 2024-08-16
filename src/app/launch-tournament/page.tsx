@@ -10,6 +10,13 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import { UploadButton } from '@/utils/uploadthings';
 import Link from 'next/link';
+import Script from 'next/script';
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 interface FormData {
   token: string;
@@ -30,9 +37,13 @@ interface FormData {
 
 const TournamentModel = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const router = useRouter();
+  const [userDetails, setUserDetails] = useState({
+    email: "",
+    userName: "",
+    mobileNumber: ""
+  });
   const [formData, setFormData] = useState<FormData>({
     token: "",
     title: '',    
@@ -50,6 +61,9 @@ const TournamentModel = () => {
     thumbnail: ''
   });
 
+  const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_g1g3enpX7nMKYG";
+  if (!key) throw new Error("Razorpay key is missing");
+
   const [errors, setErrors] = useState({
     mode: '',
     map: '',
@@ -61,15 +75,22 @@ const TournamentModel = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
-    if (!token || token === "") {
-      router.push("/sign-in")
+    if (!token) {
+      router.push("/sign-in");
+    } else {
+      setFormData((prev) => ({ ...prev, token }));
+      setUserDetails({
+        email: localStorage.getItem("email") || "",
+        userName: localStorage.getItem("userName") || "",
+        mobileNumber: localStorage.getItem("mobileNumber") || ""
+      });
     }
-    setFormData((prev) => ({ ...prev, token }));
-  }, []);
+  }, [router]);
 
   const uploadThumbnail = async (url: string) => {
     try {
       setImageUrl(url);
+      toast.success('Image uploaded successfully!');
     } catch (error) {
       toast.error('Failed to upload image.');
     }
@@ -84,12 +105,11 @@ const TournamentModel = () => {
 
     setFormData((prev) => ({
       ...prev,
-      [id]: id === 'winningPrice' || id === 'rank1Price' || id === 'rank2Price' || id === 'rank3Price' || id === 'requiredTeamSize' || id === 'entryPrice'
+      [id]: ['winningPrice', 'rank1Price', 'rank2Price', 'rank3Price', 'requiredTeamSize', 'entryPrice'].includes(id)
         ? parseFloat(value)
         : value
     }));
 
-    // Reset the corresponding error message on change
     setErrors((prev) => ({
       ...prev,
       [id]: '',
@@ -113,7 +133,6 @@ const TournamentModel = () => {
     };
     let isValid = true;
 
-    // Date validation
     const currentDate = new Date();
     const selectedDate = new Date(formData.launchDate);
     if (!formData.launchDate || selectedDate < currentDate) {
@@ -121,19 +140,16 @@ const TournamentModel = () => {
       isValid = false;
     }
 
-    // Mode validation
     if (formData.mode === 'none') {
       currentErrors.mode = 'Please select a mode.';
       isValid = false;
     }
 
-    // Map validation
     if (formData.map === 'none') {
       currentErrors.map = 'Please select a map.';
       isValid = false;
     }
 
-    // Checkbox validation
     if (!isChecked) {
       currentErrors.checkbox = 'You must agree with the Cancellation and Refund Policy.';
       isValid = false;
@@ -160,15 +176,45 @@ const TournamentModel = () => {
           time: `${formData.launchDate}T${formData.time}:00Z`
         };
 
-        if ((updatedFormData.rank1Price +updatedFormData.rank2Price + updatedFormData.rank3Price) !==  updatedFormData.winningPrice  ) {
-          toast.error('An the pool amount is not valid for all rank.');
+        if ((updatedFormData.rank1Price + updatedFormData.rank2Price + updatedFormData.rank3Price) !== updatedFormData.winningPrice) {
+          toast.error('The pool amount is not valid for all ranks.');
+        } else {
+          const response = await axios.put('/api/tournament/createTournament', updatedFormData);
           
-        }else{
-          const response = await axios.post('/api/tournament/createTournament', updatedFormData);
-
-          if (response.status === 201) {
-            toast.success('Tournament created successfully!');
-            router.push('/');
+          if (response.status === 200) {
+            const order = response.data.order;
+            const options = {
+              key,
+              name: "Scrims Crown",
+              currency: order.currency,
+              amount: order.amount,
+              order_id: order.id,
+              description: "Tournament Payment",
+              image: "https://utfs.io/f/b20ac6fe-f3d3-4df6-998a-2084302d59e6-apa690.png",
+              handler: async (response: any) => {  
+                const res = await axios.post('/api/tournament/createTournament', updatedFormData);
+                if (res.status === 201) {
+                  toast.success('Tournament created successfully!');
+                  router.push('/');
+                } else {
+                  toast.error('Failed to create tournament.');
+                }
+              },
+              prefill: {
+                name: userDetails.userName,
+                email: userDetails.email,
+                contact: userDetails.mobileNumber,
+              },
+              theme: {
+                color: "#3399cc",
+              },
+            };
+            const paymentObject = new window.Razorpay(options);
+            paymentObject.open();
+      
+            paymentObject.on("payment.failed", () => {
+              toast.error("Payment failed. Please try again.");
+            });
           } else {
             toast.error('Failed to create tournament.');
           }
@@ -219,6 +265,7 @@ const TournamentModel = () => {
     <Header />
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <ToastContainer />
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" />
         <div className="mx-auto w-full max-w-md space-y-6 p-8 bg-gray-800 rounded-lg border border-gray-700">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-orange-500">Launch The Tournament</h1>
@@ -280,21 +327,30 @@ const TournamentModel = () => {
                 checked={isChecked} 
                 onChange={handleCheckboxChange} 
               />
-              <Link href="/legaldocs/cancellation&refund">
-                I agree with the Cancellation and Refund Policy
-              </Link>
+               <Label htmlFor="terms" className="ml-2 text-gray-300">
+                I agree to the{' '}
+                <Link href="/refund-cancellation" className="text-orange-500 hover:text-orange-700">
+                  Cancellation and Refund Policy
+                </Link>
+              </Label>
             </div>
             {errors.checkbox && <p className="text-red-500 text-sm">{errors.checkbox}</p>}
-            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={loading}>
-              {loading ? (
-                <div className="flex justify-center items-center h-20">
-                  <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
-                </div>
-              ) : 'Create Tournament'}
-            </Button>
-            <Button type="button" onClick={handleCancel} className="w-full bg-gray-600 hover:bg-gray-700">
-              Cancel
-            </Button>
+            <div className="flex justify-between items-center">
+              <Button
+                type="submit"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : 'Launch'}
+              </Button>
+              <Button
+                type="button"
+                className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+            </div>
           </form>
         </div>
       </div>
