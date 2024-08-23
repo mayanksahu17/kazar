@@ -50,7 +50,7 @@ export default function Tournaments() {
     try {
      
       
-      const response = await axios.get("/api/tournament/getAlltournaments");
+      const response = await axios.put("/api/tournament/getAlltournaments");
       const currentDate = new Date();
       const validTournaments = response.data.data.filter((tournament: Tournament) => {
         return new Date(tournament.launchDate) >= currentDate;

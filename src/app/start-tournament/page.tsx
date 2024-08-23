@@ -7,10 +7,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { UploadButton } from '@/utils/uploadthings';
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
-// Define the shape of the tournament data
+
 interface Tournament {
   _id: string;
   token: string;
@@ -34,6 +35,8 @@ export default function Tournaments() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
+  const [winnerFile, setWinnerFile] = useState<File | null>(null);
+  const [winnerFileUrl, setWinnerFileUrl] = useState<string | null>(null);
   const [roomData, setRoomData] = useState<Record<string, { Roomid: string; Roompass: string }>>({});
   const [userRegisteredTournaments, setUserRegisteredTournaments] = useState<Set<string>>(new Set());
   const router = useRouter();
@@ -92,6 +95,32 @@ export default function Tournaments() {
     }
   };
 
+  const handleWinnerUpload = async (imageUrl : string, tournamentId : string) => {
+  
+
+    setUploading((prev) => ({ ...prev, [tournamentId]: true }));
+
+    try {
+   
+     
+
+      const response = await axios.post("/api/tournament/upload-winners", {imageUrl , tournamentId});
+
+      if (response.data && response.data.url) {
+        toast.success("Winners file uploaded successfully");
+        // Handle the response to process the URL as needed
+        console.log("Uploaded file URL:", response.data.url);
+      }
+    } catch (error) {
+      console.error("Error uploading winners file:", error);
+      toast.error("Failed to upload winners file");
+    } finally {
+      setUploading((prev) => ({ ...prev, [tournamentId]: false }));
+      setWinnerFile(null);
+    }
+  };
+
+  
   const getTimeRemaining = (launchDate: string) => {
     const now = new Date();
     const launch = new Date(launchDate);
@@ -120,154 +149,139 @@ export default function Tournaments() {
 
   return (
     <>
-   <Header />
-    <div className="flex flex-col min-h-screen bg-muted/40 bg-gray-900">
-      <ToastContainer />
-      <main className="flex-1 p-4 sm:p-6 bg-gray-900">
-        {loading ? (
-          <div className="flex justify-center items-center h-20">
-            <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
-          </div>
-        ) : tournaments.length === 0 ? (
-          <div className="ml-10 font-bold p-10">No tournaments Registered YET!</div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {tournaments.map((tournament) => (
-              <Card key={tournament._id} className="bg-gray-900 text-orange-600">
-                <CardHeader>
-                  <img
-                    src={tournament.thumbnail}
-                    alt={`${tournament.title} Thumbnail`}
-                    className="rounded-t-lg w-full h-[200px] object-cover"
-                  />
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="grid gap-2">
-                    <div className="flex items-center justify-between">
-                      <div className="font-semibold text-lg">{tournament.title}</div>
-                      <Badge>
-                        {isRegistrationOpen(tournament.launchDate)
-                          ? `Starts in ${getTimeRemaining(tournament.launchDate)}`
-                          : "Ended"}
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <div className="text-sm text-gray-200">Entry Price</div>
-                        <div>₹{tournament.entryPrice}</div>
+      <Header />
+      <div className="flex flex-col min-h-screen bg-muted/40 bg-gray-900">
+        <ToastContainer />
+        <main className="flex-1 p-4 sm:p-6 bg-gray-900">
+          {loading ? (
+            <div className="flex justify-center items-center h-20">
+              <div className="w-8 h-8 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
+            </div>
+          ) : tournaments.length === 0 ? (
+            <div className="ml-10 font-bold p-10">No tournaments Registered YET!</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {tournaments.map((tournament) => (
+                <Card key={tournament._id} className="bg-gray-900 text-orange-600">
+                  <CardHeader>
+                    <img
+                      src={tournament.thumbnail}
+                      alt={`${tournament.title} Thumbnail`}
+                      className="rounded-t-lg w-full h-[200px] object-cover"
+                    />
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <div className="grid gap-2">
+                      <div className="flex items-center justify-between">
+                        <div className="font-semibold text-lg">{tournament.title}</div>
+                        <Badge>
+                          {isRegistrationOpen(tournament.launchDate)
+                            ? `Starts in ${getTimeRemaining(tournament.launchDate)}`
+                            : "Ended"}
+                        </Badge>
                       </div>
-                      <div>
-                        <div className="text-sm text-gray-200">Mode</div>
-                        <div>{tournament.mode}</div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <div className="text-sm text-gray-200">Map</div>
-                        <div>{tournament.map}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-200">Price Pool</div>
-                        <div>₹{tournament.winningPrice}</div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <div className="text-sm text-gray-200">Organiser</div>
-                        <div>{tournament.owner}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-200">#1 Winning Price</div>
-                        <div>₹{tournament.rank1Price}</div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <div className="text-sm text-gray-200">Launch Date</div>
-                        <div>{new Date(tournament.launchDate).toLocaleDateString()}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-200">#2 Winning Price</div>
-                        <div>₹{tournament.rank2Price}</div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <div className="text-sm text-gray-200">Eligibility/Rules*</div>
-                        <div>{tournament.eligibility}</div>
-                      </div>
-                    </div>
-
-                    {isRegistrationOpen(tournament.launchDate) ? (
-                      <>
+                      <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <Label>Enter Room Id</Label>
-                          <Input
-                            value={roomData[tournament._id]?.Roomid || ""}
-                            onChange={(e) => handleInputChange(tournament._id, "Roomid", e.target.value)}
-                            placeholder="Room Id"
-                            disabled={uploading[tournament._id]}
-                          />
+                          <div className="text-sm text-gray-200">Entry Price</div>
+                          <div>₹{tournament.entryPrice}</div>
                         </div>
                         <div>
-                          <Label>Enter Room Password</Label>
-                          <Input
-                            value={roomData[tournament._id]?.Roompass || ""}
-                            onChange={(e) => handleInputChange(tournament._id, "Roompass", e.target.value)}
-                            placeholder="Room Password"
-                            disabled={uploading[tournament._id]}
-                          />
+                          <div className="text-sm text-gray-200">Mode</div>
+                          <div>{tournament.mode}</div>
                         </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="text-sm text-gray-200">Map</div>
+                          <div>{tournament.map}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-200">Price Pool</div>
+                          <div>₹{tournament.winningPrice}</div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="text-sm text-gray-200">Organiser</div>
+                          <div>{tournament.owner}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-200">#1 Winning Price</div>
+                          <div>₹{tournament.rank1Price}</div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="text-sm text-gray-200">Launch Date</div>
+                          <div>{new Date(tournament.launchDate).toLocaleDateString()}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-200">#2 Winning Price</div>
+                          <div>₹{tournament.rank2Price}</div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="text-sm text-gray-200">Eligibility</div>
+                          <div>{tournament.eligibility}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-200">#3 Winning Price</div>
+                          <div>₹{tournament.rank3Price}</div>
+                        </div>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor={`Roomid-${tournament._id}`}>Room ID</Label>
+                        <Input
+                          id={`Roomid-${tournament._id}`}
+                          value={roomData[tournament._id]?.Roomid || ""}
+                          onChange={(e) => handleInputChange(tournament._id, "Roomid", e.target.value)}
+                          className="bg-gray-900 text-orange-600"
+                        />
+                        <Label htmlFor={`Roompass-${tournament._id}`}>Room Password</Label>
+                        <Input
+                          id={`Roompass-${tournament._id}`}
+                          value={roomData[tournament._id]?.Roompass || ""}
+                          onChange={(e) => handleInputChange(tournament._id, "Roompass", e.target.value)}
+                          className="bg-gray-900 text-orange-600"
+                        />
                         <Button
-                          onClick={() =>
-                            handleUpload(roomData[tournament._id]?.Roomid, roomData[tournament._id]?.Roompass, tournament._id, tournament.title)
-                          }
-                          className="mt-4 w-full py-2 bg-yellow-600 text-white rounded-lg"
-                          disabled={uploading[tournament._id]}
+                          onClick={() => handleUpload(roomData[tournament._id]?.Roomid || "", roomData[tournament._id]?.Roompass || "", tournament._id, tournament.title)}
+                          className="bg-orange-600 text-white"
+                          disabled={uploading[tournament._id] || !isRegistrationOpen(tournament.launchDate)}
                         >
-                          {uploading[tournament._id] ? (
-                            <div className="flex justify-center items-center">
-                              <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
-                              Uploading...
-                            </div>
-                          ) : (
-                            "Launch Winning Team"
-                          )}
+                          {uploading[tournament._id] ? "Uploading..." : "Upload Room Details"}
                         </Button>
-                        <Button
-                          onClick={() =>
-                            handleUpload(roomData[tournament._id]?.Roomid, roomData[tournament._id]?.Roompass, tournament._id, tournament.title)
-                          }
-                          className="mt-4 w-full py-2 bg-yellow-600 text-white rounded-lg"
-                          disabled={uploading[tournament._id]}
-                        >
-                          {uploading[tournament._id] ? (
-                            <div className="flex justify-center items-center">
-                              <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
-                              Uploading...
-                            </div>
-                          ) : (
-                            "Upload"
-                          )}
-                        </Button>
-                      </>
-                    ) : (
-                      <button
-                        className="mt-4 w-full py-2 bg-gray-400 text-white rounded-lg"
-                        disabled
-                      >
-                        Ended
-                      </button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            
-          </div>
-        )}
-      </main>
-    </div>
+                      </div>
+                      {!isRegistrationOpen(tournament.launchDate) && (
+                        <>
+                                  <UploadButton
+                        endpoint='imageUploader'
+                        onClientUploadComplete={async(res) => {
+                           setWinnerFileUrl(res[0].url);
+                          alert("Upload Completed");
+                        }}
+                        onUploadError={(error: Error) => {
+                          alert(`ERROR! ${error.message}`);
+                        }}
+                        />
+                          <Button
+                            onClick={() => handleWinnerUpload(winnerFileUrl as string , tournament._id )}
+                            className="bg-orange-600 text-white"
+                            disabled={uploading[tournament._id]}
+                          >
+                            {uploading[tournament._id] ? "Uploading..." : "Launch Winners"}
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
     </>
   );
 }

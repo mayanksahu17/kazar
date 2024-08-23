@@ -23,7 +23,7 @@ import { Team } from "./Teams";
     status : string;
     registeredTeams :  mongoose.Types.ObjectId[];
     registeredSoloTeams :  mongoose.Types.ObjectId[];
-  
+    winningTeam : string;
   }
 
   const tournamentSchema: Schema<ITournament> = new Schema({
@@ -43,7 +43,8 @@ import { Team } from "./Teams";
     thumbnail: { type: String, required: true },
     status: { type: String, default : "Upcoming" },
     registeredTeams : [{ type : mongoose.Types.ObjectId , ref : "Team"}],
-    registeredSoloTeams : [{ type : mongoose.Types.ObjectId , ref : "User"}]
+    registeredSoloTeams : [{ type : mongoose.Types.ObjectId , ref : "User"}],
+    winningTeam : {type : String , default : null}
   });
 
 

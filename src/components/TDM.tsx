@@ -154,7 +154,7 @@ export default function TdmPage() {
                 <Badge>{`Starts in ${getTimeRemaining(tdm.launchDate)}`}</Badge>
               </CardHeader>
               <CardContent>
-                <img src={tdm.thumbnail} alt={tdm.name} className="w-full h-40 object-cover mb-4" width={300} height={160} />
+                <img src={tdm.thumbnail} alt={tdm.name} className="w-full h-40 object-cover mb-4"  />
                 <p><span className="text-orange-600">Entry Price:</span> {tdm.entryPrice}</p>
                 <p><span className="text-orange-600">Winning Price:</span> {tdm.winningPrice}</p>
                 <p><span className="text-orange-600">Weapon:</span> {tdm.Weapon}</p>
