@@ -17,6 +17,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
     if (!userNameOrEmail || !password) {
       return NextResponse.json({ success: false, message: 'Please provide username/email and password' }, { status: 400 });
     }
+    console.log(userNameOrEmail);
+    
 
     // Check if userNameOrEmail is an email or username
     const query = userNameOrEmail.includes('@') ? { email: userNameOrEmail } : { userName: userNameOrEmail };

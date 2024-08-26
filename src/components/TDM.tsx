@@ -135,6 +135,13 @@ export default function TdmPage() {
     return `${days}d ${hours}h`;
   };
 
+    // Function to check if registration is open
+    const isRegistrationOpen = (launchDate: string) => {
+      const now = new Date();
+      const launch = new Date(launchDate);
+      return launch >= now;
+    };
+
   const getRegistrationStatus = (tdm: TDM) => {
     const registeredTeams = [tdm.registeredTeam1, tdm.registeredTeam2].filter(Boolean).length;
     return `Registered teams ${registeredTeams} of 2`;
@@ -151,7 +158,11 @@ export default function TdmPage() {
               <CardHeader>
                 <CardTitle className="text-orange-600">{tdm.name}</CardTitle>
                 <CardDescription>{new Date(tdm.launchDate).toLocaleDateString()}</CardDescription>
-                <Badge>{`Starts in ${getTimeRemaining(tdm.launchDate)}`}</Badge>
+                <Badge>
+                                {isRegistrationOpen(tdm.launchDate)
+                                    ? `Starts in ${getTimeRemaining(tdm.launchDate)}`
+                                    : "Ended"}
+                              </Badge>
               </CardHeader>
               <CardContent>
                 <img src={tdm.thumbnail} alt={tdm.name} className="w-full h-40 object-cover mb-4"  />

@@ -20,7 +20,7 @@ async function getTournaments() {
 export default function Component() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const router = useRouter();
-  const [selectedTab, setSelectedTab] = useState('tdm'); // Initial tab
+  const [selectedTab, setSelectedTab] = useState('upcoming'); // Initial tab
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -33,7 +33,6 @@ export default function Component() {
 
   return (
     <>
-  
       <div className="flex flex-col min-h-screen bg-gray-900 text-orange-500">
       <ToastContainer />
         <Header />
@@ -58,7 +57,6 @@ export default function Component() {
         </div>
         {selectedTab === 'upcoming' && <Tournaments />}
         {selectedTab === 'tdm' && <TDM />}
-        {/* {selectedTab === 'registered' && <Tournaments />} */}
         {selectedTab === 'registered' && <Registered />}
         <Footer />
       </div>

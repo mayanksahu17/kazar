@@ -9,7 +9,7 @@ const UNAUTHORIZED = 401;
 const SUCCESS = 200;
 const SERVER_ERROR = 500;
 
-export async function PUT(req:NextRequest) {
+export async function GET(req:NextRequest) {
 
     await dbConnect()
     try {

@@ -18,20 +18,24 @@ export default function Header() {
   const router = useRouter();
 
 
-  const getUser = async(token : string)=>{
+  const getUser = async(token : string) =>{
+    if ( !localStorage.getItem("avatar") ) {
+      
     const response = await axios.post('/api/teams/get-user',{token})
     
-    // console.log(response.data.data[0].mobileNumber);
-    // console.log(response.data.data[0].userName);
-    // console.log(response.data.data[0].email);
     localStorage.setItem("userName" ,response.data.data[0].userName )
     localStorage.setItem("email" ,response.data.data[0].email )
     localStorage.setItem("mobileNumber" ,response.data.data[0].mobileNumber )
     
     setUserFirstLetter(response.data.data[0].userName[0])
+    localStorage.setItem("avatar",response.data.data[0].userName[0])
+    }
+    setUserFirstLetter(localStorage.getItem("avatar") as string)
+
   }
 
   useEffect(() => {
+
     const token = localStorage.getItem("token");
     if (token) {
      getUser(token)  

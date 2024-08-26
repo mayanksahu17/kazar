@@ -1,17 +1,62 @@
 
 import Link from "next/link"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
-
+import Image from "next/image"
+import t from "../../public/assets/t.webp"
+import splitStringUsingRegex from "@/utils/seperateStringByChar"
+import {motion , Variants} from "framer-motion"
+import scrims from "../../public/scrims.png"
 export default function Component() {
+  let heading = "Elevate Your BGMI Esports Experience";
+  let subheading = " Discover, compete, and thrive in the world of BGMI esports with our cutting-edge tournament platform."
+  const title = splitStringUsingRegex(heading)
+  const subTitle = splitStringUsingRegex(subheading)
+
+  const charVarients = {
+    hidden: {opacity : 0},
+    reveal: {opacity : 1}
+  }
+  
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-900 sm:h-screen">
       <div className="container px-4 md:px-6">
         <div className="grid gap-8 lg:grid-cols-[1fr_550px] lg:gap-12 xl:grid-cols-[1fr_650px]">
           <div className="flex flex-col justify-center space-y-6">
             <div className="space-y-4">
-              <h1 className="text-4xl font-bold tracking-tighter text-orange-600 sm:text-5xl xl:text-6xl/none">
-                Elevate Your BGMI Esports Experience
-              </h1>
+              <motion.h1 className="text-4xl font-bold tracking-tighter text-orange-600 sm:text-5xl xl:text-6xl/none"
+              initial = {"hidden"}
+              whileInView={"reveal"}
+              transition={{staggerChildren : 0.1}}
+              >
+                {title.map(char=>(
+                  <motion.span
+                  key={char}
+                  transition={{duration : 0.5}}
+                  variants={charVarients}
+                  > 
+                    {char}
+                  </motion.span>
+                ))
+                
+                }  
+              </motion.h1>
+
+{/*             
+              <motion.p className="max-w-[600px] text-orange-600 md:text-xl"
+                initial = {"hidden"}
+                whileInView={"reveal"}
+                transition={{staggerChildren : 0.2}}
+              >
+              {subTitle.map(char=>(
+                  <motion.span
+                  key={char}
+                  transition={{duration : 0.35}}
+                  variants={charVarients}
+                  > 
+                    {char}
+                  </motion.span>
+                ))}  
+              </motion.p> */}
               <p className="max-w-[600px] text-orange-600 md:text-xl">
                 Discover, compete, and thrive in the world of BGMI esports with our cutting-edge tournament platform.
                 <br />
@@ -38,12 +83,11 @@ export default function Component() {
           </div>
           <Carousel className="rounded-xl overflow-hidden">
             <CarouselContent>
-              <CarouselItem>
-                <img
-                  src="https://utfs.io/f/65707cfa-ebb0-404a-8a0b-bf8dd80ada9f-38.webp"
-                //   src="https://utfs.io/f/8f9b955a-4a9b-40a0-b05e-f465977f2bf7-2vu.webp"
-                  width={650}
-                  height={400}
+              <CarouselItem >
+                <Image
+                src={t.src}
+                  width={t.width}
+                  height={t.height}
                   alt="Tournament Highlight"
                   className="aspect-[16/9] object-cover"
                 />

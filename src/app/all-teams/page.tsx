@@ -48,7 +48,7 @@ const Page: React.FC = () => {
     }
 
     getTeams();
-  });
+  },[]);
 
   const handleRemoveMember = (teamId: string, memberId: string) => {
     console.log(`Removing member: ${memberId} from team: ${teamId}`);
@@ -103,7 +103,7 @@ const Page: React.FC = () => {
             </div>
           ) : (
             teams.map((team) => {
-              const isLeader = userId === team.leader;
+              const isLeader = (userId === team.leader);
               const players = [
                 { id: team.player1, name: "Player 1" },
                 { id: team.player2, name: "Player 2" },

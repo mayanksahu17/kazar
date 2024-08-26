@@ -255,6 +255,7 @@ export default function Tournaments() {
                       </div>
                       {!isRegistrationOpen(tournament.launchDate) && (
                         <>
+                         <p>Upload the result of the match*</p>
                                   <UploadButton
                         endpoint='imageUploader'
                         onClientUploadComplete={async(res) => {
