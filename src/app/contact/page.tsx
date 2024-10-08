@@ -52,7 +52,7 @@ const Contact: React.FC = () => {
             <h2 className="text-3xl font-bold text-orange-400">Our Location</h2>
             <p className="mt-2 text-gray-300">
               Scrims Crown Inc.<br />
-              Rambali Nagar Govind colony, Indore<br />
+            vijay nagar, Indore<br />
               Madhya Pradesh - 452015
             </p>
           </section>
