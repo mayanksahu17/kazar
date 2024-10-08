@@ -196,7 +196,7 @@ export default function Tournaments() {
                               </div>
                               <div>
                                 <div className="text-sm text-gray-200"> Price Pool</div>
-                                <div>{tournament.winningPrice}</div>
+                                <div>₹{tournament.winningPrice}</div>
                               </div>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
