@@ -10,7 +10,7 @@ import Hero from "@/components/Hero"
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 async function getTournaments() {
   const response = await axios.get("/api/foo");

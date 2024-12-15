@@ -1,268 +1,304 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Tournaments } from "@/model/Tournaments";
 import { User } from "@/model/User";
-import { Types } from "mongoose"; // Import Types from Mongoose
+import { Types } from "mongoose";
 import { jwtVerify } from "jose";
 import dbConnect from "@/lib/dbConnect";
 import Razorpay from "razorpay";
 import shortid from "shortid";
-import LaunchTournament from '@/emails/LaunchTournament';
 import nodemailer from 'nodemailer';
 import { render } from "@react-email/components";
+import LaunchTournament from '@/emails/LaunchTournament';
 
+// Enum for HTTP Status Codes
+enum HttpStatus {
+  SUCCESS = 200,
+  CREATED = 201,
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  SERVER_ERROR = 500
+}
 
+// Interface for Tournament Input
+interface TournamentInput {
+  token: string;
+  title: string;
+  mode: string;
+  map: string;
+  winningPrice: number;
+  rank1Price: number;
+  rank2Price: number;
+  rank3Price: number;
+  eligibility: string;
+  launchDate: string;
+  time: string;
+  requiredTeamSize: number;
+  entryPrice: number;
+  thumbnail: string;
+}
 
-const UNAUTHORIZED = 401;
-const SUCCESS = 200;
-const SERVER_ERROR = 500;
-const BAD_REQUEST = 400;
+// Validation Utility
+class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
 
+// Tournament Service
+class TournamentService {
+  private razorpay: Razorpay;
 
-const razorpay = new Razorpay({
-    key_id: process.env.RAZOR_PAY_KEY_ID as string,
-    key_secret: process.env.RAZOR_PAY_KEY_SECRET as string,
-  });
+  constructor() {
+    this.razorpay = new Razorpay({
+      key_id: process.env.RAZOR_PAY_KEY_ID as string,
+      key_secret: process.env.RAZOR_PAY_KEY_SECRET as string,
+    });
+  }
 
+  // Validate input fields
+  private validateInput(input: TournamentInput) {
+    const requiredFields: (keyof TournamentInput)[] = [
+      'title', 'mode', 'map', 'winningPrice', 'rank1Price', 
+      'rank2Price', 'rank3Price', 'eligibility', 'launchDate', 
+      'time', 'requiredTeamSize', 'entryPrice', 'thumbnail'
+    ];
 
-export async function POST(req: NextRequest) {
-  await dbConnect();
-
-
-  try {
-    const {
-      token,
-      title,
-      mode,
-      map,
-      winningPrice,
-      rank1Price,
-      rank2Price,
-      rank3Price,
-      eligibility,
-      launchDate,
-      time,
-      requiredTeamSize,
-      entryPrice,
-      thumbnail,
-    } = await req.json();
-    console.log("image " ,thumbnail);
-
-
-
-    
-    
-    // Token validation
-    if (!token) {
-      return NextResponse.json(
-        { success: false, message: "You are not logged in" },
-        { status: 403 }
-      );
-    }
-
-    const { payload } = await jwtVerify(
-      token,
-      new TextEncoder().encode(process.env.JWT_SECRET)
+    // Check for missing fields
+    const missingFields = requiredFields.filter(field => 
+      !input[field] || (typeof input[field] === 'string' && input[field].trim() === '')
     );
-    const userName = payload.userName;
-    const userId  = payload.id
-
-    // Field validation
-    const missingFields = [];
-    if (!title) missingFields.push("title");
-    if (!mode) missingFields.push("mode");
-    if (!map) missingFields.push("map");
-    if (winningPrice === undefined) missingFields.push("winningPrice");
-    if (rank1Price === undefined) missingFields.push("rank1Price");
-    if (rank2Price === undefined) missingFields.push("rank2Price");
-    if (rank3Price === undefined) missingFields.push("rank3Price");
-    if (!eligibility) missingFields.push("eligibility");
-    if (!launchDate) missingFields.push("launchDate");
-    if (!time) missingFields.push("time");
-    if (requiredTeamSize === undefined) missingFields.push("requiredTeamSize");
-    if (entryPrice === undefined) missingFields.push("entryPrice");
-    if (!thumbnail) missingFields.push("thumbnail");
 
     if (missingFields.length > 0) {
-      return NextResponse.json(
-        { message: "Missing required fields", missingFields },
-        { status: 400 }
+      throw new ValidationError(`Missing required fields: ${missingFields.join(', ')}`);
+    }
+
+    // Detailed validations
+    this.validateString(input.title, 'Title');
+    this.validateString(input.mode, 'Mode');
+    this.validateString(input.map, 'Map');
+    this.validatePositiveNumber(input.winningPrice, 'Winning Price');
+    this.validatePositiveNumber(input.rank1Price, 'Rank 1 Price');
+    this.validatePositiveNumber(input.rank2Price, 'Rank 2 Price');
+    this.validatePositiveNumber(input.rank3Price, 'Rank 3 Price');
+    this.validateString(input.eligibility, 'Eligibility');
+    this.validateDate(input.launchDate, 'Launch Date');
+    this.validateString(input.time, 'Time');
+    this.validatePositiveInteger(input.requiredTeamSize, 'Required Team Size');
+    this.validatePositiveNumber(input.entryPrice, 'Entry Price');
+    this.validateString(input.thumbnail, 'Thumbnail');
+
+    // Validate prize distribution
+    if (input.winningPrice !== (input.rank1Price + input.rank2Price + input.rank3Price)) {
+      throw new ValidationError('Winning price must equal the sum of rank prizes');
+    }
+  }
+
+  // String validation
+  private validateString(value: string, fieldName: string) {
+    if (typeof value !== 'string' || value.trim() === '') {
+      throw new ValidationError(`Invalid ${fieldName}`);
+    }
+  }
+
+  // Positive number validation
+  private validatePositiveNumber(value: number, fieldName: string) {
+    if (isNaN(Number(value)) || Number(value) < 0) {
+      throw new ValidationError(`Invalid ${fieldName}`);
+    }
+  }
+
+  // Positive integer validation
+  private validatePositiveInteger(value: number, fieldName: string) {
+    if (isNaN(Number(value)) || Number(value) <= 0) {
+      throw new ValidationError(`Invalid ${fieldName}`);
+    }
+  }
+
+  // Date validation
+  private validateDate(value: string, fieldName: string) {
+    if (isNaN(Date.parse(value))) {
+      throw new ValidationError(`Invalid ${fieldName}`);
+    }
+  }
+
+  // Verify JWT token
+  private async verifyToken(token: string) {
+    if (!token) {
+      throw new ValidationError('No authentication token provided');
+    }
+
+    try {
+      const { payload } = await jwtVerify(
+        token,
+        new TextEncoder().encode(process.env.JWT_SECRET)
       );
+
+      return {
+        userId: payload.id as string,
+        userName: payload.userName as string
+      };
+    } catch (error) {
+      throw new ValidationError('Invalid authentication token');
+    }
+  }
+
+  // Create tournament
+  async createTournament(input: TournamentInput) {
+    await dbConnect();
+
+    // Validate input
+    this.validateInput(input);
+
+    // Verify token
+    const { userId, userName } = await this.verifyToken(input.token);
+
+    // Check user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ValidationError('User not found');
     }
 
-    // User existence validation
-    const userExists = await User.findById(userId);
-    if (!userExists) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
-    }
-
-    // Data validation
-    if (typeof title !== "string" || title.trim() === "") {
-      return NextResponse.json({ message: "Invalid title" }, { status: 400 });
-    }
-    if (typeof mode !== "string" || mode.trim() === "") {
-      return NextResponse.json({ message: "Invalid mode" }, { status: 400 });
-    }
-    if (typeof map !== "string" || map.trim() === "") {
-      return NextResponse.json({ message: "Invalid map" }, { status: 400 });
-    }
-    if (isNaN(Number(winningPrice)) || Number(winningPrice) < 0) {
-      return NextResponse.json({ message: "Invalid winningPrice" }, { status: 400 });
-    }
-    if (isNaN(Number(rank1Price)) || Number(rank1Price) < 0) {
-      return NextResponse.json({ message: "Invalid rank1Price" }, { status: 400 });
-    }
-    if (isNaN(Number(rank2Price)) || Number(rank2Price) < 0) {
-      return NextResponse.json({ message: "Invalid rank2Price" }, { status: 400 });
-    }
-    if (isNaN(Number(rank3Price)) || Number(rank3Price) < 0) {
-      return NextResponse.json({ message: "Invalid rank3Price" }, { status: 400 });
-    }
-    if (typeof eligibility !== "string" || eligibility.trim() === "") {
-      return NextResponse.json({ message: "Invalid eligibility" }, { status: 400 });
-    }
-    if (isNaN(Date.parse(launchDate))) {
-      return NextResponse.json({ message: "Invalid launchDate" }, { status: 400 });
-    }
-    if (typeof time !== "string" || time.trim() === "") {
-      return NextResponse.json({ message: "Invalid time" }, { status: 400 });
-    }
-    if (isNaN(Number(requiredTeamSize)) || Number(requiredTeamSize) <= 0) {
-      return NextResponse.json({ message: "Invalid requiredTeamSize" }, { status: 400 });
-    }
-    if (isNaN(Number(entryPrice)) || Number(entryPrice) < 0) {
-      return NextResponse.json({ message: "Invalid entryPrice" }, { status: 400 });
-    }
-    if (typeof thumbnail !== "string" || thumbnail.trim() === "") {
-      return NextResponse.json({ message: "Invalid thumbnail" }, { status: 400 });
-    }
-
-
-    // Create the tournament
+    // Create tournament
     const newTournament = new Tournaments({
-      owner : userName,
-      title,
-      mode,
-      map,
-      winningPrice: Number(winningPrice),
-      rank1Price: Number(rank1Price),
-      rank2Price: Number(rank2Price),
-      rank3Price: Number(rank3Price),
-      eligibility,
-      launchDate,
-      time,
-      requiredTeamSize: Number(requiredTeamSize),
-      entryPrice: Number(entryPrice),
-      thumbnail,
+      owner: userName,
+      title: input.title,
+      mode: input.mode,
+      map: input.map,
+      winningPrice: Number(input.winningPrice),
+      rank1Price: Number(input.rank1Price),
+      rank2Price: Number(input.rank2Price),
+      rank3Price: Number(input.rank3Price),
+      eligibility: input.eligibility,
+      launchDate: input.launchDate,
+      time: input.time,
+      requiredTeamSize: Number(input.requiredTeamSize),
+      entryPrice: Number(input.entryPrice),
+      thumbnail: input.thumbnail,
     });
 
     await newTournament.save();
 
-    // Update the user's tournaments array
-    userExists.tournaments.push(newTournament._id as Types.ObjectId);
-    await userExists.save();
+    // Update user's tournaments
+    user.tournaments.push(newTournament._id as Types.ObjectId);
+    await user.save();
 
-    // Send confirmation email to the user
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      secure: true,
-      auth: {
+    // Send confirmation email
+    await this.sendConfirmationEmail(user, input.title);
+
+    return newTournament;
+  }
+
+  // Send confirmation email
+  private async sendConfirmationEmail(user: any, tournamentTitle: string) {
+    try {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        secure: true,
+        auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
-      },
-  });
+        },
+      });
 
-      
-  const emailTemplate = render(
-    <LaunchTournament username = {userExists.userName as string} title= {title}/>
-);
-
-const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: userExists.email,
-    subject: 'Registration Confirmation',
-    html: emailTemplate,
-};
-
-await transporter.sendMail(mailOptions);
-
-
-
-    return NextResponse.json(
-      { message: "Tournament created successfully", data: newTournament },
-      { status: 201 }
-    );
-  } catch (error: any) {
-    console.error("Error creating tournament:", error.message);
-    return NextResponse.json(
-      { message: "Error creating tournament", error: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-
-export async function PUT(req:NextRequest) {
-  const {
-    token,
-    title,
-    winningPrice,
-    rank1Price,
-    rank2Price,
-    rank3Price,
-   
-  } = await req.json();
-
-  const tournament = await Tournaments.find({title})
-  // if (tournament) {
-  //   return NextResponse.json({
-  //     success : false,
-  //     message : "Tournament with same name already exists"
-  //   },{status : 401})
-  // }
- if( winningPrice !== (rank1Price +  rank2Price + rank3Price)){
-  return NextResponse.json({
-    success : false,
-    message : "Winning price should be equal to the sum of rank prices"
-    },{status : 401})
- }
-  // Token validation
-  if (!token) {
-    return NextResponse.json(
-      { success: false, message: "You are not logged in" },
-      { status: 403 }
-    );
-  }
-
-  const { payload } = await jwtVerify(
-    token,
-    new TextEncoder().encode(process.env.JWT_SECRET)
-  );
-  const userName = payload.userName;
-  const userId  = payload.id
-
-
-  const user = await User.findById({_id : userId})
-  if (!user) {
-    return NextResponse.json(
-      { success: false, message: "User not found" },
-      { status: 404 }
+      const emailTemplate = render(
+        <LaunchTournament username={user.userName} title={tournamentTitle} />
       );
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: user.email,
+        subject: 'Tournament Launch Confirmation',
+        html: emailTemplate,
+      };
+
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      // Non-critical error, tournament creation still succeeds
     }
+  }
+
+  // Create Razorpay order
+  async createPaymentOrder(input: { 
+    token: string, 
+    winningPrice: number 
+  }) {
+    // Verify token first
+    await this.verifyToken(input.token);
 
     const options = {
-      amount: (winningPrice * 100).toString(), // Razorpay expects amount in paise
+      amount: Math.round(input.winningPrice * 100), // Convert to paise
       currency: "INR",
       receipt: shortid.generate(),
       payment_capture: 1,
-  };
+    };
 
-  const order = await razorpay.orders.create(options);
+    try {
+      const order = await this.razorpay.orders.create(options);
+      return order;
+    } catch (error) {
+      throw new ValidationError('Payment order creation failed');
+    }
+  }
+}
 
-  return NextResponse.json({
-    success : true,
-    message: 'Payment successful',
-    order,
-}, { status: SUCCESS });
+// API Handlers
+const tournamentService = new TournamentService();
 
+export async function POST(req: NextRequest) {
+  try {
+    const input = await req.json();
+    const tournament = await tournamentService.createTournament(input);
 
+    return NextResponse.json(
+      { 
+        message: "Tournament created successfully", 
+        data: tournament 
+      },
+      { status: HttpStatus.CREATED }
+    );
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const input = await req.json();
+    const order = await tournamentService.createPaymentOrder(input);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Payment order created successfully',
+      order,
+    }, { status: HttpStatus.SUCCESS });
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+// Central error handling
+function handleError(error: any) {
+  console.error('Tournament API Error:', error);
+
+  if (error instanceof ValidationError) {
+    return NextResponse.json(
+      { 
+        success: false, 
+        message: error.message 
+      }, 
+      { status: HttpStatus.BAD_REQUEST }
+    );
+  }
+
+  return NextResponse.json(
+    { 
+      success: false, 
+      message: 'An unexpected error occurred' 
+    }, 
+    { status: HttpStatus.SERVER_ERROR }
+  );
 }
