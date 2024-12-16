@@ -69,6 +69,7 @@ const TournamentModel = () => {
     map: '',
     launchDate: '',
     checkbox: '',
+    thumbnail: '', // Add thumbnail error
   });
 
   const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -130,31 +131,38 @@ const TournamentModel = () => {
       map: '',
       launchDate: '',
       checkbox: '',
+      thumbnail: '', // Add thumbnail error
     };
     let isValid = true;
-
+  
     const currentDate = new Date();
     const selectedDate = new Date(formData.launchDate);
     if (!formData.launchDate || selectedDate < currentDate) {
       currentErrors.launchDate = 'Please enter a valid future date.';
       isValid = false;
     }
-
+  
     if (formData.mode === 'none') {
-      currentErrors.mode = 'Please select a mode.';
+      errors.mode = 'Please select a mode.';
       isValid = false;
     }
-
+  
     if (formData.map === 'none') {
       currentErrors.map = 'Please select a map.';
       isValid = false;
     }
-
+  
     if (!isChecked) {
       currentErrors.checkbox = 'You must agree with the Cancellation and Refund Policy.';
       isValid = false;
     }
-
+  
+    // Add thumbnail validation
+    if (!imageUrl) {
+      currentErrors.thumbnail = 'Please upload a thumbnail for the tournament.';
+      isValid = false;
+    }
+  
     setErrors(currentErrors);
     return isValid;
   };
@@ -351,6 +359,8 @@ const TournamentModel = () => {
                 Cancel
               </Button>
             </div>
+            {errors.thumbnail && <p className="text-red-500 text-sm">{errors.thumbnail}</p>}
+
           </form>
         </div>
       </div>
