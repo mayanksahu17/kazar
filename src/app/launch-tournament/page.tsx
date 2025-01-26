@@ -148,7 +148,9 @@ const TournamentModel = () => {
     }
   
     if (formData.map === 'none') {
+
       currentErrors.map = 'Please select a map.';
+      
       isValid = false;
     }
   
