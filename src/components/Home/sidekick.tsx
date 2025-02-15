@@ -16,13 +16,13 @@ interface Assistant {
 export default function AssistantCard() {
   const assistants: Assistant[] = [
     { name: 'Anjali Singh', school: 'Senior at KIIT', rating: '4.7', reviews: '37', applications: '3150', paragraph: 'Every successful placement brings immense joy!', image: 'Anjali.png' },
-    { name: 'Yash Jaiswal', school: 'Junior at IIT Indore', rating: '4.9', reviews: '52', applications: '4890', paragraph: 'Seeing clients thrive in their careers is the best reward.', image: 'Anil.jpg' },
-    { name: 'Radhika Gupta', school: 'Freshman at IIT Indore', rating: '4.6', reviews: '29', applications: '2340', paragraph: 'Connecting talent with opportunities makes my day.', image: 'Radhika.png' },
-    { name: 'Chirag Thakur', school: 'Senior at SVVV', rating: '4.8', reviews: '44', applications: '1980', paragraph: 'Guiding clients to their dream jobs is my mission.', image: 'Chirag.png' },
-    { name: 'Aradhy Agrawal', school: 'Senior at SVVV', rating: '4.7', reviews: '39', applications: '5760', paragraph: 'Helping people succeed professionally is what I strive for.', image: 'Siddharth.png' },
-    { name: 'Kuldeep Vyas', school: 'Senior at KIIT', rating: '4.9', reviews: '50', applications: '4250', paragraph: 'Each success story inspires me to do more.', image: 'Kuldeep.jpeg' },
-    { name: 'Shagun J', school: 'Sophomore at Vellore Institute of Technology', rating: '4.8', reviews: '48', applications: '3050', paragraph: 'Ensuring client satisfaction is my top priority.', image: 'Shagun.jpg' },
-    { name: 'Deepesh Gupta', school: 'Sophomore at Jawaharlal Nehru University', rating: '4.8', reviews: '43', applications: '5560', paragraph: 'Helping clients achieve their goals is my passion!', image: 'Depeesh.png' }
+    { name: 'Yash Jaiswal', school: 'Junior at IIT Indore', rating: '4.9', reviews: '52', applications: '4890', paragraph: 'Seeing myself get placement is the best reward.', image: 'Anil.jpg' },
+    { name: 'Radhika Gupta', school: 'Freshman at IIT Indore', rating: '4.6', reviews: '29', applications: '2340', paragraph: 'Various opportunities makes my day.', image: 'Radhika.png' },
+    { name: 'Chirag Thakur', school: 'Senior at SVVV', rating: '4.8', reviews: '44', applications: '1980', paragraph: 'Getting my dream jobs is now possible.', image: 'Chirag.png' },
+    { name: 'Aradhy Agrawal', school: 'Senior at SVVV', rating: '4.7', reviews: '39', applications: '5760', paragraph: 'succeeding professionally is what I strive for.', image: 'Siddharth.png' },
+    { name: 'Kuldeep Vyas', school: 'Senior at KIIT', rating: '4.9', reviews: '50', applications: '4250', paragraph: 'I love to work for my betterment', image: 'Kuldeep.jpeg' },
+    { name: 'Shagun J', school: 'Sophomore at Vellore Institute of Technology', rating: '4.8', reviews: '48', applications: '3050', paragraph: 'I love cats', image: 'Shagun.jpg' },
+    { name: 'Deepesh Gupta', school: 'Sophomore at Jawaharlal Nehru University', rating: '4.8', reviews: '43', applications: '5560', paragraph: 'I love cats and coding sometimes', image: 'Depeesh.png' }
   ]
 
   return (

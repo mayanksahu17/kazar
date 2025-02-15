@@ -34,7 +34,7 @@ const WorksFor: React.FC = () => {
     <section className="bg-transparent py-8 mb-12 mt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
-          We Proudly Say, Our Clients Now Work At
+          We Proudly Say, Our Students Now Work At
         </h2>
         <p className="text-xl text-gray-600 mb-12">
           We stand by our commitments and ensure that our actions align with our promises.
@@ -58,13 +58,6 @@ const WorksFor: React.FC = () => {
             </div>
           ))}
         </div>
-        <p className="mt-12 text-gray-600 text-lg">
-          We've worked with several thousand fellows and counting.{' '}
-          <Link href="/wall" className="text-blue-600 hover:underline font-medium">
-            Read their stories here
-          </Link>
-          .
-        </p>
       </div>
     </section>
   );
