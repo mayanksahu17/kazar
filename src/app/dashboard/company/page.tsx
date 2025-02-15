@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-
+import LeaderboardPage from "@/components/leaderboard/leaderboard";
 type CompanyDashboardData = {
   postedInternships: string[];
   jobListings: string[];
@@ -71,10 +71,12 @@ export default function CompanyDashboard() {
               <Card className="col-span-1">
                 <CardHeader>
                   <CardTitle className="text-blue-600">Leaderboard</CardTitle>
-                  <CardDescription>Top performing interns and employees</CardDescription>
+                  
                 </CardHeader>
                 <CardContent>
+                <link href="" ></link>
                   {/* Placeholder for leaderboard */}
+                  <LeaderboardPage />
                   <p>Leaderboard content goes here</p>
                 </CardContent>
               </Card>
