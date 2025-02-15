@@ -1,5 +1,5 @@
 import { DashboardShell } from "@/components/student-dashboard"
-import { TasksList } from "@/components/task-list"
+import  TasksList  from "@/components/task-list"
 
 export default function DashboardPage() {
   return (

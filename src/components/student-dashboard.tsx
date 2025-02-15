@@ -1,6 +1,7 @@
 "use client"
 
-import type { ReactNode } from "react"
+import type { ReactNode, } from "react"
+import { useState } from "react"
 import { GraduationCap, LayoutDashboard, MedalIcon as Medal2, ScrollText, Trophy } from "lucide-react"
 import {
   Sidebar,
@@ -12,12 +13,17 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { Button } from "./ui/button"
+import { CiLock } from "react-icons/ci"
+import FormModal from "./student-profile/formTest/ProfileForm/FormModal"
 
 interface DashboardShellProps {
   children: ReactNode
 }
 
 export function DashboardShell({ children }: DashboardShellProps) {
+  const [isProfileFormOpen, setIsProfileFormOpen] = useState(false);
+  const [profileIndex, setProfileIndex] = useState(0);
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -45,12 +51,29 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+
+                {/* <SidebarMenuButton asChild>
                   <a href="/profile" className="flex items-center gap-2">
                     <Medal2 className="h-4 w-4" />
                     <span>Profile</span>
                   </a>
-                </SidebarMenuButton>
+                </SidebarMenuButton> */}
+                <Button
+            onClick={() => setIsProfileFormOpen(true)}
+          
+            className={`mt-4 w-full sm:w-auto border-gray-300 bg-blue-600 text-white hover:bg-blue-700
+             shadow-md rounded-md px-3 sm:px-3 py-1 sm:py-3 flex items-center justify-center ml-1`}
+          >
+            Complete Profile
+            {/* {<CiLock className="ml-2" />} */}
+          </Button>
+          {/* Profile Completion Modal */}
+      <FormModal
+        isOpen={isProfileFormOpen}
+        onClose={() => setIsProfileFormOpen(false)}
+        profileIndex={profileIndex} // Ensure correct profileIndex is passed to the modal
+      />
+
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
