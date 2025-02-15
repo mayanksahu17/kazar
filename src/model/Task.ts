@@ -6,6 +6,7 @@ export interface Task extends Document {
     deadline: Date;
     publisher: Schema.Types.ObjectId;
     taskContent: string;
+    joiners : [string]
     submissions: Schema.Types.ObjectId[];
 }
 
@@ -40,7 +41,11 @@ const TaskSchema: Schema<Task> = new Schema({
     submissions: [{
         type: Schema.Types.ObjectId,
         ref: 'Submission'  // Assuming you'll have a Submission model
-    }]
+    }],
+    joiners : [
+        {type : String , default : false}
+    ]
+
 }, {
     timestamps: true  // Adds createdAt and updatedAt fields automatically
 });
