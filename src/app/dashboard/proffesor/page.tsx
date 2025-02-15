@@ -1,57 +1,48 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type ProfessorDashboardData = {
-  teachingSchedule: string[]
-  assignments: string[]
-}
+  teachingSchedule: string[];
+  assignments: string[];
+};
 
 export default function ProfessorDashboard() {
-  const router = useRouter()
-  const [data, setData] = useState<ProfessorDashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [data, setData] = useState<ProfessorDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
         if (!token) {
-          router.push("/signin")
-          return
+          router.push("/signin");
+          return;
         }
 
         const response = await fetch("/api/dashboard/professor", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch dashboard data")
-        }
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "Failed to fetch data");
 
-        const result = await response.json()
-        setData(result.data)
+        setData(result.data);
       } catch (err) {
-        setError("An error occurred while fetching dashboard data")
+        setError("Error loading dashboard data");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchDashboardData()
-  }, [router])
+    fetchDashboardData();
+  }, [router]);
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -63,24 +54,27 @@ export default function ProfessorDashboard() {
       <main>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {data && (
-            <div className="px-4 py-6 sm:px-0">
+            <div className="p-6 bg-white shadow rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Teaching Schedule</h2>
-              <ul className="list-disc pl-5">
-                {data.teachingSchedule.map((schedule, index) => (
-                  <li key={index}>{schedule}</li>
-                ))}
+              <ul className="list-disc pl-5 space-y-1">
+                {data.teachingSchedule.length > 0 ? (
+                  data.teachingSchedule.map((schedule, index) => <li key={index}>{schedule}</li>)
+                ) : (
+                  <p>No scheduled classes.</p>
+                )}
               </ul>
               <h2 className="text-xl font-semibold mt-6 mb-4">Assignments</h2>
-              <ul className="list-disc pl-5">
-                {data.assignments.map((assignment, index) => (
-                  <li key={index}>{assignment}</li>
-                ))}
+              <ul className="list-disc pl-5 space-y-1">
+                {data.assignments.length > 0 ? (
+                  data.assignments.map((assignment, index) => <li key={index}>{assignment}</li>)
+                ) : (
+                  <p>No assignments available.</p>
+                )}
               </ul>
             </div>
           )}
         </div>
       </main>
     </div>
-  )
+  );
 }
-

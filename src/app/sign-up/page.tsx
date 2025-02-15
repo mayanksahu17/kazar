@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-<<<<<<< HEAD
 const signUpSchema = z.object({
   userName: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Invalid email address"),
@@ -14,60 +13,21 @@ const signUpSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, "Invalid mobile number"),
   role: z.enum(["student", "professor", "company"]),
 });
-=======
-interface SignUpFormData {
-  userName: string;
-  email: string;
-  password: string;
-  role: string;
-}
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
 
 type SignUpForm = z.infer<typeof signUpSchema>;
 
 export default function SignUp() {
   const router = useRouter();
-<<<<<<< HEAD
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
-=======
-
-  const [formData, setFormData] = useState<SignUpFormData>({
-    userName: '',
-    email: '',
-    password: '',
-    role: ''
-    
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
   });
   const [error, setError] = useState<string | null>(null);
 
-<<<<<<< HEAD
   const onSubmit = async (data: SignUpForm) => {
-=======
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    });
-  };
-  
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { userName, email, password, role } = formData;
-
-    if (!userName || !email || !password || !role) {
-      toast.error('All fields are required');
-      return;
-    }
-
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
@@ -177,7 +137,6 @@ export default function SignUp() {
               )}
             </div>
           </div>
-<<<<<<< HEAD
 
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
@@ -189,31 +148,6 @@ export default function SignUp() {
               Sign Up
             </button>
           </div>
-=======
-         
-          <div>
-  <Label htmlFor="role">Role</Label>
-  <select
-    id="role"
-    value={formData.role}
-    onChange={handleChange}
-    required
-    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="">Select your role</option>
-    <option value="student">Student</option>
-    <option value="faculty">Faculty</option>
-    <option value="company">Company</option>
-  </select>
-</div>
-
-          <Link href="/sign-in" className="text-sm font-medium hover:underline text-muted-foreground" prefetch={false}>
-            Already have an account? Sign-in
-          </Link>
-          <Button type="submit" className="w-full text-orange-600">
-            {loading ? 'Signing up...' : 'Sign up'}
-          </Button>
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
         </form>
       </div>
     </div>

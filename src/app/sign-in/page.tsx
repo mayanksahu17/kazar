@@ -34,19 +34,9 @@ export default function SignIn() {
 
       const result = await response.json()
 
-<<<<<<< HEAD
       if (result.success) {
         localStorage.setItem("token", result.token)
         router.push(`/dashboard/${result.data.role.toLowerCase()}`)
-=======
-      if (response.status === 200) {
-        // todo 
-        
-        router.push("/");
-        toast.success(response?.data.message);
-      } else if (response.status === 404) {
-        toast.error(response.data.message);
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
       } else {
         setError(result.message || "Invalid username/email or password")
       }
