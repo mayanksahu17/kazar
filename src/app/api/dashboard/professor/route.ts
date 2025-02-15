@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUserFromToken } from "@/utils/auth"; // Extracts user ID from token
 import dbConnect from "@/lib/dbConnect";
-import { professor } from "@/model/Professor"; // Ensure Professor model exists
+import { Professor } from "@/model/Professor"; // Ensure Professor model exists
 
 import { NextRequest } from "next/server";
 
@@ -20,12 +20,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Invalid token" }, { status: 401 });
     }
 
-    const Professor = await professor.findById(userId).select("teachingSchedule assignments");
-    if (!professor) {
+    const professor = await Professor.findById(userId).select("teachingSchedule assignments");
+    if (!Professor) {
       return NextResponse.json({ success: false, message: "Professor not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: Professor }, { status: 200 });
+    return NextResponse.json({ success: true, data: professor }, { status: 200 });
   } catch (error) {
     console.error("Error fetching professor dashboard:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });

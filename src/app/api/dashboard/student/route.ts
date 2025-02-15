@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUserFromToken } from "@/utils/auth"; // Helper to extract token
 import dbConnect from "@/lib/dbConnect";
-import { student } from "@/model/Student"; // Assuming Student model exists
+import {Student} from "@/model/Student"; // Assuming Student model exists
 
 import { NextRequest } from "next/server";
 
