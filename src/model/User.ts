@@ -4,7 +4,7 @@ export interface user extends Document{
     userName : string,
     email : string,
     password : string,
-    mobileNumber : Number,
+
     isLocked: boolean;
     loginAttempts: number;
     lockUntil: number ;
@@ -30,10 +30,6 @@ const UserSchema : Schema<user> = new Schema({
         type: String,
         required : [true,"please provide password"],
     },
-    mobileNumber : {
-        type : Number,
-        required : [true,"please provide mobile number"],
-    },
     isLocked: { 
         type: Boolean,
          default: false
@@ -53,7 +49,8 @@ const UserSchema : Schema<user> = new Schema({
     
     role : {
         type : String,
-        default : null
+        default : null,
+        required: true
     }
     
     

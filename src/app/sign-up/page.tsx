@@ -16,8 +16,7 @@ interface SignUpFormData {
   userName: string;
   email: string;
   password: string;
-  mobileNumber: string;
-  bgmiId: string;
+  role: string;
 }
 
 const SignUp: React.FC = () => {
@@ -33,23 +32,24 @@ const SignUp: React.FC = () => {
     userName: '',
     email: '',
     password: '',
-    mobileNumber: '+91',
-    bgmiId: ''
+    role: ''
+    
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value
     });
   };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { userName, email, password, mobileNumber, bgmiId } = formData;
+    const { userName, email, password, role } = formData;
 
-    if (!userName || !email || !password || !mobileNumber || !bgmiId) {
+    if (!userName || !email || !password || !role) {
       toast.error('All fields are required');
       return;
     }
@@ -110,14 +110,23 @@ const SignUp: React.FC = () => {
               </span>
             </div>
           </div>
+         
           <div>
-            <Label htmlFor="mobileNumber">Mobile Number</Label>
-            <Input id="mobileNumber" type="tel" placeholder="Enter your Mobile Number" value={formData.mobileNumber} onChange={handleChange} required />
-          </div>
-          <div>
-            <Label htmlFor="bgmiId">Bgmi Id</Label>
-            <Input id="bgmiId" type="number" placeholder="Enter your bgmiID" value={formData.bgmiId} onChange={handleChange} required />
-          </div>
+  <Label htmlFor="role">Role</Label>
+  <select
+    id="role"
+    value={formData.role}
+    onChange={handleChange}
+    required
+    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="">Select your role</option>
+    <option value="student">Student</option>
+    <option value="faculty">Faculty</option>
+    <option value="company">Company</option>
+  </select>
+</div>
+
           <Link href="/sign-in" className="text-sm font-medium hover:underline text-muted-foreground" prefetch={false}>
             Already have an account? Sign-in
           </Link>

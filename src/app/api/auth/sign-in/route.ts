@@ -71,7 +71,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 3600,
-      path: '/',
+      path: '/verifyOtp',
     }));
 
     return response;
