@@ -1,97 +1,120 @@
 "use client"
 
-import { useCallback, useState } from "react"
-import { AlertCircle, Clock, Star, Trash2 } from "lucide-react"
+import { useEffect, useState, useCallback } from "react"
+import { AlertCircle, Clock, Star, CheckCircle, PlusCircle } from "lucide-react"
 import cn from "classnames"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useToast } from "@/components/ui/use-toast"
+// import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 interface Task {
-  id: string
+  _id: string
   title: string
   description: string
   difficultyLevel: "Easy" | "Medium" | "Hard"
   scorePoints: number
   deadline: string
-  isPublisher?: boolean
+  publisher: { _id: string; userName: string; role: string }
+  joiners: string[]
+  isSubmitted: boolean
 }
 
-// This would come from your API
-const mockTasks: Task[] = [
-  {
-    id: "1",
-    title: "Complete JavaScript Basics",
-    description: "Learn fundamental concepts of JavaScript programming",
-    difficultyLevel: "Easy",
-    scorePoints: 10,
-    deadline: "2024-03-01",
-    isPublisher: true,
-  },
-  {
-    id: "2",
-    title: "Build a React App",
-    description: "Create a simple React application with basic functionality",
-    difficultyLevel: "Medium",
-    scorePoints: 20,
-    deadline: "2024-03-15",
-  },
-  {
-    id: "3",
-    title: "Advanced Algorithm Challenge",
-    description: "Solve complex algorithmic problems",
-    difficultyLevel: "Hard",
-    scorePoints: 30,
-    deadline: "2024-03-30",
-  },
-]
-
 export function TasksList() {
-  const [loading, setLoading] = useState(false)
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const { toast } = useToast()
+  const userId = "USER_ID_FROM_AUTH" // Replace this with actual authentication
 
+  // Fetch all tasks
+  useEffect(() => {
+    async function fetchTasks() {
+      try {
+        const response = await fetch("/api/tasks")
+        const data = await response.json()
+        if (data.success) {
+          setTasks(data.data)
+        } else {
+          throw new Error(data.message)
+        }
+      } catch (err) {
+        setError("Failed to load tasks. Please try again.")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTasks()
+  }, [])
+
+  // Handle joining a task
   const handleJoinTask = useCallback(
     async (taskId: string) => {
       try {
         setLoading(true)
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        toast({
-          title: "Success",
-          description: "You have successfully joined the task!",
+        const response = await fetch(`/api/task/${taskId}/join`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
         })
+        const data = await response.json()
+
+        if (data.success) {
+          setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task._id === taskId ? { ...task, joiners: [...task.joiners, userId] } : task
+            )
+          )
+          toast({
+            title: "Joined Task",
+            description: "You have successfully joined this task!",
+          })
+        } else {
+          throw new Error(data.message)
+        }
       } catch (err) {
         setError("Failed to join task. Please try again.")
       } finally {
         setLoading(false)
       }
     },
-    [toast],
+    [toast, userId]
   )
 
-  const handleDeleteTask = useCallback(
+  // Handle submitting a task
+  const handleSubmitTask = useCallback(
     async (taskId: string) => {
       try {
         setLoading(true)
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        toast({
-          title: "Success",
-          description: "Task has been deleted successfully!",
+        const response = await fetch(`/api/task/${taskId}/SUBMIT`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ submittedContent: "My completed work" }), // Modify if needed
         })
+        const data = await response.json()
+
+        if (data.success) {
+          setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task._id === taskId ? { ...task, isSubmitted: true } : task
+            )
+          )
+          toast({
+            title: "Task Submitted",
+            description: "Your task has been submitted successfully!",
+          })
+        } else {
+          throw new Error(data.message)
+        }
       } catch (err) {
-        setError("Failed to delete task. Please try again.")
+        setError("Failed to submit task. Please try again.")
       } finally {
         setLoading(false)
       }
     },
-    [toast],
+    [toast]
   )
 
   if (loading) {
@@ -126,10 +149,12 @@ export function TasksList() {
   }
 
   return (
-    <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {mockTasks.map((task) => (
-          <Card key={task.id} className="overflow-hidden transition-all hover:shadow-lg">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {tasks.map((task) => {
+        const hasJoined = task.joiners.includes(userId)
+
+        return (
+          <Card key={task._id} className="overflow-hidden transition-all hover:shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>{task.title}</span>
@@ -138,7 +163,7 @@ export function TasksList() {
                     "rounded-full px-2 py-1 text-xs font-semibold",
                     task.difficultyLevel === "Easy" && "bg-green-100 text-green-800",
                     task.difficultyLevel === "Medium" && "bg-yellow-100 text-yellow-800",
-                    task.difficultyLevel === "Hard" && "bg-red-100 text-red-800",
+                    task.difficultyLevel === "Hard" && "bg-red-100 text-red-800"
                   )}
                 >
                   {task.difficultyLevel}
@@ -157,28 +182,23 @@ export function TasksList() {
               </div>
             </CardContent>
             <CardFooter className="flex gap-2">
-              <Button className="flex-1" onClick={() => handleJoinTask(task.id)} disabled={loading}>
-                Join Task
-              </Button>
-              {task.isPublisher && (
-                <Button variant="destructive" size="icon" onClick={() => handleDeleteTask(task.id)} disabled={loading}>
-                  <Trash2 className="h-4 w-4" />
+              {task.isSubmitted ? (
+                <Button className="flex-1" variant="secondary" disabled>
+                  Submitted <CheckCircle className="h-4 w-4 ml-2 text-green-500" />
+                </Button>
+              ) : hasJoined ? (
+                <Button className="flex-1" onClick={() => handleSubmitTask(task._id)} disabled={loading}>
+                  Submit Task
+                </Button>
+              ) : (
+                <Button className="flex-1" onClick={() => handleJoinTask(task._id)} disabled={loading}>
+                  Join Task <PlusCircle className="h-4 w-4 ml-2" />
                 </Button>
               )}
             </CardFooter>
           </Card>
-        ))}
-      </div>
-
-      <Dialog open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedTask?.title}</DialogTitle>
-            <DialogDescription>{selectedTask?.description}</DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    </>
+        )
+      })}
+    </div>
   )
 }
-
