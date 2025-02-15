@@ -1,0 +1,15 @@
+/* CSS for parallax effect */
+.parallax-section {
+   /* Use your own background image */
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Ensure the content text is readable */
+.parallax-section .max-w-7xl {
+  background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent background */
+  padding: 20px; /* Add some padding for spacing */
+  border-radius: 8px; /* Optional: to make the content look more polished */
+}
