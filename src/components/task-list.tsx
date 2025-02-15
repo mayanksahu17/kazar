@@ -8,7 +8,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-// import { useToast } from "@/hooks/use-toast"
 import { useToast } from "@/hooks/use-toast"
 
 interface Task {
@@ -16,7 +15,7 @@ interface Task {
   title: string
   description: string
   difficultyLevel: "Easy" | "Medium" | "Hard"
-  scorePoints: number
+  scorePoints: number                                             
   deadline: string
   publisher: { _id: string; userName: string; role: string }
   joiners: string[]
