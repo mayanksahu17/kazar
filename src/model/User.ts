@@ -12,7 +12,7 @@ export interface User extends Document {
   verifyCode: string;
   role: "student" | "professor" | "company" | "admin";
   profileCompleted: boolean; 
-=======
+
 export interface user extends Document{
     userName : string,
     email : string,
@@ -23,7 +23,7 @@ export interface user extends Document{
     lockUntil: number ;
     verifyCode : string;
     role : string;
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
+
 }
 
 const UserSchema: Schema<User> = new Schema(

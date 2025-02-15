@@ -6,35 +6,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-<<<<<<< HEAD
-const signUpSchema = z.object({
-  userName: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  mobileNumber: z.string().regex(/^\d{10}$/, "Invalid mobile number"),
-  role: z.enum(["student", "professor", "company"]),
-});
-=======
 interface SignUpFormData {
   userName: string;
   email: string;
   password: string;
   role: string;
 }
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
 
 type SignUpForm = z.infer<typeof signUpSchema>;
 
 export default function SignUp() {
   const router = useRouter();
-<<<<<<< HEAD
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignUpForm>({
-    resolver: zodResolver(signUpSchema),
-=======
 
   const [formData, setFormData] = useState<SignUpFormData>({
     userName: '',
@@ -42,13 +24,9 @@ export default function SignUp() {
     password: '',
     role: ''
     
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
   });
   const [error, setError] = useState<string | null>(null);
 
-<<<<<<< HEAD
-  const onSubmit = async (data: SignUpForm) => {
-=======
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
@@ -67,7 +45,6 @@ export default function SignUp() {
       return;
     }
 
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
@@ -177,19 +154,6 @@ export default function SignUp() {
               )}
             </div>
           </div>
-<<<<<<< HEAD
-
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Sign Up
-            </button>
-          </div>
-=======
          
           <div>
   <Label htmlFor="role">Role</Label>
@@ -213,7 +177,6 @@ export default function SignUp() {
           <Button type="submit" className="w-full text-orange-600">
             {loading ? 'Signing up...' : 'Sign up'}
           </Button>
->>>>>>> d825a258ff4638a067822054f234d822e13aed6e
         </form>
       </div>
     </div>
