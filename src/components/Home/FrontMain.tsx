@@ -138,13 +138,13 @@ export default function Home() {
                 className="flex flex-col sm:flex-row gap-4"
               >
                 <Link
-                  href="/onboarding"
+                  href="/about-us"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-green-500 rounded-full hover:opacity-90 transition-all shadow-lg shadow-blue-500/25 group"
                 >
                   Know more about us!
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-    
+
               </motion.div>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-4 mt-8">
@@ -213,11 +213,11 @@ export default function Home() {
   </div>
 
   <Image
-    src="/banner hero.jpeg"
+    src="/herobanner.jpeg"
     alt="Application Interface"
     width={1920} // Desktop width
     height={1080} // Desktop height
-    className="w-full h-auto object-cover md:object-contain"
+    className="w-4/5 h-auto object-cover md:object-contain"
   />
 </div>
 

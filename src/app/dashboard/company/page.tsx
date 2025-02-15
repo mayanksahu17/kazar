@@ -1,8 +1,12 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import LeaderboardPage from "@/components/leaderboard/leaderboard";
 type CompanyDashboardData = {
   postedInternships: string[];
   jobListings: string[];
@@ -48,32 +52,85 @@ export default function CompanyDashboard() {
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">Company Dashboard</h1>
+          <h1 className="text-3xl font-bold text-blue-600">Company Dashboard</h1>
         </div>
       </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          {data && (
-            <div className="p-6 bg-white shadow rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Posted Internships</h2>
-              <ul className="list-disc pl-5 space-y-1">
-                {data.postedInternships.length > 0 ? (
-                  data.postedInternships.map((internship, index) => <li key={index}>{internship}</li>)
-                ) : (
-                  <p>No posted internships.</p>
-                )}
-              </ul>
-              <h2 className="text-xl font-semibold mt-6 mb-4">Job Listings</h2>
-              <ul className="list-disc pl-5 space-y-1">
-                {data.jobListings.length > 0 ? (
-                  data.jobListings.map((job, index) => <li key={index}>{job}</li>)
-                ) : (
-                  <p>No job listings.</p>
-                )}
-              </ul>
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="bg-blue-600 text-white">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-blue-600">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="internships" className="data-[state=active]:bg-white data-[state=active]:text-blue-600">
+              Internships
+            </TabsTrigger>
+
+          </TabsList>
+          <TabsContent value="overview" className="mt-6">
+            <div className="grid grid-cols-2 gap-6">
+              <Card className="col-span-1">
+                <CardHeader>
+                  <CardTitle className="text-blue-600">Leaderboard</CardTitle>
+                  
+                </CardHeader>
+                <CardContent>
+                <link href="" ></link>
+                  {/* Placeholder for leaderboard */}
+                  <LeaderboardPage />
+                  <p>Leaderboard content goes here</p>
+                </CardContent>
+              </Card>
+              <div className="col-span-1 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-blue-600">Post Opportunity</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form className="space-y-4">
+                      <Input placeholder="Opportunity Title" />
+                      <Textarea placeholder="Opportunity Description" />
+                      <Button className="w-full bg-green-500 hover:bg-green-600">Post Opportunity</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-blue-600">Current Projects</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-500">No current projects</p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          )}
-        </div>
+          </TabsContent>
+          <TabsContent value="internships">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-blue-600">Posted Internships</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {data?.postedInternships?.length ? (
+                  <ul>
+                    {data.postedInternships.map((internship, index) => (
+                      <li key={index}>{internship}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No internships posted yet</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="jobs">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-blue-600">Job Listings</CardTitle>
+              </CardHeader>
+
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

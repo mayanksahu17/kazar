@@ -24,16 +24,7 @@ const sectionsData = [
       'Students achieve remarkable feedback, through our strategic AI feedback model, which gives complete information and evaluation of their profile, resulting in 80% less time spent doubting themselves.',
     bgColor: '#2563EB',
     image:
-      'https://res.cloudinary.com/dmky9t4sr/video/upload/v1736745520/20250113_1048_Dream_Job_Unveiled_simple_compose_01jhf1hgdffddtm8v04v6y9nfs_dlh4i8.mp4?height=600&width=550',
-  },
-  {
-    title: '600x',
-    subtitle: 'Return on Investment',
-    description:
-      'By cutting weeks off the job search, we help clients gain an extra $20K in earnings. Additionally, receiving multiple offers can boost salaries by an average of $30K, leading to a substantial increase in overall compensation.',
-    bgColor: '#059669',
-    image:
-      'https://res.cloudinary.com/dmky9t4sr/video/upload/v1736745713/20250113_1051_Entering_Google_s_Office_simple_compose_01jhf1qt9gfrs8yv1m823kw6t8_w2u1bs.mp4?height=600&width=550',
+      'catbot.png',
   },
 ];
 
@@ -132,15 +123,8 @@ const Section = ({
           >
             <Link href="https://apply.neetocal.com/meeting-with-nikhil-jain">
               <button className="relative flex items-center justify-center gap-2 px-4 py-1.5 text-sm md:text-base font-medium text-primary-foreground bg-white rounded-full hover:bg-gray-100 transition-all shadow-md border border-gray-300 w-full md:w-auto mt-8">
-                <span className="rounded-full bg-white p-1.5">
-                  <img
-                    src="Ashwin_jain.png"
-                    alt="Custom Image"
-                    className="h-5 w-5 rounded-full"
-                    loading="lazy"
-                  />
-                </span>
-                <span>Try it for free</span>
+
+                <span  className='text-black'>Try it for free</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"

@@ -12,13 +12,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Logo & Description */}
           <div className="flex flex-col items-center lg:items-start space-y-4">
-            <Image
+            {/* <Image
               src="/Hiredeasy.png"
               alt="Hiredeasy Logo"
               width={160}
               height={64}
               className="h-16 w-auto"
-            />
+            /> */}
             <p className="text-gray-600 text-sm text-center lg:text-left">
               Empowering job seekers with smart and efficient tools to land their dream job.
             </p>

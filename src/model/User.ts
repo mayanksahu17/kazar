@@ -33,7 +33,7 @@ const UserSchema: Schema<User> = new Schema(
     },
     mobileNumber: {
       type: Number,
-      required: [true, "Please provide a mobile number"],
+      // required: [true, "Please provide a mobile number"],
     },
     isLocked: { type: Boolean, default: false },
     loginAttempts: { type: Number, default: 0 },
