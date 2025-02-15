@@ -4,34 +4,34 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
+import jwt from "jsonwebtoken";
 
 // Dynamically importing modal and other components
 const Model = dynamic(() => import("../GetInTouch/Model"), { ssr: false });
 const Help = dynamic(() => import("../GetInTouch/Help"), { ssr: false });
 
+interface DecodedToken {
+  id: string;
+  userName: string;
+  role: "company" | "professor" | "student";
+}
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<{ id: string; userName: string; role: string } | null>(null);
+  const [user, setUser] = useState<DecodedToken | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
+    const token = localStorage.getItem("token");
+    if (token) {
       try {
-        const res = await fetch("/api/auth/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (data.success) {
-          setUser(data.user);
+        const decoded = jwt.decode(token) as DecodedToken;
+        if (decoded && decoded.role) {
+          setUser(decoded);
         }
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error("Invalid token:", error);
       }
-    };
-
-    fetchUser();
+    }
   }, []);
 
   const handleLogout = () => {
@@ -40,7 +40,7 @@ const Navbar = () => {
     window.location.reload();
   };
 
-  const dashboardRoute = user?.role ? `/dashboard/${user.role}` : "/dashboard";
+  const dashboardRoute = user?.role ? `/dashboard/${user.role}` : "/dashboard/student"; // Fallback to student
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] mt-4">
@@ -62,7 +62,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/Job-Data" className="text-sm font-medium bg-green-600 text-white py-1.5 px-4 rounded-full hover:bg-green-700">
+            <Link href="/Job-Data" className="text-sm font-medium bg-green-500 text-white py-1.5 px-4 rounded-full hover:bg-green-600">
               LeaderBoard
             </Link>
            
@@ -72,10 +72,10 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
-                <Link href={dashboardRoute} className="text-sm font-medium bg-blue-500 text-white py-1.5 px-4 rounded-md hover:bg-blue-600">
+                <Link href={dashboardRoute} className="text-sm font-medium bg-green-500 text-white py-1.5 px-4 rounded-md hover:bg-green-600">
                   Dashboard
                 </Link>
-                <button onClick={handleLogout} className="text-sm font-medium bg-red-500 text-white py-1.5 px-4 rounded-md hover:bg-red-600">
+                <button onClick={handleLogout} className="text-sm font-medium bg-green-700 text-white py-1.5 px-4 rounded-md hover:bg-green-800">
                   Logout
                 </button>
               </>
@@ -97,16 +97,16 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden mt-2 bg-green-100/90 border border-gray-200 rounded-lg shadow-lg p-4 backdrop-blur-sm z-[200] relative">
           <nav className="flex flex-col space-y-4">
-            <Link href="/Job-Data" className="text-sm font-medium bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-700 text-center">
+            <Link href="/Job-Data" className="text-sm font-medium bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600 text-center">
               LeaderBoard
             </Link>
 
             {user ? (
               <>
-                <Link href={dashboardRoute} className="text-sm font-medium bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-center">
+                <Link href={dashboardRoute} className="text-sm font-medium bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 text-center">
                   Dashboard
                 </Link>
-                <button onClick={handleLogout} className="text-sm font-medium bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 text-center">
+                <button onClick={handleLogout} className="text-sm font-medium bg-green-700 text-white py-2 px-4 rounded-md hover:bg-green-800 text-center">
                   Logout
                 </button>
               </>
