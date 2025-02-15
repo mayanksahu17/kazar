@@ -1,28 +1,27 @@
-"use client"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+'use client'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const signInSchema = z.object({
   userNameOrEmail: z.string().min(1, "Username or email is required"),
   password: z.string().min(1, "Password is required"),
-})
+});
 
-type SignInForm = z.infer<typeof signInSchema>
+type SignInForm = z.infer<typeof signInSchema>;
 
-export default function SignIn() {
-  const router = useRouter()
+const Index = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
-  })
-  const [error, setError] = useState<string | null>(null)
+  });
+  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (data: SignInForm) => {
     try {
@@ -30,70 +29,114 @@ export default function SignIn() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
-        localStorage.setItem("token", result.token)
-        router.push(`/dashboard/${result.data.role.toLowerCase()}`)
+        localStorage.setItem("token", result.token);
+        window.location.href = `/dashboard/${result.data.role.toLowerCase()}`;
+        toast.success("Successfully signed in!");
       } else {
-        setError(result.message || "Invalid username/email or password")
+        setError(result.message || "Invalid username/email or password");
+        toast.error(result.message || "Invalid username/email or password");
       }
     } catch (err) {
-      setError("An error occurred during sign in")
+      setError("An error occurred during sign in");
+      toast.error("An error occurred during sign in");
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="userNameOrEmail" className="sr-only">
-                Username or Email
-              </label>
-              <input
-                id="userNameOrEmail"
-                type="text"
-                {...register("userNameOrEmail")}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Username or Email"
-              />
-              {errors.userNameOrEmail && <p className="text-red-500 text-xs mt-1">{errors.userNameOrEmail.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                {...register("password")}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-            </div>
-          </div>
-
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 antialiased">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-md px-8 py-10 mx-4"
+      >
+        <div className="relative backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-green-100 p-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent rounded-2xl" />
+          
+          <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-center space-y-3 mb-8"
             >
-              Sign In
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
-}
+              <h2 className="text-2xl font-medium text-gray-900">Welcome back</h2>
+              <p className="text-sm text-gray-600">Sign in to your account</p>
+            </motion.div>
 
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="space-y-4"
+              >
+                <div>
+                  <label htmlFor="userNameOrEmail" className="block text-sm font-medium text-gray-700 mb-1">
+                    Username or Email
+                  </label>
+                  <input
+                    id="userNameOrEmail"
+                    type="text"
+                    {...register("userNameOrEmail")}
+                    className="w-full px-4 py-3 rounded-lg bg-white/50 border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-gray-900 text-sm placeholder:text-gray-400"
+                    placeholder="Enter your username or email"
+                  />
+                  {errors.userNameOrEmail && (
+                    <p className="mt-1 text-sm text-red-500">{errors.userNameOrEmail.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    {...register("password")}
+                    className="w-full px-4 py-3 rounded-lg bg-white/50 border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-gray-900 text-sm placeholder:text-gray-400"
+                    placeholder="Enter your password"
+                  />
+                  {errors.password && (
+                    <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
+                  )}
+                </div>
+              </motion.div>
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-sm text-red-500 text-center"
+                >
+                  {error}
+                </motion.p>
+              )}
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-lg font-medium hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                >
+                  Sign in
+                </button>
+              </motion.div>
+            </form>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default Index;

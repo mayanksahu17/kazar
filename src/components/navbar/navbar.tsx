@@ -64,10 +64,10 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/">
             <img
-              alt="Hiredeasy Logo"
-              className="absolute h-12 w-auto cursor-pointer transition-transform duration-200 hover:scale-110"
+              alt="skill bridge"
+              className="absolute h-8 w-auto rounded-lg cursor-pointer transition-transform duration-200 hover:scale-110"
               style={{ top: '50%', transform: 'translateY(-50%)' }}
-              src="/Hiredeasy.png"
+              src="/assets/Images/skill-bridge-logo.png"
             />
           </Link>
 
@@ -86,6 +86,8 @@ const Navbar = () => {
                 LeaderBoard
               </span>
             </Link>
+            <Link href={'/sign-up'}>sign up</Link>
+            <Link href={'/sign-in'}>sign in</Link>
           </nav>
 
           {/* User Controls */}

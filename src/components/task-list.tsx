@@ -33,7 +33,7 @@ export function TasksList() {
   useEffect(() => {
     async function fetchTasks() {
       try {
-        const response = await fetch("/api/tasks")
+        const response = await fetch("/api/task")
         const data = await response.json()
         if (data.success) {
           setTasks(data.data)
