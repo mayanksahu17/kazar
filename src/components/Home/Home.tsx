@@ -7,7 +7,6 @@ import Navbar from '../navbar/navbar';
 import Footer from '../footer/footer';
 import FrontMain from './FrontMain';
 import WorksFor from './worksfor';
-import Universities from './Universities';
 import Message from './Message';
 import StatsAndCTA from './StatsAndCTA'
 import Call from './call';
@@ -16,9 +15,7 @@ import Call from './call';
 const Help = dynamic(() => import('../GetInTouch/Help'), { ssr: false });
 const Model = dynamic(() => import('../GetInTouch/Model'), { ssr: false });
 const Sidekick = dynamic(() => import('./sidekick'), { ssr: false });
-const FAQSection = dynamic(() => import('../FAQ/faq'), { ssr: false });
 const Widget = dynamic(() => import('./Widget'), { ssr: false });
-const Testimonial = dynamic(() => import('./Testimonial'), { ssr: false });
 
 const ScrollBackgroundEffect = () => {
   const [bgColor, setBgColor] = useState('#ffffff')
@@ -92,10 +89,10 @@ const ScrollBackgroundEffect = () => {
 }
 
 const HomePage = () => {
-  const [showForm, setShowForm] = useState(false);
+  // const [showForm, setShowForm] = useState(false);
 
   // Close the form modal
-  const handleClose = () => setShowForm(false);
+  // const handleClose = () => setShowForm(false);
 
   return (
     <>
@@ -112,11 +109,8 @@ const HomePage = () => {
           <Call/>
           <StatsAndCTA/>
           <WorksFor />
-          <Universities />
           {/* <Features /> */}
           <Sidekick />
-          <Testimonial />
-          <FAQSection />
           {/* <Message /> */}
           <Widget />
           <Footer />

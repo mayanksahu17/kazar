@@ -144,7 +144,7 @@ export default function Home() {
                   Know more about us!
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-    
+
               </motion.div>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-4 mt-8">
