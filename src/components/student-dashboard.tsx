@@ -85,7 +85,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/resume" className="flex items-center gap-2">
+                  <a href="/student-resume" className="flex items-center gap-2">
                     <ScrollText className="h-4 w-4" />
                     <span>Resume</span>
                   </a>

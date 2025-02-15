@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import ProfileSchema from "./Profile"; // Reusing the profile schema
+import { ProfileSchema } from "./Profile"; // Import the Schema, NOT the Model!
 
 export interface IStudent extends Document {
   userId: mongoose.Schema.Types.ObjectId;
@@ -12,25 +12,27 @@ export interface IStudent extends Document {
     academics: number;
     practicals: number;
     extracurriculars: number;
-    totalScore?: number; // Made optional since it's computed
+    totalScore?: number;
   };
 }
 
-const StudentSchema: Schema<IStudent> = new Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  enrollmentNumber: { type: String, unique: true, required: true },
-  year: { type: Number, required: true },
-  section: { type: String, required: true },
-  classId: { type: mongoose.Schema.Types.ObjectId, ref: "Class" },
-  profile: ProfileSchema, // Embedded profile schema
-  scores: {
-    academics: { type: Number, default: 0 },
-    practicals: { type: Number, default: 0 },
-    extracurriculars: { type: Number, default: 0 },
-    totalScore: { type: Number, default: 0 }, // Will be overridden by virtual
+const StudentSchema: Schema<IStudent> = new Schema(
+  {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    enrollmentNumber: { type: String, unique: true, required: true },
+    year: { type: Number, required: true },
+    section: { type: String, required: true },
+    classId: { type: mongoose.Schema.Types.ObjectId, ref: "Class" },
+    profile: ProfileSchema, // ✅ Correct way to embed ProfileSchema
+    scores: {
+      academics: { type: Number, default: 0 },
+      practicals: { type: Number, default: 0 },
+      extracurriculars: { type: Number, default: 0 },
+      totalScore: { type: Number, default: 0 },
+    },
   },
-});
-
+  { timestamps: true }
+);
 
 // 🔹 Prevent OverwriteModelError
 const Student = mongoose.models.Student || mongoose.model<IStudent>("Student", StudentSchema);
