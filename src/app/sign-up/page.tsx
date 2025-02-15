@@ -1,133 +1,155 @@
-"use client"
-import React, { useState } from 'react';
-import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import Cookies from 'js-cookie';
+"use client";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface SignUpFormData {
-  userName: string;
-  email: string;
-  password: string;
-  mobileNumber: string;
-  bgmiId: string;
-}
+const signUpSchema = z.object({
+  userName: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  mobileNumber: z.string().regex(/^\d{10}$/, "Invalid mobile number"),
+  role: z.enum(["student", "professor", "company"]),
+});
 
-const SignUp: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+type SignUpForm = z.infer<typeof signUpSchema>;
 
-  const getCookie = (name: string): string | undefined => {
-    return Cookies.get(name);
-  };
+export default function SignUp() {
   const router = useRouter();
-
-  const [formData, setFormData] = useState<SignUpFormData>({
-    userName: '',
-    email: '',
-    password: '',
-    mobileNumber: '+91',
-    bgmiId: ''
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpForm>({
+    resolver: zodResolver(signUpSchema),
   });
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { userName, email, password, mobileNumber, bgmiId } = formData;
-
-    if (!userName || !email || !password || !mobileNumber || !bgmiId) {
-      toast.error('All fields are required');
-      return;
-    }
-
+  const onSubmit = async (data: SignUpForm) => {
     try {
-      setLoading(true);
-      const response = await axios.post('api/auth/sign-up', formData);
-      console.log(response);
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-      toast.success('Sign up successful');
-      router.push('/sign-in');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message);
-    } finally {
-      setLoading(false);
+      const result = await response.json();
+
+      if (result.success) {
+        localStorage.setItem("token", result.token);
+        router.push(`/profile/${data.role}`);
+      } else {
+        setError(result.message || "An error occurred during sign up");
+      }
+    } catch (err) {
+      setError("An error occurred during sign up");
     }
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
   };
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 bg-gray-900 text-orange-600">
-      <ToastContainer />
-      <div className="mx-auto w-full max-w-md space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground text-orange-600">Sign up your account</h1>
-          <p className="mt-2 text-muted-foreground">Enter your Username and Details below</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign up for an account
+          </h2>
         </div>
-        <form className="space-y-4 text-orange-500" onSubmit={handleSubmit}>
-          <div>
-            <Label htmlFor="userName">Username</Label>
-            <Input id="userName" type="text" placeholder="Enter your username" value={formData.userName} onChange={handleChange} required />
-          </div>
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="Enter your email" value={formData.email} onChange={handleChange} required />
-          </div>
-          <div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-            </div>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                required
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="userName" className="sr-only">
+                Username
+              </label>
+              <input
+                id="userName"
+                type="text"
+                {...register("userName")}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Username"
               />
-              <span
-                className="absolute right-3 top-2 cursor-pointer"
-                onClick={togglePasswordVisibility}
+              {errors.userName && (
+                <p className="text-red-500 text-xs mt-1">{errors.userName.message}</p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email"
+                type="email"
+                {...register("email")}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email address"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                {...register("password")}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="mobileNumber" className="sr-only">
+                Mobile Number
+              </label>
+              <input
+                id="mobileNumber"
+                type="tel"
+                {...register("mobileNumber")}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Mobile Number"
+              />
+              {errors.mobileNumber && (
+                <p className="text-red-500 text-xs mt-1">{errors.mobileNumber.message}</p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="role" className="sr-only">
+                Role
+              </label>
+              <select
+                id="role"
+                {...register("role")}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
               >
-                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
-              </span>
+                <option value="">Select Role</option>
+                <option value="student">Student</option>
+                <option value="professor">Professor</option>
+                <option value="company">Company</option>
+              </select>
+              {errors.role && (
+                <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>
+              )}
             </div>
           </div>
+
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
           <div>
-            <Label htmlFor="mobileNumber">Mobile Number</Label>
-            <Input id="mobileNumber" type="tel" placeholder="Enter your Mobile Number" value={formData.mobileNumber} onChange={handleChange} required />
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Sign Up
+            </button>
           </div>
-          <div>
-            <Label htmlFor="bgmiId">Bgmi Id</Label>
-            <Input id="bgmiId" type="number" placeholder="Enter your bgmiID" value={formData.bgmiId} onChange={handleChange} required />
-          </div>
-          <Link href="/sign-in" className="text-sm font-medium hover:underline text-muted-foreground" prefetch={false}>
-            Already have an account? Sign-in
-          </Link>
-          <Button type="submit" className="w-full text-orange-600">
-            {loading ? 'Signing up...' : 'Sign up'}
-          </Button>
         </form>
       </div>
     </div>
   );
-};
-
-export default SignUp;
+}

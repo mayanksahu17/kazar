@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import cookie from 'cookie';
 
 const MAX_FAILED_ATTEMPTS = 5;
-const LOCK_TIME = 30 * 60 * 1000; // 30 minutes
+const LOCK_TIME = 30 * 60 * 1000; 
 
 export async function POST(req: NextRequest, res: NextResponse) {
   await dbConnect();
