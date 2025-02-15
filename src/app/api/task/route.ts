@@ -81,6 +81,7 @@ export async function GET() {
 
 // ✅ Get Single Task
 export async function GET_ONE(req: NextRequest) {
+  
   await dbConnect();
   try {
     const { id } = await req.json(); // Extract task ID from the request body

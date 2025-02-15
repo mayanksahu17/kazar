@@ -45,7 +45,10 @@ const DialogContent = React.forwardRef<
     >
       {children}
       <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+<<<<<<< HEAD
         <X className="h-4 w-4" />
+=======
+>>>>>>> e8cf2a8dd7991c9d5d831ace8e45ea07447f52d0
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
@@ -112,8 +115,13 @@ export {
   Dialog,
   DialogPortal,
   DialogOverlay,
+<<<<<<< HEAD
   DialogTrigger,
   DialogClose,
+=======
+  DialogClose,
+  DialogTrigger,
+>>>>>>> e8cf2a8dd7991c9d5d831ace8e45ea07447f52d0
   DialogContent,
   DialogHeader,
   DialogFooter,
