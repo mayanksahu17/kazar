@@ -2,7 +2,7 @@
 
 import { FloatingIcons } from './floating-icon';
 import { JobCard } from './job-card';
-import Marquee from 'react-fast-marquee';
+import Marquee from "react-fast-marquee";
 
 const jobCategories = [
   {
