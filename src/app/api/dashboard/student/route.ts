@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUserFromToken } from "@/utils/auth"; // Helper to extract token
 import dbConnect from "@/lib/dbConnect";
-import {student} from "@/model/Student"; // Assuming Student model exists
+import { student } from "@/model/Student"; // Assuming Student model exists
 
 import { NextRequest } from "next/server";
 
@@ -20,12 +20,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Invalid token" }, { status: 401 });
     }
 
-    const Student = await student.findById(userId).select("enrolledCourses events");
-    if (!student) {
+    const student = await Student.findById(userId).select("enrolledCourses events");
+    if (!Student) {
       return NextResponse.json({ success: false, message: "Student not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: Student }, { status: 200 });
+    return NextResponse.json({ success: true, data: student }, { status: 200 });
   } catch (error) {
     console.error("Error fetching student dashboard:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
