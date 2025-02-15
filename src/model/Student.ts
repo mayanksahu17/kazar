@@ -9,9 +9,7 @@ export interface IStudent extends Document {
   classId: mongoose.Schema.Types.ObjectId;
   profile: typeof ProfileSchema;
   scores: {
-    academics: number;
-    practicals: number;
-    extracurriculars: number;
+    
     totalScore?: number; // Made optional since it's computed
   };
 }
@@ -24,9 +22,6 @@ const StudentSchema: Schema<IStudent> = new Schema({
   classId: { type: mongoose.Schema.Types.ObjectId, ref: "Class" },
   profile: ProfileSchema, // Embedded profile schema
   scores: {
-    academics: { type: Number, default: 0 },
-    practicals: { type: Number, default: 0 },
-    extracurriculars: { type: Number, default: 0 },
     totalScore: { type: Number, default: 0 }, // Will be overridden by virtual
   },
 });

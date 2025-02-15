@@ -92,10 +92,10 @@ const ScrollBackgroundEffect = () => {
 }
 
 const HomePage = () => {
-  const [showForm, setShowForm] = useState(false);
+  // const [showForm, setShowForm] = useState(false);
 
   // Close the form modal
-  const handleClose = () => setShowForm(false);
+  // const handleClose = () => setShowForm(false);
 
   return (
     <>
