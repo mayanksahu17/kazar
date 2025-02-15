@@ -35,6 +35,7 @@ const Index = () => {
 
       if (result.success) {
         localStorage.setItem("token", result.token);
+        localStorage.setItem("userId", result.data?._id);
         window.location.href = `/dashboard/${result.data.role.toLowerCase()}`;
         toast.success("Successfully signed in!");
       } else {
