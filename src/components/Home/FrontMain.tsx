@@ -138,7 +138,7 @@ export default function Home() {
                 className="flex flex-col sm:flex-row gap-4"
               >
                 <Link
-                  href="/onboarding"
+                  href="/about-us"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-green-500 rounded-full hover:opacity-90 transition-all shadow-lg shadow-blue-500/25 group"
                 >
                   Know more about us!

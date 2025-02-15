@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 interface Task {
@@ -109,45 +110,55 @@ const TaskList = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Available Tasks</h1>
-      {tasks.length === 0 ? (
-        <p>No tasks available.</p>
-      ) : (
-        <ul className=" space-y-4 flex ">
-          {tasks.map((task) => {
-            const isJoined = userId && task.joiners.includes(userId);
+    <div className="max-w-6xl mx-auto p-4">
+    <h1 className="text-2xl font-bold mb-6 text-center">Available Tasks</h1>
 
-            return (
-              <li key={task._id} className=" grid grid-col-3 border p-4 rounded-lg shadow">
-                <h2 className="text-lg font-semibold">{task.taskContent}</h2>
-                <p className="text-sm text-gray-500">
-                  Difficulty: {task.difficultyLevel} | Points: {task.scorePoints}
-                </p>
+    {tasks.length === 0 ? (
+      <p className="text-center text-gray-500">No tasks available.</p>
+    ) : (
+      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tasks.map((task) => {
+          const isJoined = userId && task.joiners.includes(userId);
 
-                {!isJoined ? (
-                  <button
-                    className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
-                    onClick={() => handleJoinTask(task._id)}
-                    disabled={loading === task._id}
-                  >
-                    {loading === task._id ? "Joining..." : "Join Task"}
-                  </button>
-                ) : (
-                  <button
-                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-                    onClick={() => handleSubmitTask(task._id)}
-                    disabled={loading === task._id}
-                  >
-                    {loading === task._id ? "Submitting..." : "Submit Task"}
-                  </button>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
+          return (
+            <motion.li
+              key={task._id}
+              className="border p-5 rounded-lg shadow-lg bg-white transition-transform transform hover:scale-105"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <h2 className="text-lg font-semibold text-gray-800">{task.taskContent}</h2>
+              <p className="text-sm text-gray-500">
+                Difficulty: {task.difficultyLevel} | Points: {task.scorePoints}
+              </p>
+
+              {!isJoined ? (
+                <motion.button
+                  className="mt-4 w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all"
+                  onClick={() => handleJoinTask(task._id)}
+                  disabled={loading === task._id}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {loading === task._id ? "Joining..." : "Join Task"}
+                </motion.button>
+              ) : (
+                <motion.button
+                  className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all"
+                  onClick={() => handleSubmitTask(task._id)}
+                  disabled={loading === task._id}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {loading === task._id ? "Submitting..." : "Submit Task"}
+                </motion.button>
+              )}
+            </motion.li>
+          );
+        })}
+      </ul>
+    )}
+  </div>
   );
 };
 
