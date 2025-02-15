@@ -1,10 +1,11 @@
 import dbConnect from '@/lib/dbConnect';
 import { Task } from '@/model/Task';
 import { User } from '@/model/User';
+import { Submission } from '@/model/Submisstion';
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromToken } from '@/utils/auth';
 
-// Create Task
+// ✅ Create Task
 export async function POST(req: NextRequest) {
   await dbConnect();
   try {
@@ -22,10 +23,7 @@ export async function POST(req: NextRequest) {
     const { scorePoints, difficultyLevel, deadline, taskContent } = taskData;
 
     if (!scorePoints || !difficultyLevel || !deadline || !taskContent) {
-      return NextResponse.json({
-        success: false,
-        message: 'Missing required fields'
-      }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
     const task = await Task.create({
@@ -35,21 +33,13 @@ export async function POST(req: NextRequest) {
       submissions: []
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Task created successfully',
-      data: task
-    }, { status: 201 });
+    return NextResponse.json({ success: true, message: 'Task created successfully', data: task }, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating task:', error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || 'Error creating task'
-    }, { status: error.statusCode || 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Error creating task' }, { status: 500 });
   }
 }
 
-// Get All Tasks
+// ✅ Get All Tasks
 export async function GET(req: NextRequest) {
   await dbConnect();
   try {
@@ -66,63 +56,38 @@ export async function GET(req: NextRequest) {
     if (upcoming) query.deadline = { $gt: new Date() };
 
     const skip = (page - 1) * limit;
-
-    const tasks = await Task.find(query)
-      .populate('publisher', 'userName role')
-      .skip(skip)
-      .limit(limit)
-      .sort({ deadline: 1 });
-
+    const tasks = await Task.find(query).populate('publisher', 'userName role').skip(skip).limit(limit).sort({ deadline: 1 });
     const total = await Task.countDocuments(query);
 
     return NextResponse.json({
       success: true,
       data: tasks,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(total / limit),
-        totalTasks: total
-      }
+      pagination: { currentPage: page, totalPages: Math.ceil(total / limit), totalTasks: total }
     });
   } catch (error: any) {
-    console.error('Error fetching tasks:', error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || 'Error fetching tasks'
-    }, { status: error.statusCode || 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Error fetching tasks' }, { status: 500 });
   }
 }
 
-// Get Single Task
-export async function GET_ONE(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Get Single Task
+export async function GET_ONE(req: NextRequest) {
   await dbConnect();
   try {
-    const task = await Task.findById(params.id)
-      .populate('publisher', 'userName role')
-      .populate('submissions');
+    const { id } = await req.json(); // Extract task ID from the request body
 
+    const task = await Task.findById(id).populate('publisher', 'userName role').populate('submissions');
     if (!task) {
-      return NextResponse.json({
-        success: false,
-        message: 'Task not found'
-      }, { status: 404 });
+      return NextResponse.json({ success: false, message: 'Task not found' }, { status: 404 });
     }
 
-    return NextResponse.json({
-      success: true,
-      data: task
-    });
+    return NextResponse.json({ success: true, data: task });
   } catch (error: any) {
-    console.error('Error fetching task:', error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || 'Error fetching task'
-    }, { status: error.statusCode || 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Error fetching task' }, { status: 500 });
   }
 }
 
-// Update Task
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Update Task
+export async function PUT(req: NextRequest) {
   await dbConnect();
   try {
     const tokenData = await getUserFromToken(req);
@@ -130,44 +95,27 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const task = await Task.findById(params.id);
+    const { id, ...updateData } = await req.json();
+
+    const task = await Task.findById(id);
     if (!task) {
-      return NextResponse.json({
-        success: false,
-        message: 'Task not found'
-      }, { status: 404 });
+      return NextResponse.json({ success: false, message: 'Task not found' }, { status: 404 });
     }
 
     if (task.publisher.toString() !== tokenData.id) {
-      return NextResponse.json({
-        success: false,
-        message: 'Only the task publisher can update this task'
-      }, { status: 403 });
+      return NextResponse.json({ success: false, message: 'Only the task publisher can update this task' }, { status: 403 });
     }
 
-    const updateData = await req.json();
-    const updatedTask = await Task.findByIdAndUpdate(
-      params.id,
-      updateData,
-      { new: true, runValidators: true }
-    ).populate('publisher', 'userName role');
+    const updatedTask = await Task.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).populate('publisher', 'userName role');
 
-    return NextResponse.json({
-      success: true,
-      message: 'Task updated successfully',
-      data: updatedTask
-    });
+    return NextResponse.json({ success: true, message: 'Task updated successfully', data: updatedTask });
   } catch (error: any) {
-    console.error('Error updating task:', error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || 'Error updating task'
-    }, { status: error.statusCode || 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Error updating task' }, { status: 500 });
   }
 }
 
-// Delete Task
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Delete Task
+export async function DELETE(req: NextRequest) {
   await dbConnect();
   try {
     const tokenData = await getUserFromToken(req);
@@ -175,38 +123,25 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const task = await Task.findById(params.id);
+    const { id } = await req.json();
+    const task = await Task.findById(id);
     if (!task) {
-      return NextResponse.json({
-        success: false,
-        message: 'Task not found'
-      }, { status: 404 });
+      return NextResponse.json({ success: false, message: 'Task not found' }, { status: 404 });
     }
 
     if (task.publisher.toString() !== tokenData.id) {
-      return NextResponse.json({
-        success: false,
-        message: 'Only the task publisher can delete this task'
-      }, { status: 403 });
+      return NextResponse.json({ success: false, message: 'Only the task publisher can delete this task' }, { status: 403 });
     }
 
-    await Task.findByIdAndDelete(params.id);
-
-    return NextResponse.json({
-      success: true,
-      message: 'Task deleted successfully'
-    });
+    await Task.findByIdAndDelete(id);
+    return NextResponse.json({ success: true, message: 'Task deleted successfully' });
   } catch (error: any) {
-    console.error('Error deleting task:', error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || 'Error deleting task'
-    }, { status: error.statusCode || 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Error deleting task' }, { status: 500 });
   }
 }
 
-// Join Task
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Join Task
+export async function PATCH(req: NextRequest) {
   await dbConnect();
   try {
     const tokenData = await getUserFromToken(req);
@@ -214,34 +149,58 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const task = await Task.findById(params.id);
+    const { id } = await req.json();
+
+    const task = await Task.findById(id);
     if (!task) {
-      return NextResponse.json({
-        success: false,
-        message: 'Task not found'
-      }, { status: 404 });
+      return NextResponse.json({ success: false, message: 'Task not found' }, { status: 404 });
     }
 
     if (task.joiners.includes(tokenData.id)) {
-      return NextResponse.json({
-        success: false,
-        message: 'You have already joined this task'
-      }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'You have already joined this task' }, { status: 400 });
     }
 
     task.joiners.push(tokenData.id);
     await task.save();
 
-    return NextResponse.json({
-      success: true,
-      message: 'Successfully joined the task',
-      data: task
-    });
+    return NextResponse.json({ success: true, message: 'Successfully joined the task', data: task });
   } catch (error: any) {
-    console.error('Error joining task:', error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || 'Error joining task'
-    }, { status: error.statusCode || 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Error joining task' }, { status: 500 });
+  }
+}
+
+// ✅ Submit Task (Automatically Adds User to Joiners)
+export async function SUBMIT(req: NextRequest) {
+  await dbConnect();
+  try {
+    const tokenData = await getUserFromToken(req);
+    if (!tokenData) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { taskId, submittedContent } = await req.json();
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return NextResponse.json({ success: false, message: 'Task not found' }, { status: 404 });
+    }
+
+    const existingSubmission = await Submission.findOne({ task: taskId, student: tokenData.id });
+    if (existingSubmission) {
+      return NextResponse.json({ success: false, message: 'You have already submitted this task' }, { status: 400 });
+    }
+
+    const submission = await Submission.create({
+      task: taskId,
+      student: tokenData.id,
+      submittedContent,
+      submissionDate: new Date(),
+      status: 'pending'
+    });
+
+    await Task.updateOne({ _id: taskId }, { $addToSet: { joiners: tokenData.id } });
+
+    return NextResponse.json({ success: true, message: 'Task submitted successfully', data: submission });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: error.message || 'Error submitting task' }, { status: 500 });
   }
 }
