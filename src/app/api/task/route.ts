@@ -2,13 +2,13 @@ import dbConnect from '@/lib/dbConnect';
 import { Task } from '@/model/Task';
 import { User } from '@/model/User';
 import { NextRequest, NextResponse } from 'next/server';
-import { getTokenData } from '@/utils/auth';
+import { getUserFromToken } from '@/utils/auth';
 
 // Create Task
 export async function POST(req: NextRequest) {
   await dbConnect();
   try {
-    const tokenData = await getTokenData(req);
+    const tokenData = await getUserFromToken(req);
     if (!tokenData) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
@@ -125,7 +125,7 @@ export async function GET_ONE(req: NextRequest, { params }: { params: { id: stri
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   await dbConnect();
   try {
-    const tokenData = await getTokenData(req);
+    const tokenData = await getUserFromToken(req);
     if (!tokenData) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
@@ -170,7 +170,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   await dbConnect();
   try {
-    const tokenData = await getTokenData(req);
+    const tokenData = await getUserFromToken(req);
     if (!tokenData) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
@@ -209,7 +209,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   await dbConnect();
   try {
-    const tokenData = await getTokenData(req);
+    const tokenData = await getUserFromToken(req);
     if (!tokenData) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
