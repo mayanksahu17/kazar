@@ -1,184 +1,154 @@
-"use client"
+"use client";
 
-import { useCallback, useState } from "react"
-import { AlertCircle, Clock, Star, Trash2 } from "lucide-react"
-import cn from "classnames"
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useToast } from "@/components/ui/use-toast"
+import { useEffect, useState } from "react";
 
 interface Task {
-  id: string
-  title: string
-  description: string
-  difficultyLevel: "Easy" | "Medium" | "Hard"
-  scorePoints: number
-  deadline: string
-  isPublisher?: boolean
+  _id: string;
+  taskContent: string;
+  difficultyLevel: string;
+  deadline: string;
+  scorePoints: number;
+  joiners: string[];
 }
 
-// This would come from your API
-const mockTasks: Task[] = [
-  {
-    id: "1",
-    title: "Complete JavaScript Basics",
-    description: "Learn fundamental concepts of JavaScript programming",
-    difficultyLevel: "Easy",
-    scorePoints: 10,
-    deadline: "2024-03-01",
-    isPublisher: true,
-  },
-  {
-    id: "2",
-    title: "Build a React App",
-    description: "Create a simple React application with basic functionality",
-    difficultyLevel: "Medium",
-    scorePoints: 20,
-    deadline: "2024-03-15",
-  },
-  {
-    id: "3",
-    title: "Advanced Algorithm Challenge",
-    description: "Solve complex algorithmic problems",
-    difficultyLevel: "Hard",
-    scorePoints: 30,
-    deadline: "2024-03-30",
-  },
-]
+const TaskList = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState<string | null>(null);
 
-export function TasksList() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
-  const { toast } = useToast()
-
-  const handleJoinTask = useCallback(
-    async (taskId: string) => {
+  // Fetch tasks from backend
+  useEffect(() => {
+    const fetchTasks = async () => {
       try {
-        setLoading(true)
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        toast({
-          title: "Success",
-          description: "You have successfully joined the task!",
-        })
-      } catch (err) {
-        setError("Failed to join task. Please try again.")
-      } finally {
-        setLoading(false)
+        const res = await fetch("/api/task", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
+        if (data.success) {
+          setTasks(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching tasks", error);
       }
-    },
-    [toast],
-  )
+    };
 
-  const handleDeleteTask = useCallback(
-    async (taskId: string) => {
-      try {
-        setLoading(true)
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        toast({
-          title: "Success",
-          description: "Task has been deleted successfully!",
-        })
-      } catch (err) {
-        setError("Failed to delete task. Please try again.")
-      } finally {
-        setLoading(false)
+    fetchTasks();
+  }, []);
+
+  // Get token from localStorage
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
+
+  // Handle joining a task
+  const handleJoinTask = async (taskId: string) => {
+    if (!token) return alert("You must be logged in to join a task");
+
+    setLoading(taskId);
+    try {
+      const res = await fetch("/api/studenttasks", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ taskId }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert("Joined the task successfully!");
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task._id === taskId ? { ...task, joiners: [...task.joiners, data.userId] } : task
+          )
+        );
+        setUserId(data.userId);
+      } else {
+        alert(data.message);
       }
-    },
-    [toast],
-  )
+    } catch (error) {
+      console.error("Error joining task", error);
+    } finally {
+      setLoading(null);
+    }
+  };
 
-  if (loading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[...Array(3)].map((_, i) => (
-          <Card key={i} className="overflow-hidden">
-            <CardHeader className="space-y-2">
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-3/4" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-20" />
-            </CardContent>
-            <CardFooter>
-              <Skeleton className="h-9 w-full" />
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    )
-  }
+  // Handle submitting a task
+  const handleSubmitTask = async (taskId: string) => {
+    if (!token) return alert("You must be logged in to submit a task");
 
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    )
-  }
+    setLoading(taskId);
+    try {
+      const res = await fetch("/api/studenttasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ taskId, submittedContent: "My submission" }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert("Task submitted successfully!");
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error submitting task", error);
+    } finally {
+      setLoading(null);
+    }
+  };
 
   return (
-    <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {mockTasks.map((task) => (
-          <Card key={task.id} className="overflow-hidden transition-all hover:shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>{task.title}</span>
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-1 text-xs font-semibold",
-                    task.difficultyLevel === "Easy" && "bg-green-100 text-green-800",
-                    task.difficultyLevel === "Medium" && "bg-yellow-100 text-yellow-800",
-                    task.difficultyLevel === "Hard" && "bg-red-100 text-red-800",
-                  )}
-                >
-                  {task.difficultyLevel}
-                </span>
-              </CardTitle>
-              <CardDescription className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                <span>Due {new Date(task.deadline).toLocaleDateString()}</span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{task.description}</p>
-              <div className="mt-4 flex items-center gap-2 text-sm font-medium">
-                <Star className="h-4 w-4 text-yellow-400" />
-                <span>{task.scorePoints} points</span>
-              </div>
-            </CardContent>
-            <CardFooter className="flex gap-2">
-              <Button className="flex-1" onClick={() => handleJoinTask(task.id)} disabled={loading}>
-                Join Task
-              </Button>
-              {task.isPublisher && (
-                <Button variant="destructive" size="icon" onClick={() => handleDeleteTask(task.id)} disabled={loading}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+    <div className="max-w-4xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Available Tasks</h1>
+      {tasks.length === 0 ? (
+        <p>No tasks available.</p>
+      ) : (
+        <ul className="space-y-4">
+          {tasks.map((task) => {
+            const isJoined = userId && task.joiners.includes(userId);
 
-      <Dialog open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedTask?.title}</DialogTitle>
-            <DialogDescription>{selectedTask?.description}</DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    </>
-  )
-}
+            return (
+              <li key={task._id} className="border p-4 rounded-lg shadow">
+                <h2 className="text-lg font-semibold">{task.taskContent}</h2>
+                <p className="text-sm text-gray-500">
+                  Difficulty: {task.difficultyLevel} | Points: {task.scorePoints}
+                </p>
 
+                {!isJoined ? (
+                  <button
+                    className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+                    onClick={() => handleJoinTask(task._id)}
+                    disabled={loading === task._id}
+                  >
+                    {loading === task._id ? "Joining..." : "Join Task"}
+                  </button>
+                ) : (
+                  <button
+                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                    onClick={() => handleSubmitTask(task._id)}
+                    disabled={loading === task._id}
+                  >
+                    {loading === task._id ? "Submitting..." : "Submit Task"}
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+export default TaskList;
