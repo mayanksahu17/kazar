@@ -35,6 +35,7 @@ const Index = () => {
 
       if (result.success) {
         localStorage.setItem("token", result.token);
+        localStorage.setItem("userId", result.data?._id);
         window.location.href = `/dashboard/${result.data.role.toLowerCase()}`;
         toast.success("Successfully signed in!");
       } else {
@@ -48,7 +49,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 antialiased">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-100 to-blue-100 antialiased">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -56,7 +57,7 @@ const Index = () => {
         className="w-full max-w-md px-8 py-10 mx-4"
       >
         <div className="relative backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-green-100 p-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent rounded-2xl" />
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-100 to-transparent rounded-2xl" />
           
           <div className="relative">
             <motion.div
@@ -126,7 +127,7 @@ const Index = () => {
               >
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-lg font-medium hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
                 >
                   Sign in
                 </button>
