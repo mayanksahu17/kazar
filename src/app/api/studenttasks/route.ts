@@ -114,6 +114,16 @@ export async function POST(req: NextRequest) {
       status: "pending",
     });
 
+
+  //   submissions: [{
+  //     type: Schema.Types.ObjectId,
+  //     ref: 'Submission'  // Assuming you'll have a Submission model
+  // }],
+    // TODO : push the id according to the models 
+    await Task.findByIdAndUpdate(taskId, {
+      $push: { submissions: submission._id }  // Ensure "submissions" matches the Task model field
+    }, { new: true });
+
     return NextResponse.json({ success: true, message: "Task submitted successfully", data: submission });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
