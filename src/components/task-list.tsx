@@ -9,14 +9,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 interface Task {
   id: string
   title: string
   description: string
   difficultyLevel: "Easy" | "Medium" | "Hard"
-  scorePoints: number
+  scorePoints: number                                             
   deadline: string
   isPublisher?: boolean
 }
