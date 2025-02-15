@@ -31,13 +31,13 @@ export default function AssistantCard() {
         className="text-center text-4xl font-bold text-gray-800 mb-2"
         style={{ fontFamily: 'Josefin Sans, sans-serif' }}
       >
-        Assistants you can trust
+        Student reviews
       </h2>
       <p
         className="text-center mb-10 text-gray-500"
         style={{ fontFamily: 'Roboto, sans-serif' }}
       >
-        We assemble top-tier talent to support you during the pivotal moments of your journey as your trusted aides.
+        We assemble top-tier projects to support you during the pivotal moments of your journey as a cse student.
       </p>
       <div className="container max-w-7xl px-4 md:px-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -69,16 +69,7 @@ export default function AssistantCard() {
                   </p>
                 </div>
               </CardContent>
-              <CardFooter className="border-t bg-muted/50 p-4">
-                <a 
-                  href="https://apply.neetocal.com/meeting-with-nikhil-jain"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full text-center text-sm font-medium hover:underline"
-                >
-                  Hire an Assistant
-                </a>
-              </CardFooter>
+              
             </Card>
           ))}
         </div>

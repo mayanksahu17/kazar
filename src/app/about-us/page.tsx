@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import { useRouter } from "next/navigation"
 
 const features = [
   {
@@ -52,6 +53,7 @@ const pricingPlans = [
 ];
 
 const Index = () => {
+  const router = useRouter()
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
       {/* Hero Section */}
@@ -129,6 +131,7 @@ const Index = () => {
       </section>
 
       {/* Pricing Section */}
+      
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
@@ -175,7 +178,8 @@ const Index = () => {
                     ))}
                   </ul>
                   <Button
-                    className={`mt-8 w-full ${
+                    onClick={() => {router.push("/payment")}}
+                    className={`mt-8 w-full ${ 
                       plan.isPopular
                         ? 'bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white'
                         : 'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50'
