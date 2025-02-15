@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Link from 'next/link';
 
 interface Assignment {
   _id: string;
@@ -41,29 +42,29 @@ const FacultyDashboard: React.FC = () => {
       console.error('Error fetching assignments:', error);
     }
   };
+
   const createAssignment = async () => {
     try {
       const token = localStorage.getItem("token");
       console.log(token);
-      
+
       if (!token) {
         console.error("No token found. Please log in.");
         return;
       }
-  
+
       await axios.post('/api/task', newAssignment, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         }
       });
-  
+
       fetchAssignments();
     } catch (error) {
       console.error('Error creating assignment:', error);
     }
   };
-  
 
   const verifySubmission = async (submissionId: string) => {
     try {
@@ -75,70 +76,27 @@ const FacultyDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gradient-to-r from-blue-50 to-green-50">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 text-white p-5">
-        <h2 className="text-2xl font-bold">Faculty Dashboard</h2>
-        <ul className="mt-5 space-y-2">
-          <li className="p-2 hover:bg-gray-700 rounded cursor-pointer">Create Assignment</li>
-          <li className="p-2 hover:bg-gray-700 rounded cursor-pointer">View Assignments</li>
+      <div className="w-72 bg-gradient-to-b from-blue-600 to-green-500 text-white p-6 shadow-lg">
+        <h2 className="text-3xl font-bold tracking-wide text-center">Faculty Dashboard</h2>
+        <ul className="mt-6 space-y-4">
+          <li className="p-3 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">
+            <Link href='/dashboard/professor/tasks/create-task' className="block text-lg font-medium">
+              ➕ Create Assignment
+            </Link>
+          </li>
+          <li className="p-3 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">
+            <Link href='/dashboard/professor/tasks/view-task' className="block text-lg font-medium">
+              📜 View Assignments
+            </Link>
+          </li>
         </ul>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6 bg-gray-100 overflow-auto">
-        {/* Create Assignment */}
-        <div className="bg-white p-5 rounded shadow-md">
-          <h2 className="text-xl font-semibold mb-3">Create Assignment</h2>
-          <input className="w-full p-2 mb-2 border rounded" type="text" placeholder="Task Content" value={newAssignment.taskContent} onChange={(e) => setNewAssignment({ ...newAssignment, taskContent: e.target.value })} />
-          <input className="w-full p-2 mb-2 border rounded" type="number" placeholder="Score Points" value={newAssignment.scorePoints} onChange={(e) => setNewAssignment({ ...newAssignment, scorePoints: e.target.value })} />
-          <select className="w-full p-2 mb-2 border rounded" value={newAssignment.difficultyLevel} onChange={(e) => setNewAssignment({ ...newAssignment, difficultyLevel: e.target.value })}>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-          <input className="w-full p-2 mb-2 border rounded" type="datetime-local" value={newAssignment.deadline} onChange={(e) => setNewAssignment({ ...newAssignment, deadline: e.target.value })} />
-          <button className="bg-blue-600 text-white p-2 rounded w-full" onClick={createAssignment}>Create</button>
-        </div>
-
-        {/* List Assignments */}
-        <div className="mt-6 bg-white p-5 rounded shadow-md">
-          <h2 className="text-xl font-semibold mb-3">Assignments</h2>
-          <ul>
-            {assignments.map((task) => (
-              <li key={task._id} className="p-3 border-b flex justify-between items-center">
-                <div>
-                  <strong>{task.taskContent}</strong> ({task.difficultyLevel})
-                  <p>Task ID: {task._id}</p>
-                  <p>Joiners: {task.joiners.length}</p>
-                  <p>Submissions: {task.submissions.length}</p>
-                </div>
-                <button className="bg-green-600 text-white p-2 rounded" onClick={() => setSelectedTask(task._id)}>View Submissions</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Submissions for Selected Task */}
-        {selectedTask && (
-          <div className="mt-6 bg-white p-5 rounded shadow-md">
-            <h2 className="text-xl font-semibold mb-3">Submissions</h2>
-            <ul>
-              {assignments.find((task) => task._id === selectedTask)?.submissions.map((submission) => (
-                <li key={submission._id} className="p-3 border-b flex justify-between items-center">
-                  <div>
-                    <p>Student ID: {submission.student}</p>
-                    <p>Content: {submission.submittedContent}</p>
-                    <p>Status: {submission.status}</p>
-                  </div>
-                  {submission.status === 'pending' && (
-                    <button className="bg-red-600 text-white p-2 rounded" onClick={() => verifySubmission(submission._id)}>Verify</button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+      {/* Content Placeholder */}
+      <div className="flex-1 flex justify-center items-center text-gray-700">
+        <h2 className="text-2xl font-semibold">Select an option from the sidebar.</h2>
       </div>
     </div>
   );

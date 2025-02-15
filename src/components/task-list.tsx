@@ -2,6 +2,10 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 interface Task {
   _id: string;
@@ -17,6 +21,7 @@ const TaskList = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
+  const router = useRouter()
 
   // Fetch tasks from backend
   useEffect(() => {
@@ -110,8 +115,23 @@ const TaskList = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <div className="max-w-6xl mx-auto p-4 mt-10">
+      <div className="flex items-center justify-between w-full">
+  
+  <div className="flex ">
+  <Button variant="outline" size="sm" className="mb-4 bg-white hover:bg-gray-100" onClick={() => router.back()}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+  </div>
+
+
+  <div className="absolute left-1/2 transform -translate-x-1/2">
     <h1 className="text-2xl font-bold mb-6 text-center">Available Tasks</h1>
+  </div>
+</div>
+
+    
 
     {tasks.length === 0 ? (
       <p className="text-center text-gray-500">No tasks available.</p>
