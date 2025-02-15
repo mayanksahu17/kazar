@@ -1,25 +1,15 @@
 import mongoose, {Schema, Document, } from "mongoose";
-import { ITournament } from "./Tournaments";
-import { TransectionHistory } from "./TrasectionHistory";
-import { history } from "./History";
+
 export interface user extends Document{
     userName : string,
     email : string,
     password : string,
     mobileNumber : Number,
-    bgmiId : Number,
-    upi : string ,
-    walletBalance : Number ,
-    tournaments: mongoose.Types.ObjectId[];
-    transectionHistory : [TransectionHistory] 
     isLocked: boolean;
     loginAttempts: number;
     lockUntil: number ;
     verifyCode : string;
-    teams : [];
-    registeredTournaments : String;
-    isAdmin : Boolean;
-    bgmiUsername : string
+    role : string;
 }
 
 
@@ -44,25 +34,6 @@ const UserSchema : Schema<user> = new Schema({
         type : Number,
         required : [true,"please provide mobile number"],
     },
-    bgmiId : {
-        type : Number,
-        required : [true,"please provide bgmi id"],
-    },
-    upi : {
-        type : String,
-        },
-    walletBalance : {
-        type : Number, 
-        default : 0,
-         },
-    tournaments : [{
-        type : Schema.Types.ObjectId,
-        ref : "Tournament",
-        }],
-    transectionHistory : [{
-        type : Schema.Types.ObjectId,
-        ref : "TransectionHistory"
-         }],
     isLocked: { 
         type: Boolean,
          default: false
@@ -79,19 +50,8 @@ const UserSchema : Schema<user> = new Schema({
         type : String,
         required : [true, "verify code is required"]
     },
-    teams : [{
-         type : Schema.Types.ObjectId,
-        ref : "Teams"
-    }],
-    registeredTournaments : [{
-        type :  String
-        
-        }], 
-    isAdmin : {
-        type : Boolean,
-        default : false
-    },
-    bgmiUsername : {
+    
+    role : {
         type : String,
         default : null
     }
