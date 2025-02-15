@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 }
 
 // ✅ Get All Tasks
-export async function GET(req: NextRequest) {
+/*export async function GET(req: NextRequest) {
   await dbConnect();
   try {
     const { searchParams } = new URL(req.url);
@@ -66,6 +66,16 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message || 'Error fetching tasks' }, { status: 500 });
+  }
+}*/
+
+export async function GET() {
+  await dbConnect();
+  try {
+    const tasks = await Task.find({});
+    return NextResponse.json({ success: true, data: tasks });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: "Error fetching tasks" }, { status: 500 });
   }
 }
 
