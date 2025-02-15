@@ -213,11 +213,11 @@ export default function Home() {
   </div>
 
   <Image
-    src="/banner hero.jpeg"
+    src="/herobanner.jpeg"
     alt="Application Interface"
     width={1920} // Desktop width
     height={1080} // Desktop height
-    className="w-full h-auto object-cover md:object-contain"
+    className="w-4/5 h-auto object-cover md:object-contain"
   />
 </div>
 
