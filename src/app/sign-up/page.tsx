@@ -6,45 +6,28 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-interface SignUpFormData {
-  userName: string;
-  email: string;
-  password: string;
-  role: string;
-}
+const signUpSchema = z.object({
+  userName: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  mobileNumber: z.string().regex(/^\d{10}$/, "Invalid mobile number"),
+  role: z.enum(["student", "professor", "company"]),
+});
 
 type SignUpForm = z.infer<typeof signUpSchema>;
 
 export default function SignUp() {
   const router = useRouter();
-
-  const [formData, setFormData] = useState<SignUpFormData>({
-    userName: '',
-    email: '',
-    password: '',
-    role: ''
-    
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpForm>({
+    resolver: zodResolver(signUpSchema),
   });
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    });
-  };
-  
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { userName, email, password, role } = formData;
-
-    if (!userName || !email || !password || !role) {
-      toast.error('All fields are required');
-      return;
-    }
-
+  const onSubmit = async (data: SignUpForm) => {
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
@@ -154,29 +137,17 @@ export default function SignUp() {
               )}
             </div>
           </div>
-         
-          <div>
-  <Label htmlFor="role">Role</Label>
-  <select
-    id="role"
-    value={formData.role}
-    onChange={handleChange}
-    required
-    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="">Select your role</option>
-    <option value="student">Student</option>
-    <option value="faculty">Faculty</option>
-    <option value="company">Company</option>
-  </select>
-</div>
 
-          <Link href="/sign-in" className="text-sm font-medium hover:underline text-muted-foreground" prefetch={false}>
-            Already have an account? Sign-in
-          </Link>
-          <Button type="submit" className="w-full text-orange-600">
-            {loading ? 'Signing up...' : 'Sign up'}
-          </Button>
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Sign Up
+            </button>
+          </div>
         </form>
       </div>
     </div>
