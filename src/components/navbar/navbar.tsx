@@ -62,7 +62,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/Job-Data" className="text-sm font-medium bg-green-500 text-white py-1.5 px-4 rounded-full hover:bg-green-600">
+            <Link href="/leaderboard" className="text-sm font-medium bg-green-500 text-white py-1.5 px-4 rounded-full hover:bg-green-600">
               LeaderBoard
             </Link>
            

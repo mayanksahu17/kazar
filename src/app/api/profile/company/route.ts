@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { company } from "@/model/Company";
+import { Company } from "@/model/Company";
 import { getUserFromToken } from "@/utils/auth";
 
 export async function POST(req: NextRequest) {
@@ -11,13 +11,13 @@ export async function POST(req: NextRequest) {
   try {
     const { name, industry, internships } = await req.json();
 
-    const Company = await company.findOneAndUpdate(
+    const company = await Company.findOneAndUpdate(
       { userId: user._id },
       { name, industry, internships },
       { new: true, upsert: true }
     );
 
-    return NextResponse.json({ success: true, Company });
+    return NextResponse.json({ success: true, company });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
