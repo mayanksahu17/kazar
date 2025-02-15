@@ -114,12 +114,12 @@ const TaskList = () => {
       {tasks.length === 0 ? (
         <p>No tasks available.</p>
       ) : (
-        <ul className="space-y-4">
+        <ul className=" space-y-4 flex ">
           {tasks.map((task) => {
             const isJoined = userId && task.joiners.includes(userId);
 
             return (
-              <li key={task._id} className="border p-4 rounded-lg shadow">
+              <li key={task._id} className=" grid grid-col-3 border p-4 rounded-lg shadow">
                 <h2 className="text-lg font-semibold">{task.taskContent}</h2>
                 <p className="text-sm text-gray-500">
                   Difficulty: {task.difficultyLevel} | Points: {task.scorePoints}

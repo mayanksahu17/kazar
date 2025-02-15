@@ -4,7 +4,6 @@ const ProfileSchema = new mongoose.Schema({
   personalInfo: {
     fullName: { type: String, required: true },
     email: { type: String, required: true },
-    phone: { type: String, required: true },
     location: { type: String, required: true },
     linkedin: { type: String },
     github: { type: String, required: true },
