@@ -54,6 +54,7 @@
     "jsonwebtoken-esm": "^2.0.1",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.475.0",
+    "marquee": "^0.2.1",
     "mongoose": "^8.5.1",
     "next": "14.2.5",
     "nodemailer": "^6.9.14",
