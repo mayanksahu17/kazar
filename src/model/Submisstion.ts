@@ -90,5 +90,5 @@ SubmissionSchema.virtual('timeRemaining').get(function() {
     };
 });
 
-export const Submission = (mongoose.models.Submission as mongoose.Model<Submission>) || 
+export const Submission1 = (mongoose.models.Submission as mongoose.Model<Submission>) || 
     mongoose.model<Submission>("Submission", SubmissionSchema);

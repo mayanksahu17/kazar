@@ -1,7 +1,7 @@
 import dbConnect from '@/lib/dbConnect';
 import { Task } from '@/model/Task';
 import { User } from '@/model/User';
-import { Submission } from '@/model/Submisstion';
+import { Submission1 } from '@/model/Submisstion';
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromToken } from '@/utils/auth';
 
@@ -195,12 +195,12 @@ export async function SUBMIT(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Task not found' }, { status: 404 });
     }
 
-    const existingSubmission = await Submission.findOne({ task: taskId, student: tokenData.id });
+    const existingSubmission = await Submission1.findOne({ task: taskId, student: tokenData.id });
     if (existingSubmission) {
       return NextResponse.json({ success: false, message: 'You have already submitted this task' }, { status: 400 });
     }
 
-    const submission = await Submission.create({
+    const submission = await Submission1.create({
       task: taskId,
       student: tokenData.id,
       submittedContent,
