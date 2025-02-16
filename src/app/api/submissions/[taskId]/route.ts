@@ -69,7 +69,8 @@ export async function GET(req: NextRequest, { params }: { params: { taskId: stri
             if (!task) {
                 return NextResponse.json({ success: false, message: "Task not found" }, { status: 404 });
             }
-
+            console.log(task);
+            
             const submissionsWithDetails = await Promise.all(
                 task.submissions.map(async (submission) => {
                     const student = await Student.findById(submission.studentId).select("profile enrollmentNumber name");
