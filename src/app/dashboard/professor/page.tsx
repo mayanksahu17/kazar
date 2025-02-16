@@ -144,13 +144,13 @@ const FacultyDashboard: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 p-8">
         <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-bold mb-8">
-          Mentor Dashboard
+          Faculty Dashboard
         </motion.h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Mentees Progress */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-semibold mb-4">Mentees Progress</h2>
+            <h2 className="text-2xl font-semibold mb-4">Faculty Progress</h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie data={pieChartData} cx="50%" cy="50%" outerRadius={80} dataKey="value">

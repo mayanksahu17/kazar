@@ -1,9 +1,12 @@
-'use client'
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
-import { useRouter } from "next/navigation"
+"use client";
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Assignment {
   _id: string;
@@ -15,18 +18,33 @@ interface Assignment {
   joiners: string[];
 }
 
-interface Submission {
-  _id: string;
-  student: string;
-  submittedContent: string;
-  status: string;
+interface StudentDetails {
+  enrollmentNumber: string;
+  year: number;
+  section: string;
+  name: string;
 }
 
-const ViewTask: React.FC = () => {
+interface Submission {
+  _id: string;
+  status: "pending" | "complete" | "rejected";
+  submittedAt: string;
+  submittedContent: string;
+  studentDetails: StudentDetails;
+  taskDetails: {
+    scorePoints: number;
+    difficultyLevel: string;
+    deadline: string;
+    taskContent: string;
+  };
+}
+
+const ViewTask = () => {
   const router = useRouter();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchAssignments();
@@ -34,110 +52,79 @@ const ViewTask: React.FC = () => {
 
   const fetchAssignments = async () => {
     try {
-      const response = await axios.get('/api/task');
+      const response = await axios.get("/api/task");
       setAssignments(response.data.data);
-      console.log(response.data.data);
-      
     } catch (error) {
-      console.error('Error fetching assignments:', error);
+      console.error("Error fetching assignments:", error);
     }
   };
 
-  const fetchSubmissions = async (submissionIds: any) => {
+  const fetchSubmissions = async (taskId: string) => {
+    setLoading(true);
     try {
-      const response = await axios.post('/api/submissions', {submissionIds  });
-      setSubmissions(response.data); // Assuming API returns an array of submissions
-    } catch (error : any) {
-      console.error('Error fetching submissions:', error);
+      const response = await axios.get(`/api/submissions/${taskId}`);
+      setSubmissions(response.data.submissions);
+    } catch (error) {
+      console.error("Error fetching submissions:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const verifySubmission = async (taskId: string, studentId: string) => {
+  const updateSubmissionStatus = async (taskId: string, studentId: string, newStatus: string) => {
     try {
-      await axios.patch(`/api/task/prof-verify`, { 
-        taskId, 
-        studentId, 
-        status: 'graded' 
+      await axios.patch(`/api/submissions/${taskId}`, {
+        studentId,
+        status: newStatus,
       });
-      fetchAssignments();
+      fetchSubmissions(taskId);
     } catch (error) {
-      console.error('Error verifying submission:', error);
+      console.error("Error updating submission status:", error);
     }
   };
 
   return (
-    <div className="mt-6 p-6 max-w-3xl mx-auto bg-gradient-to-b from-gray-50 to-white rounded-lg shadow-md">
-      {/* Back Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        className="mb-4 flex items-center gap-2 bg-white hover:bg-gray-100 transition-all text-black"
-        onClick={() => router.back()}
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
+    <div className="p-6 max-w-4xl mx-auto">
+      <Button onClick={() => router.back()} variant="outline" size="sm" className="mb-4 flex items-center gap-2">
+        <ArrowLeft className="h-4 w-4" /> Back
       </Button>
 
-      {/* Assignments Heading */}
-      <h2 className="text-2xl font-bold mb-5 text-center text-black">Assignments</h2>
-
-      {/* Assignments List */}
-      <ul className="space-y-4">
-        {assignments.map((task) => (
-          <li key={task._id} className="p-4 bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-all flex justify-between items-center">
-            <div>
-              <h3 className="font-semibold text-lg text-black">
-                {task.taskContent} <span className="text-sm text-gray-700">({task.difficultyLevel})</span>
-              </h3>
-              <p className="text-sm text-black">
-                Task ID: <span className="font-medium">{task._id}</span>
-              </p>
-              <p className="text-sm text-black">
-                Joiners: <span className="font-medium">{task.joiners.length}</span>
-              </p>
-              <p className="text-sm text-black">
-                Submissions: <span className="font-medium">{task.submissions.length}</span>
-              </p>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Assignments</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {assignments.map((task) => (
+            <div key={task._id} className="p-4 border rounded-lg">
+              <h3>{task.taskContent}</h3>
+              <Button onClick={() => { setSelectedTask(task._id); fetchSubmissions(task._id); }}>View Submissions</Button>
             </div>
-            <button 
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition-all" 
-              onClick={() => {
-                setSelectedTask(task._id);
-                fetchSubmissions(task._id); // Fetch submissions when task is selected
-              }}
-            >
-              View Submissions
-            </button>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </CardContent>
+      </Card>
 
-      {/* Submissions Section */}
       {selectedTask && (
-        <div className="mt-6 p-5 bg-gradient-to-b from-white to-gray-50 rounded-lg shadow-md border border-gray-200">
-          <h2 className="text-xl font-semibold mb-4 text-black">Submissions</h2>
-          <ul className="space-y-4">
-          {submissions && Array.isArray(submissions) && submissions.map((submission) => (
-              <li key={submission._id} className="p-4 bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-all flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-black"><strong>Student ID:</strong> {submission.student}</p>
-                  <p className="text-sm text-black"><strong>Content:</strong> {submission.submittedContent}</p>
-                  <p className={`text-sm font-medium ${submission.status === 'pending' ? 'text-red-600' : 'text-green-600'}`}>
-                    <strong>Status:</strong> {submission.status}
-                  </p>
+        <Card>
+          <CardHeader><CardTitle>Submissions</CardTitle></CardHeader>
+          <CardContent>
+            {loading ? <p>Loading...</p> : submissions.length === 0 ? <p>No submissions yet.</p> : (
+              submissions.map((submission) => (
+                <div key={submission._id} className="p-4 border rounded-lg">
+                  <p><strong>{submission.studentDetails.name}</strong> ({submission.studentDetails.enrollmentNumber})</p>
+                  <p>Submitted: {new Date(submission.submittedAt).toLocaleString()}</p>
+                  <p>Status: <Badge>{submission.status}</Badge></p>
+                  <p>{submission.submittedContent}</p>
+                  {submission.status === "pending" && (
+                    <div>
+                      <Button onClick={() => updateSubmissionStatus(selectedTask, submission.studentDetails.enrollmentNumber, "complete")}>Accept</Button>
+                      <Button onClick={() => updateSubmissionStatus(selectedTask, submission.studentDetails.enrollmentNumber, "rejected")}>Reject</Button>
+                    </div>
+                  )}
                 </div>
-                {submission.status === 'pending' && (
-                  <button 
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition-all" 
-                    onClick={() => verifySubmission(selectedTask, submission.student)}
-                  >
-                    Verify
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   );
