@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { Task } from "@/model/Task";
 import { getUserFromToken } from "@/utils/auth";
-import { Submission } from "@/model/Submisstion";
+import { Submission1 } from "@/model/Submisstion";
 
 // Get submissions for the current user
 export async function GET(req: NextRequest) {
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Find all submissions for the current user
-    const submissions = await Submission.find({ 
+    const submissions = await Submission1.find({ 
       student: user._id 
     })
     .select('task submissionDate status')
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user has already submitted this task
-    const existingSubmission = await Submission.findOne({
+    const existingSubmission = await Submission1.findOne({
       task: taskId,
       student: user._id
     });
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const submission = await Submission.create({
+    const submission = await Submission1.create({
       task: taskId,
       student: user._id,
       submittedContent,
