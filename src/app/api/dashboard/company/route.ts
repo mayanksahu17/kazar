@@ -1,33 +1,46 @@
 import { NextResponse } from "next/server";
-import { getUserFromToken } from "@/utils/auth"; // Helper to extract token
+import { getUserFromToken } from "@/utils/auth";
 import dbConnect from "@/lib/dbConnect";
-import { company } from "@/model/Company"; // Ensure Company model exists
-
+import { Company } from "@/model/Company";
 import { NextRequest } from "next/server";
-
+import { User } from "@/model/User";
 export async function GET(req: NextRequest) {
-  await dbConnect(); // Ensure database is connected
+  await dbConnect();
 
   try {
-    const token = req.headers.get("Authorization")?.split(" ")[1];
+    const user = await getUserFromToken(req);
 
-    if (!token) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
-    const userId = getUserFromToken(req); // Extract user ID from token
-    if (!userId) {
-      return NextResponse.json({ success: false, message: "Invalid token" }, { status: 401 });
+    // Assuming the user has a companyId field that references their company
+    const companyData = await Company.findOne({userId: user._id})
+      
+
+    if (!companyData) {
+      return NextResponse.json(
+        { success: false, message: "Company not found" },
+        { status: 404 }
+      );
     }
 
-    const Company = await company.findById(userId).select("postedInternships jobListings");
-    if (!company) {
-      return NextResponse.json({ success: false, message: "Company not found" }, { status: 404 });
-    }
+    return NextResponse.json(
+      { 
+        success: true, 
+        data: companyData 
+      },
+      { status: 200 }
+    );
 
-    return NextResponse.json({ success: true, data: Company }, { status: 200 });
   } catch (error) {
     console.error("Error fetching company dashboard:", error);
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

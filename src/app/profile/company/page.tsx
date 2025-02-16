@@ -40,7 +40,7 @@ export default function CompanyProfile() {
       const result = await response.json()
 
       if (result.success) {
-        router.push("/dashboard/company")
+        router.push("/pricing")
       } else {
         setError(result.message || "An error occurred while saving profile")
       }

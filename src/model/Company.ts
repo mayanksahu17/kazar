@@ -14,6 +14,6 @@ const CompanySchema: Schema<company> = new Schema({
   internships: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],
 });
 
-export const company =
+export const Company =
   mongoose.models.Company ||
   mongoose.model<company>("Company", CompanySchema);
