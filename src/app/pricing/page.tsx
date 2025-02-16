@@ -12,22 +12,22 @@ import { useRouter } from "next/navigation"
 const pricingPlans = [
   {
     name: "Quarterly Plan",
-    price: "799",
+    price: "10,000",
     duration: "3 months",
-    features: ["Basic mentorship", "Project reviews", "Community access"]
+    features: ["Post Opportunities", "Community access"]
   },
   {
     name: "Six-Month Plan",
-    price: "1,499",
+    price: "16,000",
     duration: "6 months",
-    features: ["Priority mentorship", "Detailed project reviews", "Premium community access"]
+    features: ["Post Opportunities + Hackathons ", "Detailed project reviews", "Premium community access"]
   },
   {
     name: "Yearly Plan",
-    price: "2,499",
+    price: "32,000",
     duration: "12 months",
     isPopular: true,
-    features: ["Dedicated mentor", "Unlimited project reviews", "VIP community access"]
+    features: ["Job Postings", "Student Dashboard premium access", "VIP community access"]
   }
 ];
 
