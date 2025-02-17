@@ -2,7 +2,7 @@
 
  <!-- Replace with your actual image path -->
 
-Welcome to *Skill Bridge*, the ultimate platform for organizing and participating in PUBG and BGMI tournaments. Our goal is to create a seamless and engaging experience for mobile gamers looking to showcase their skills, compete for glory, and win exciting prizes.
+Welcome to *Skill Bridge*, the ultimate platform for every student to get hands-on real world tasks from mentors and get themselves positioned on learder board based on reward points.
 
 
 
@@ -20,8 +20,8 @@ Before you begin, ensure you have met the following requirements:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/scrims-crown.git
-   cd scrims-crown
+   git clone https://github.com/yourusername/kazar.git
+   cd kazae
    npm install
 2. Set up environment variables:
 
